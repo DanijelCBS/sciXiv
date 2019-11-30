@@ -1,9 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified">
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:jxb="http://java.sun.com/xml/ns/jaxb"
+    jxb:version="2.0" elementFormDefault="qualified">
     <xs:element name="users">
         <xs:complexType>
             <xs:sequence maxOccurs="unbounded">
-                <xs:element name="user"/>
+                <xs:annotation>
+                    <xs:appinfo>
+                        <jxb:property name="users"/>
+                    </xs:appinfo>
+                </xs:annotation>
+                <xs:element name="user" type="TUser"> </xs:element>
             </xs:sequence>
         </xs:complexType>
     </xs:element>
@@ -20,20 +26,8 @@
             <xs:element name="firstName" type="xs:string"/>
             <xs:element name="lastName" type="xs:string"/>
             <xs:element name="role" type="TRole"/>
-            <xs:element name="ownPublications">
-                <xs:complexType>
-                    <xs:sequence maxOccurs="unbounded" minOccurs="0">
-                        <xs:element name="publicationID" type="xs:string"/>
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
-            <xs:element name="publicationsToReview">
-                <xs:complexType>
-                    <xs:sequence maxOccurs="unbounded" minOccurs="0">
-                        <xs:element name="publicationID" type="xs:string"/>
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
+            <xs:element name="ownPublications" type="TPublications"> </xs:element>
+            <xs:element name="publicationsToReview" type="TPublications"> </xs:element>
         </xs:sequence>
     </xs:complexType>
     <xs:simpleType name="TRole">
@@ -43,4 +37,9 @@
             <xs:enumeration value="author"/>
         </xs:restriction>
     </xs:simpleType>
+    <xs:complexType name="TPublications">
+        <xs:sequence maxOccurs="unbounded" minOccurs="0">
+            <xs:element name="publicationID" type="xs:string"/>
+        </xs:sequence>
+    </xs:complexType>
 </xs:schema>

@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified">
+    <xs:element name="users">
+        <xs:complexType>
+            <xs:sequence maxOccurs="unbounded">
+                <xs:element name="user"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+    <xs:complexType name="TUser">
+        <xs:sequence>
+            <xs:element name="email">
+                <xs:simpleType>
+                    <xs:restriction base="xs:string">
+                        <xs:pattern value="[^@]+@[^\.]+\..+"/>
+                    </xs:restriction>
+                </xs:simpleType>
+            </xs:element>
+            <xs:element name="password" type="xs:string"/>
+            <xs:element name="firstName" type="xs:string"/>
+            <xs:element name="lastName" type="xs:string"/>
+            <xs:element name="role" type="TRole"/>
+            <xs:element name="ownPublications">
+                <xs:complexType>
+                    <xs:sequence maxOccurs="unbounded" minOccurs="0">
+                        <xs:element name="publicationID" type="xs:string"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="publicationsToReview">
+                <xs:complexType>
+                    <xs:sequence maxOccurs="unbounded" minOccurs="0">
+                        <xs:element name="publicationID" type="xs:string"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+        </xs:sequence>
+    </xs:complexType>
+    <xs:simpleType name="TRole">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="editor"/>
+            <xs:enumeration value="reviewer"/>
+            <xs:enumeration value="author"/>
+        </xs:restriction>
+    </xs:simpleType>
+</xs:schema>

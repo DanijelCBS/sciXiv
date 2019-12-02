@@ -67,6 +67,12 @@
 			<artifactId>jaxb-xjc</artifactId>
 			<version>2.2.5.1</version>
 		</dependency>
+		<dependency>
+		    <groupId>org.exist-db</groupId>
+		    <artifactId>exist-core</artifactId>
+		    <version>5.1.0</version>
+		</dependency>
+		
 	</dependencies>
 
 	<build>

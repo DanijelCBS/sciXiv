@@ -40,7 +40,7 @@ public class DOMParser {
         schemaFactory = SchemaFactory.newInstance(W3C_XML_SCHEMA_NS_URI);
     }
 
-    public Document buildDocument(String xmlFile, String schemaPath) {
+    public Document buildAndValidateDocument(String xmlFile, String schemaPath) {
         try {
             DocumentBuilder builder = factory.newDocumentBuilder();
             File schemaFile = new File(schemaPath);

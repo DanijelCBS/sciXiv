@@ -2,7 +2,6 @@ package xml.web.services.team2.sciXiv.utils;
 
 import org.exist.xmldb.EXistResource;
 import org.springframework.stereotype.Component;
-import org.w3c.dom.Node;
 import org.xmldb.api.DatabaseManager;
 import org.xmldb.api.base.Collection;
 import org.xmldb.api.base.Database;
@@ -11,6 +10,8 @@ import org.xmldb.api.modules.CollectionManagementService;
 import org.xmldb.api.modules.XMLResource;
 
 import xml.web.services.team2.sciXiv.utils.AuthenticationUtilities.ConnectionProperties;
+
+import javax.xml.transform.OutputKeys;
 
 @Component
 public class DbConnectionManager {
@@ -35,14 +36,14 @@ public class DbConnectionManager {
 		DatabaseManager.registerDatabase(database);
 	}
 	
-	public void saveDocument(String collectionName, String documentId, Node domContentRoot) {
+	public void store(String collectionName, String documentId, String xmlEntity) {
 		Collection col = null;
 		XMLResource res = null;
 
 		try {
 			col = getOrCreateCollection(dbUri + collectionName, 0);
 			res = (XMLResource) col.createResource(documentId, XMLResource.RESOURCE_TYPE);
-			res.setContentAsDOM(domContentRoot);
+			res.setContent(xmlEntity);
 			col.storeResource(res);
 		}
 		catch(XMLDBException ex) {
@@ -66,7 +67,41 @@ public class DbConnectionManager {
 		}
 	}
 
-	private Collection getOrCreateCollection(String collectionUri, int pathSegmentOffset) throws XMLDBException {
+	public void load(String collectionName, String documentId) {
+		Collection col = null;
+		XMLResource res = null;
+
+		try {
+			col = DatabaseManager.getCollection(conn.getUri() + collectionName);
+			col.setProperty(OutputKeys.INDENT, "yes");
+			res = (XMLResource)col.getResource(documentId);
+
+			if(res == null)
+				throw new Exception();
+		}
+		catch(Exception ex) {
+			ex.printStackTrace();
+		}
+		finally{
+			if(res != null) {
+				try {
+					((EXistResource)res).freeResources();
+				} catch (XMLDBException xe) {
+					xe.printStackTrace();
+				}
+			}
+
+			if(col != null) {
+				try {
+					col.close();
+				} catch (XMLDBException xe) {
+					xe.printStackTrace();
+				}
+			}
+		}
+	}
+
+	public Collection getOrCreateCollection(String collectionUri, int pathSegmentOffset) throws XMLDBException {
 		Collection col = DatabaseManager.getCollection(conn.getUri() + collectionUri, conn.getUser(), conn.getPassword());
 
 		if (col == null) {

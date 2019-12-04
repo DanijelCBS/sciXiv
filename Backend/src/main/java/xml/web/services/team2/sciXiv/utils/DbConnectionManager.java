@@ -25,7 +25,7 @@ public class DbConnectionManager {
 	}
 	
 	private void initialize() throws Exception {
-		dbUri = "db/sciXiv/";
+		dbUri = "/db/sciXiv/";
 		conn = AuthenticationUtilities.loadProperties();
 		Class<?> cl = Class.forName(conn.getDriver());
 

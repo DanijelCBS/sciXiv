@@ -1,16 +1,7 @@
 package xml.web.services.team2.sciXiv.utils;
 
-import java.io.File;
-import java.io.IOException;
-
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.transform.OutputKeys;
-
 import org.exist.xmldb.EXistResource;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.Node;
+import org.springframework.stereotype.Component;
 import org.xmldb.api.DatabaseManager;
 import org.xmldb.api.base.Collection;
 import org.xmldb.api.base.Database;
@@ -20,51 +11,45 @@ import org.xmldb.api.modules.XMLResource;
 
 import xml.web.services.team2.sciXiv.utils.AuthenticationUtilities.ConnectionProperties;
 
+import javax.xml.transform.OutputKeys;
+
+@Component
 public class DbConnectionManager {
-	
-	private static ConnectionProperties conn;
-	
-	private static String dbUri = "db/sciXiv/";
-	
+
+	private ConnectionProperties conn;
+
+	private String dbUri;
+
 	public DbConnectionManager() throws Exception {
 		super();
 		initialize();
 	}
 	
-	public static void initialize() throws Exception {
-		// load connection properties
+	private void initialize() throws Exception {
+		dbUri = "/db/sciXiv/";
 		conn = AuthenticationUtilities.loadProperties();
-		// initialize database driver
-		Class<?> cl = Class.forName(conn.driver);
+		Class<?> cl = Class.forName(conn.getDriver());
 
-		// encapsulation of the database driver functionality
 		Database database = (Database) cl.newInstance();
 		database.setProperty("create-database", "true");
 
-		// entry point for the API which enables you to get the Collection reference
 		DatabaseManager.registerDatabase(database);
 	}
 	
-	public static void saveDocument(String collectionName, String documentId, Node domContentRoot) throws XMLDBException {
+	public void store(String collectionName, String documentId, String xmlEntity) {
 		Collection col = null;
 		XMLResource res = null;
 
 		try {
-			col = getOrCreateCollection(collectionName);
-
-			/*
-			 * create new XMLResource with a given id an id is assigned to the new resource
-			 * if left empty (null)
-			 */
+			col = getOrCreateCollection(dbUri + collectionName, 0);
 			res = (XMLResource) col.createResource(documentId, XMLResource.RESOURCE_TYPE);
-
-			res.setContentAsDOM(domContentRoot);
-
+			res.setContent(xmlEntity);
 			col.storeResource(res);
-
-		} finally {
-
-			// don't forget to cleanup
+		}
+		catch(XMLDBException ex) {
+			ex.printStackTrace();
+		}
+		finally {
 			if (res != null) {
 				try {
 					((EXistResource) res).freeResources();
@@ -72,7 +57,6 @@ public class DbConnectionManager {
 					xe.printStackTrace();
 				}
 			}
-
 			if (col != null) {
 				try {
 					col.close();
@@ -82,40 +66,65 @@ public class DbConnectionManager {
 			}
 		}
 	}
-	
-	public static Collection getOrCreateCollection(String collectionName) throws XMLDBException {
-		return getOrCreateCollection(dbUri + collectionName, 0);
+
+	public void load(String collectionName, String documentId) {
+		Collection col = null;
+		XMLResource res = null;
+
+		try {
+			col = DatabaseManager.getCollection(conn.getUri() + collectionName);
+			col.setProperty(OutputKeys.INDENT, "yes");
+			res = (XMLResource)col.getResource(documentId);
+
+			if(res == null)
+				throw new Exception();
+		}
+		catch(Exception ex) {
+			ex.printStackTrace();
+		}
+		finally{
+			if(res != null) {
+				try {
+					((EXistResource)res).freeResources();
+				} catch (XMLDBException xe) {
+					xe.printStackTrace();
+				}
+			}
+
+			if(col != null) {
+				try {
+					col.close();
+				} catch (XMLDBException xe) {
+					xe.printStackTrace();
+				}
+			}
+		}
 	}
 
-	private static Collection getOrCreateCollection(String collectionUri, int pathSegmentOffset) throws XMLDBException {
+	public Collection getOrCreateCollection(String collectionUri, int pathSegmentOffset) throws XMLDBException {
+		Collection col = DatabaseManager.getCollection(conn.getUri() + collectionUri, conn.getUser(), conn.getPassword());
 
-		Collection col = DatabaseManager.getCollection(conn.uri + collectionUri, conn.user, conn.password);
-
-		// create the collection if it does not exist
 		if (col == null) {
 
 			if (collectionUri.startsWith("/")) {
 				collectionUri = collectionUri.substring(1);
 			}
 
-			String pathSegments[] = collectionUri.split("/");
+			String[] pathSegments = collectionUri.split("/");
 
 			if (pathSegments.length > 0) {
 				StringBuilder path = new StringBuilder();
 
 				for (int i = 0; i <= pathSegmentOffset; i++) {
-					path.append("/" + pathSegments[i]);
+					path.append("/").append(pathSegments[i]);
 				}
 
-				Collection startCol = DatabaseManager.getCollection(conn.uri + path, conn.user, conn.password);
+				Collection startCol = DatabaseManager.getCollection(conn.getUri() + path, conn.getUser(), conn.getPassword());
 
 				if (startCol == null) {
-
-					// child collection does not exist
-
 					String parentPath = path.substring(0, path.lastIndexOf("/"));
-					Collection parentCol = DatabaseManager.getCollection(conn.uri + parentPath, conn.user,
-							conn.password);
+					Collection parentCol = DatabaseManager.getCollection(conn.getUri() + parentPath, conn.getUser(),
+							conn.getPassword());
 
 					CollectionManagementService mgt = (CollectionManagementService) parentCol
 							.getService("CollectionManagementService", "1.0");
@@ -134,31 +143,4 @@ public class DbConnectionManager {
 			return col;
 		}
 	}
-	
-	// Write test document
-	public static void main(String[] args) {
-		try {
-			DbConnectionManager dbc = new DbConnectionManager();
-			DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-			DocumentBuilder builder = factory.newDocumentBuilder();
-			Document document = builder.newDocument();
-			Element rect = document.createElement("rectangle");
-			rect.setAttribute("unit", "px");
-			document.appendChild(rect);
-			
-			Element width = document.createElement("width");
-			width.appendChild(document.createTextNode("1920"));
-			rect.appendChild(width);
-			
-			Element heigth = document.createElement("heigth");
-			heigth.appendChild(document.createTextNode("1080"));
-			rect.appendChild(heigth);
-			DbConnectionManager.saveDocument("testDocuments", "rectangle.xml", document);
-			System.out.println("Saved rectangle.xml");
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}
-
 }

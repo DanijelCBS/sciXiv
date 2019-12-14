@@ -1,4 +1,4 @@
-package xml.web.services.team2.sciXiv.utils;
+package xml.web.services.team2.sciXiv.utils.database;
 
 import org.exist.xupdate.XUpdateProcessor;
 import org.springframework.stereotype.Component;

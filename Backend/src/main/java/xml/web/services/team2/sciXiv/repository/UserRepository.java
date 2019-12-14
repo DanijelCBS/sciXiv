@@ -6,10 +6,9 @@ import org.springframework.stereotype.Repository;
 import org.xmldb.api.base.*;
 import org.xmldb.api.modules.XMLResource;
 import org.xmldb.api.modules.XPathQueryService;
-import org.xmldb.api.modules.XQueryService;
 import xml.web.services.team2.sciXiv.model.TUser;
-import xml.web.services.team2.sciXiv.utils.DbConnectionManager;
-import xml.web.services.team2.sciXiv.utils.UpdateTemplate;
+import xml.web.services.team2.sciXiv.utils.connection.DbConnectionManager;
+import xml.web.services.team2.sciXiv.utils.database.UpdateTemplate;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;

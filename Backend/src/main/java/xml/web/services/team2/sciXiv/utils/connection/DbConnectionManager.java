@@ -1,6 +1,7 @@
-package xml.web.services.team2.sciXiv.utils;
+package xml.web.services.team2.sciXiv.utils.connection;
 
 import org.exist.xmldb.EXistResource;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.xmldb.api.DatabaseManager;
 import org.xmldb.api.base.Collection;
@@ -8,13 +9,15 @@ import org.xmldb.api.base.Database;
 import org.xmldb.api.base.XMLDBException;
 import org.xmldb.api.modules.CollectionManagementService;
 import org.xmldb.api.modules.XMLResource;
-
-import xml.web.services.team2.sciXiv.utils.AuthenticationUtilities.ConnectionProperties;
+import xml.web.services.team2.sciXiv.utils.factory.ConnectionPropertiesFactory;
 
 import javax.xml.transform.OutputKeys;
 
 @Component
 public class DbConnectionManager {
+
+	@Autowired
+	private ConnectionPropertiesFactory connectionPropertiesFactory;
 
 	private ConnectionProperties conn;
 
@@ -27,7 +30,7 @@ public class DbConnectionManager {
 	
 	private void initialize() throws Exception {
 		dbUri = "/db/sciXiv/";
-		conn = AuthenticationUtilities.loadProperties();
+		conn = connectionPropertiesFactory.getObject();
 		Class<?> cl = Class.forName(conn.getDriver());
 
 		Database database = (Database) cl.newInstance();

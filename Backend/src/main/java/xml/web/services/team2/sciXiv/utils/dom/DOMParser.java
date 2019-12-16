@@ -14,7 +14,7 @@ import javax.xml.validation.SchemaFactory;
 import org.w3c.dom.Document;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
-import xml.web.services.team2.sciXiv.exception.DocumentParsingFailureException;
+import xml.web.services.team2.sciXiv.exception.DocumentParsingFailedException;
 
 
 @Component
@@ -28,14 +28,14 @@ public class DOMParser {
 
     public DOMParser() {}
 
-    public Document buildAndValidateDocument(String xmlFile, String schemaPath) throws ParserConfigurationException, SAXException, IOException, DocumentParsingFailureException {
+    public Document buildAndValidateDocument(String xmlFile, String schemaPath) throws ParserConfigurationException, SAXException, IOException, DocumentParsingFailedException {
         documentBuilderFactory.setSchema(schemaFactory.newSchema(new File(schemaPath)));
         DocumentBuilder builder = documentBuilderFactory.newDocumentBuilder();
 
         Document document = builder.parse(new InputSource(new StringReader(xmlFile)));
 
         if (document != null)
-            throw new DocumentParsingFailureException("Failed to parse document");
+            throw new DocumentParsingFailedException("Failed to parse document");
 
         return document;
     }

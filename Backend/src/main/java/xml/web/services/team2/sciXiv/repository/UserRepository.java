@@ -37,13 +37,18 @@ public class UserRepository {
     ConnectionPropertiesFactory connectionPool;
 
     public TUser save(TUser user) throws UserSavingFailedException {
+        ConnectionProperties conn = null;
         try {
-            ConnectionProperties conn = connectionPool.getConnection();
+            conn = connectionPool.getConnection();
             String userXML = marshal(user);
             Collection col = basicOperations.getOrCreateCollection(usersCollection, 0, conn);
             updateService.append(col, usersDocument, "", "/users", userXML);
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             throw new UserSavingFailedException("Failed to save user to database");
+        }
+        finally {
+            connectionPool.releaseConnection(conn);
         }
 
         return user;
@@ -52,8 +57,9 @@ public class UserRepository {
     public TUser getByEmail(String email) throws UserRetrievingFailedException {
         Collection col;
         TUser user = null;
+        ConnectionProperties conn = null;
         try {
-            ConnectionProperties conn = connectionPool.getConnection();
+            conn = connectionPool.getConnection();
             col = basicOperations.getOrCreateCollection(usersCollection, 0, conn);
             XPathQueryService xPathService = (XPathQueryService) col.getService("XPathQueryService", "1.0");
             xPathService.setProperty("indent", "yes");
@@ -76,6 +82,9 @@ public class UserRepository {
         }
         catch (Exception e) {
             throw new UserRetrievingFailedException("Failed to get user from database");
+        }
+        finally {
+            connectionPool.releaseConnection(conn);
         }
 
         return user;

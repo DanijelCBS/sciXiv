@@ -4,6 +4,7 @@ import org.exist.xmldb.EXistResource;
 import org.springframework.stereotype.Component;
 import org.xmldb.api.DatabaseManager;
 import org.xmldb.api.base.Collection;
+import org.xmldb.api.base.ResourceSet;
 import org.xmldb.api.base.XMLDBException;
 import org.xmldb.api.modules.CollectionManagementService;
 import org.xmldb.api.modules.XMLResource;
@@ -47,7 +48,7 @@ public class BasicOperations {
         }
     }
 
-    public void loadDocument(String collectionName, String documentId, ConnectionProperties conn) throws DocumentLoadingFailedException {
+    public XMLResource loadDocument(String collectionName, String documentId, ConnectionProperties conn) throws DocumentLoadingFailedException {
         Collection col = null;
         XMLResource res = null;
 
@@ -79,6 +80,8 @@ public class BasicOperations {
                 }
             }
         }
+
+        return res;
     }
 
     public Collection getOrCreateCollection(String collectionUri, int pathSegmentOffset, ConnectionProperties conn) throws XMLDBException {

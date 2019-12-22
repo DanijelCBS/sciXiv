@@ -24,8 +24,8 @@ import java.io.OutputStream;
 @Repository
 public class UserRepository {
 
-    private String usersCollection = "/db/sciXiv/users";
-    private String usersDocument = "users.xml";
+    private static String usersCollection = "/db/sciXiv/users";
+    private static String usersDocument = "users.xml";
 
     @Autowired
     UpdateTemplate updateService;

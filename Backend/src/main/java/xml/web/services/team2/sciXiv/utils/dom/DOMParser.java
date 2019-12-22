@@ -16,7 +16,6 @@ import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import xml.web.services.team2.sciXiv.exception.DocumentParsingFailedException;
 
-
 @Component
 public class DOMParser {
 

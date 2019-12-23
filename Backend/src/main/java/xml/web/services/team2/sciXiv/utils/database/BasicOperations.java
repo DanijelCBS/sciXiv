@@ -4,20 +4,19 @@ import org.exist.xmldb.EXistResource;
 import org.springframework.stereotype.Component;
 import org.xmldb.api.DatabaseManager;
 import org.xmldb.api.base.Collection;
-import org.xmldb.api.base.ResourceSet;
 import org.xmldb.api.base.XMLDBException;
 import org.xmldb.api.modules.CollectionManagementService;
 import org.xmldb.api.modules.XMLResource;
 import xml.web.services.team2.sciXiv.exception.DocumentLoadingFailedException;
 import xml.web.services.team2.sciXiv.exception.DocumentStoringFailedException;
-import xml.web.services.team2.sciXiv.utils.connection.ConnectionProperties;
+import xml.web.services.team2.sciXiv.utils.connection.XMLConnectionProperties;
 
 import javax.xml.transform.OutputKeys;
 
 @Component
 public class BasicOperations {
 
-    public void storeDocument(String collectionName, String documentId, String xmlEntity, ConnectionProperties conn) throws DocumentStoringFailedException {
+    public void storeDocument(String collectionName, String documentId, String xmlEntity, XMLConnectionProperties conn) throws DocumentStoringFailedException {
         Collection col = null;
         XMLResource res = null;
 
@@ -48,7 +47,7 @@ public class BasicOperations {
         }
     }
 
-    public XMLResource loadDocument(String collectionName, String documentId, ConnectionProperties conn) throws DocumentLoadingFailedException {
+    public XMLResource loadDocument(String collectionName, String documentId, XMLConnectionProperties conn) throws DocumentLoadingFailedException {
         Collection col = null;
         XMLResource res = null;
 
@@ -84,7 +83,7 @@ public class BasicOperations {
         return res;
     }
 
-    public Collection getOrCreateCollection(String collectionUri, int pathSegmentOffset, ConnectionProperties conn) throws XMLDBException {
+    public Collection getOrCreateCollection(String collectionUri, int pathSegmentOffset, XMLConnectionProperties conn) throws XMLDBException {
         Collection col = DatabaseManager.getCollection(conn.getUri() + collectionUri, conn.getUser(), conn.getPassword());
 
         if (col == null) {

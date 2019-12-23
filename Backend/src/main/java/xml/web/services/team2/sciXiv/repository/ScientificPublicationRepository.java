@@ -8,9 +8,9 @@ import org.xmldb.api.base.XMLDBException;
 import org.xmldb.api.modules.XMLResource;
 import xml.web.services.team2.sciXiv.exception.DocumentLoadingFailedException;
 import xml.web.services.team2.sciXiv.exception.DocumentStoringFailedException;
-import xml.web.services.team2.sciXiv.utils.connection.ConnectionProperties;
+import xml.web.services.team2.sciXiv.utils.connection.XMLConnectionProperties;
 import xml.web.services.team2.sciXiv.utils.database.BasicOperations;
-import xml.web.services.team2.sciXiv.utils.factory.ConnectionPropertiesFactory;
+import xml.web.services.team2.sciXiv.utils.factory.XMLConnectionPropertiesFactory;
 
 @Repository
 public class ScientificPublicationRepository {
@@ -21,10 +21,10 @@ public class ScientificPublicationRepository {
     private BasicOperations basicOperations;
 
     @Autowired
-    ConnectionPropertiesFactory connectionPool;
+    XMLConnectionPropertiesFactory connectionPool;
 
     public String findByName(String name) throws DocumentLoadingFailedException, XMLDBException {
-        ConnectionProperties conn = connectionPool.getConnection();
+        XMLConnectionProperties conn = connectionPool.getConnection();
         XMLResource resource = basicOperations.loadDocument(collectionName, name, conn);
         connectionPool.releaseConnection(conn);
 
@@ -32,7 +32,7 @@ public class ScientificPublicationRepository {
     }
 
     public String save(String xmlEntity, String name) throws DocumentStoringFailedException {
-        ConnectionProperties conn = connectionPool.getConnection();
+        XMLConnectionProperties conn = connectionPool.getConnection();
         basicOperations.storeDocument(collectionName, name, xmlEntity, conn);
         connectionPool.releaseConnection(conn);
 
@@ -40,7 +40,7 @@ public class ScientificPublicationRepository {
     }
 
     public String update(String xmlEntity, String name) throws XMLDBException, DocumentStoringFailedException {
-        ConnectionProperties conn = connectionPool.getConnection();
+        XMLConnectionProperties conn = connectionPool.getConnection();
         Collection col = basicOperations.getOrCreateCollection(collectionName, 0, conn);
 
         Resource resource = col.getResource(name);
@@ -53,7 +53,7 @@ public class ScientificPublicationRepository {
     }
 
     public void delete(String name) throws XMLDBException {
-        ConnectionProperties conn = connectionPool.getConnection();
+        XMLConnectionProperties conn = connectionPool.getConnection();
         Collection col = basicOperations.getOrCreateCollection(collectionName, 0, conn);
 
         Resource resource = col.getResource(name);

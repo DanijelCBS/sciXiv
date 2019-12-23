@@ -2,20 +2,20 @@ package xml.web.services.team2.sciXiv.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import xml.web.services.team2.sciXiv.utils.connection.ConnectionProperties;
-import xml.web.services.team2.sciXiv.utils.factory.ConnectionPropertiesFactory;
+import xml.web.services.team2.sciXiv.utils.connection.XMLConnectionProperties;
+import xml.web.services.team2.sciXiv.utils.factory.XMLConnectionPropertiesFactory;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @Configuration
-public class ConnectionPropertiesConfiguration {
+public class XMLConnectionPropertiesConfiguration {
 
     @Bean
-    public ConnectionPropertiesFactory connectionPropertiesFactory() {
-        ConnectionPropertiesFactory connectionPool = new ConnectionPropertiesFactory();
+    public XMLConnectionPropertiesFactory connectionPropertiesFactory() {
+        XMLConnectionPropertiesFactory connectionPool = new XMLConnectionPropertiesFactory();
         int initialPoolSize = connectionPool.getInitialPoolSize();
-        List<ConnectionProperties> pool = new ArrayList<>(initialPoolSize);
+        List<XMLConnectionProperties> pool = new ArrayList<>(initialPoolSize);
         for (int i = 0; i < initialPoolSize; i++) {
             pool.add(connectionPool.getObject());
         }
@@ -25,7 +25,7 @@ public class ConnectionPropertiesConfiguration {
     }
 
     @Bean
-    public ConnectionProperties connectionProperties() {
+    public XMLConnectionProperties connectionProperties() {
         return connectionPropertiesFactory().getObject();
     }
 }

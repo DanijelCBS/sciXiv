@@ -2,7 +2,7 @@ package xml.web.services.team2.sciXiv.utils.connection;
 
 import java.util.Properties;
 
-public class ConnectionProperties {
+public class XMLConnectionProperties {
 
     private String host;
     private int port;
@@ -11,9 +11,9 @@ public class ConnectionProperties {
     private String driver;
     private String uri;
 
-    public ConnectionProperties() {}
+    public XMLConnectionProperties() {}
 
-    public ConnectionProperties(Properties props) {
+    public XMLConnectionProperties(Properties props) {
         user = props.getProperty("conn.user").trim();
         password = props.getProperty("conn.password").trim();
 

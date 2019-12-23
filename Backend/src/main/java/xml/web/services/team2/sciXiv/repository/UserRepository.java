@@ -9,10 +9,10 @@ import org.xmldb.api.modules.XPathQueryService;
 import xml.web.services.team2.sciXiv.exception.UserRetrievingFailedException;
 import xml.web.services.team2.sciXiv.exception.UserSavingFailedException;
 import xml.web.services.team2.sciXiv.model.TUser;
-import xml.web.services.team2.sciXiv.utils.connection.ConnectionProperties;
+import xml.web.services.team2.sciXiv.utils.connection.XMLConnectionProperties;
 import xml.web.services.team2.sciXiv.utils.database.BasicOperations;
 import xml.web.services.team2.sciXiv.utils.database.UpdateTemplate;
-import xml.web.services.team2.sciXiv.utils.factory.ConnectionPropertiesFactory;
+import xml.web.services.team2.sciXiv.utils.factory.XMLConnectionPropertiesFactory;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
@@ -34,10 +34,10 @@ public class UserRepository {
     BasicOperations basicOperations;
 
     @Autowired
-    ConnectionPropertiesFactory connectionPool;
+    XMLConnectionPropertiesFactory connectionPool;
 
     public TUser save(TUser user) throws UserSavingFailedException {
-        ConnectionProperties conn = null;
+        XMLConnectionProperties conn = null;
         try {
             conn = connectionPool.getConnection();
             String userXML = marshal(user);
@@ -57,7 +57,7 @@ public class UserRepository {
     public TUser getByEmail(String email) throws UserRetrievingFailedException {
         Collection col;
         TUser user = null;
-        ConnectionProperties conn = null;
+        XMLConnectionProperties conn = null;
         try {
             conn = connectionPool.getConnection();
             col = basicOperations.getOrCreateCollection(usersCollection, 0, conn);

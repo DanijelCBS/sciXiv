@@ -12,7 +12,7 @@ import java.util.List;
 public class XMLConnectionPropertiesConfiguration {
 
     @Bean
-    public XMLConnectionPropertiesFactory connectionPropertiesFactory() {
+    public XMLConnectionPropertiesFactory xmlConnectionPropertiesFactory() {
         XMLConnectionPropertiesFactory connectionPool = new XMLConnectionPropertiesFactory();
         int initialPoolSize = connectionPool.getInitialPoolSize();
         List<XMLConnectionProperties> pool = new ArrayList<>(initialPoolSize);
@@ -25,7 +25,7 @@ public class XMLConnectionPropertiesConfiguration {
     }
 
     @Bean
-    public XMLConnectionProperties connectionProperties() {
-        return connectionPropertiesFactory().getObject();
+    public XMLConnectionProperties xmlConnectionProperties() {
+        return xmlConnectionPropertiesFactory().getObject();
     }
 }

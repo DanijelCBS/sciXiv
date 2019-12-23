@@ -12,7 +12,7 @@ import java.util.List;
 public class RDFConnectionPropertiesConfiguration {
 
     @Bean
-    public RDFConnectionPropertiesFactory connectionPropertiesFactory() {
+    public RDFConnectionPropertiesFactory rdfConnectionPropertiesFactory() {
         RDFConnectionPropertiesFactory connectionPool = new RDFConnectionPropertiesFactory();
         int initialPoolSize = connectionPool.getInitialPoolSize();
         List<RDFConnectionProperties> pool = new ArrayList<>(initialPoolSize);
@@ -25,7 +25,7 @@ public class RDFConnectionPropertiesConfiguration {
     }
 
     @Bean
-    public RDFConnectionProperties connectionProperties() {
-        return connectionPropertiesFactory().getObject();
+    public RDFConnectionProperties rdfConnectionProperties() {
+        return rdfConnectionPropertiesFactory().getObject();
     }
 }

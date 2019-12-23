@@ -68,7 +68,7 @@ public class ReviewRepository {
     	basicOperations.storeDocument(reviewsOfPublicationCollectionName, reviewId, xmlEntity, conn);
     	
     	connectionPool.releaseConnection(conn);
-    	return "";
+    	return reviewId;
     }
     
     public void deleteReviewsForPublication(String reviewedPublicationId) throws XMLDBException {

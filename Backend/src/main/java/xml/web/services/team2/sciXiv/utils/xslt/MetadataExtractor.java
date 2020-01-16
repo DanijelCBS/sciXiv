@@ -1,4 +1,4 @@
-package xml.web.services.team2.sciXiv.utils.database;
+package xml.web.services.team2.sciXiv.utils.xslt;
 
 import com.sun.org.apache.xalan.internal.xsltc.trax.TransformerFactoryImpl;
 import org.springframework.beans.factory.annotation.Autowired;

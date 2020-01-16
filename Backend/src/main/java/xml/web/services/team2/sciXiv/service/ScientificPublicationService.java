@@ -9,7 +9,7 @@ import xml.web.services.team2.sciXiv.exception.DocumentLoadingFailedException;
 import xml.web.services.team2.sciXiv.exception.DocumentParsingFailedException;
 import xml.web.services.team2.sciXiv.exception.DocumentStoringFailedException;
 import xml.web.services.team2.sciXiv.repository.ScientificPublicationRepository;
-import xml.web.services.team2.sciXiv.utils.database.MetadataExtractor;
+import xml.web.services.team2.sciXiv.utils.xslt.MetadataExtractor;
 import xml.web.services.team2.sciXiv.utils.dom.DOMParser;
 
 import javax.xml.parsers.ParserConfigurationException;

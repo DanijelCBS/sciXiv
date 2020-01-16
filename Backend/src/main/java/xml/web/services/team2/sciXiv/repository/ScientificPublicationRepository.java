@@ -1,5 +1,9 @@
 package xml.web.services.team2.sciXiv.repository;
 
+import org.apache.jena.query.QueryExecution;
+import org.apache.jena.query.QueryExecutionFactory;
+import org.apache.jena.query.QuerySolution;
+import org.apache.jena.query.ResultSet;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.jena.update.UpdateExecutionFactory;
@@ -168,5 +172,41 @@ public class ScientificPublicationRepository {
 
         xmlConnectionPool.releaseConnection(conn);
         return sciPubs;
+    }
+
+    public ArrayList<SciPubDTO> advancedSearch(String query) throws XMLDBException {
+        RDFConnectionProperties conn = rdfConnectionPool.getConnection();
+        ResultSet results = executeSparqlQuery(conn, query);
+        ResultSet tempResults;
+        ArrayList<SciPubDTO> sciPubs = new ArrayList<>();
+        ArrayList<String> authors = new ArrayList<>();
+        String title, resourceName, sparqlQuery;
+        String sciPub = "sciPub";
+        String author = "author";
+        QuerySolution querySolution;
+
+        while(results.hasNext()) {
+            querySolution = results.next();
+            resourceName = querySolution.get(sciPub).toString();
+            title = resourceName.substring(resourceName.lastIndexOf('/') + 1);
+            sparqlQuery = SparqlUtil.selectData(conn.getDataEndpoint() + SPARQL_NAMED_GRAPH_URI,
+                    resourceName + " <http://schema.org/author> ?author .");
+            tempResults = executeSparqlQuery(conn, sparqlQuery);
+            while(tempResults.hasNext()) {
+                authors.add(results.next().get(author).toString());
+            }
+
+            sciPubs.add(new SciPubDTO(title, authors));
+        }
+
+        rdfConnectionPool.releaseConnection(conn);
+        return sciPubs;
+    }
+
+    private ResultSet executeSparqlQuery(RDFConnectionProperties conn, String query) {
+        String completeQuery = String.format(query, conn.getDataEndpoint() + SPARQL_NAMED_GRAPH_URI);
+        QueryExecution sparqlQuery = QueryExecutionFactory.sparqlService(conn.getQueryEndpoint(), completeQuery);
+
+        return sparqlQuery.execSelect();
     }
 }

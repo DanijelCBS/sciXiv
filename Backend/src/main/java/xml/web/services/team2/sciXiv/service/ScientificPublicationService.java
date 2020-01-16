@@ -8,11 +8,11 @@ import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
 import org.xmldb.api.base.*;
 import xml.web.services.team2.sciXiv.dto.SciPubDTO;
+import xml.web.services.team2.sciXiv.dto.SearchPublicationsDTO;
 import xml.web.services.team2.sciXiv.exception.DocumentLoadingFailedException;
 import xml.web.services.team2.sciXiv.exception.DocumentParsingFailedException;
 import xml.web.services.team2.sciXiv.exception.DocumentStoringFailedException;
 import xml.web.services.team2.sciXiv.repository.ScientificPublicationRepository;
-import xml.web.services.team2.sciXiv.utils.database.BasicOperations;
 import xml.web.services.team2.sciXiv.utils.xslt.MetadataExtractor;
 import xml.web.services.team2.sciXiv.utils.dom.DOMParser;
 
@@ -73,7 +73,45 @@ public class ScientificPublicationService {
         return new ResponseEntity<>(scientificPublicationRepository.basicSearch(parameter), HttpStatus.OK);
     }
 
+    public ResponseEntity<ArrayList<SciPubDTO>> advancedSearch(SearchPublicationsDTO searchParameters) throws XMLDBException {
+        String query = "SELECT * FROM <%s>\n" +
+                "WHERE { \n" +
+                "\t?sciPub";
+        query = makeSparqlQuery(query, searchParameters);
+
+        return new ResponseEntity<>(scientificPublicationRepository.advancedSearch(query), HttpStatus.OK);
+    }
+
     public void delete(String title, String name) throws XMLDBException {
         scientificPublicationRepository.delete(title, name);
+    }
+
+    private String makeSparqlQuery(String query, SearchPublicationsDTO parameters) {
+        if (!parameters.getTitle().equals("")) {
+            query += " <http://schema.org/headline> " + parameters.getTitle() + " ;\n";
+        }
+        if (!parameters.getDateReceived().equals("")) {
+            query += "\t<http://schema.org/dateCreated> " + parameters.getDateReceived() + " ;\n";
+        }
+        if (!parameters.getDateRevised().equals("")) {
+            query += "\t<http://schema.org/dateModified> " + parameters.getDateRevised() + " ;\n";
+        }
+        if (!parameters.getDateAccepted().equals("")) {
+            query += "\t<http://schema.org/datePublished> " + parameters.getDateAccepted() + " ;\n";
+        }
+        if (!parameters.getAuthorName().equals("")) {
+            query += "\t<http://schema.org/author> ?author ;\n" +
+                    "\t?author <http://schema.org/name> " + parameters.getAuthorName() + " ;\n";
+        }
+        if (!parameters.getAuthorAffiliation().equals("")) {
+            query += "\t<http://schema.org/author> ?author ;\n" +
+                    "\t?author <http://schema.org/affiliation> " + parameters.getAuthorAffiliation() + " ;\n";
+        }
+        if (!parameters.getKeyword().equals("")) {
+            query += "\t<http://schema.org/keywords> " + parameters.getKeyword() + " ;\n";
+        }
+        query = query.substring(0, query.length() - 2) + ".\n}";
+
+        return query;
     }
 }

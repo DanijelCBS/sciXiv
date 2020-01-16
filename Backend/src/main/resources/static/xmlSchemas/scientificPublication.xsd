@@ -29,7 +29,7 @@
                                     </xs:simpleContent>
                                 </xs:complexType>
                             </xs:element>
-                            <xs:element minOccurs="1" name="dateRecieved" type="sp:TDate"/>
+                            <xs:element minOccurs="1" name="dateReceived" type="sp:TDate"/>
                             <xs:element minOccurs="0" name="dateRevised" type="sp:TDate"/>
                             <xs:element minOccurs="0" name="dateAccepted" type="sp:TDate"/>
                             <xs:element name="authors">
@@ -161,6 +161,7 @@
                 </xs:element>
                 <xs:element maxOccurs="unbounded" minOccurs="0" ref="rv:review"/>
             </xs:sequence>
+            <xs:anyAttribute namespace="www.w3.org/1999/02/22-rdf-syntax-ns#"/>
         </xs:complexType>
     </xs:element>
     <xs:complexType mixed="true" name="TAbstractParagraph">

@@ -6,22 +6,26 @@ import org.apache.jena.update.UpdateExecutionFactory;
 import org.apache.jena.update.UpdateFactory;
 import org.apache.jena.update.UpdateProcessor;
 import org.apache.jena.update.UpdateRequest;
+import org.exist.xmldb.EXistResource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
-import org.xmldb.api.base.Collection;
-import org.xmldb.api.base.Resource;
-import org.xmldb.api.base.XMLDBException;
+import org.w3c.dom.Document;
+import org.xmldb.api.base.*;
 import org.xmldb.api.modules.XMLResource;
+import org.xmldb.api.modules.XPathQueryService;
+import xml.web.services.team2.sciXiv.dto.SciPubDTO;
 import xml.web.services.team2.sciXiv.exception.DocumentLoadingFailedException;
 import xml.web.services.team2.sciXiv.exception.DocumentStoringFailedException;
 import xml.web.services.team2.sciXiv.utils.connection.RDFConnectionProperties;
 import xml.web.services.team2.sciXiv.utils.connection.XMLConnectionProperties;
 import xml.web.services.team2.sciXiv.utils.database.BasicOperations;
 import xml.web.services.team2.sciXiv.utils.database.SparqlUtil;
+import xml.web.services.team2.sciXiv.utils.database.UpdateTemplate;
 import xml.web.services.team2.sciXiv.utils.factory.RDFConnectionPropertiesFactory;
 import xml.web.services.team2.sciXiv.utils.factory.XMLConnectionPropertiesFactory;
 
 import java.io.ByteArrayOutputStream;
+import java.util.ArrayList;
 
 @Repository
 public class ScientificPublicationRepository {
@@ -32,6 +36,9 @@ public class ScientificPublicationRepository {
 
     @Autowired
     private BasicOperations basicOperations;
+
+    @Autowired
+    UpdateTemplate updateService;
 
     @Autowired
     XMLConnectionPropertiesFactory xmlConnectionPool;
@@ -47,9 +54,9 @@ public class ScientificPublicationRepository {
         return resource.getContent().toString();
     }
 
-    public String save(String xmlEntity, String name) throws DocumentStoringFailedException {
+    public String save(String xmlEntity, String title, String name) throws DocumentStoringFailedException {
         XMLConnectionProperties conn = xmlConnectionPool.getConnection();
-        basicOperations.storeDocument(collectionName, name, xmlEntity, conn);
+        basicOperations.storeDocument(collectionName + "/" + title, name, xmlEntity, conn);
         xmlConnectionPool.releaseConnection(conn);
 
         return name;
@@ -68,12 +75,26 @@ public class ScientificPublicationRepository {
         return name;
     }
 
-    public void delete(String name) throws XMLDBException {
+    public void delete(String title, String name) throws XMLDBException {
         XMLConnectionProperties conn = xmlConnectionPool.getConnection();
-        Collection col = basicOperations.getOrCreateCollection(collectionName, 0, conn);
+        Collection col = basicOperations.getOrCreateCollection(collectionName + "/" + title, 0, conn);
 
         Resource resource = col.getResource(name);
         col.removeResource(resource);
+
+        xmlConnectionPool.releaseConnection(conn);
+    }
+
+    public void withdraw(String title) throws XMLDBException, DocumentLoadingFailedException, DocumentStoringFailedException {
+        XMLConnectionProperties conn = xmlConnectionPool.getConnection();
+        int lastVersion = getLastVersionNumber(title);
+        String name = title + "/v" + lastVersion;
+        Document document = (Document) basicOperations.loadDocument(title, name, conn).getContentAsDOM();
+        document.getElementsByTagName("status").item(0).setNodeValue("withdrawn");
+
+        delete(title, name);
+        String xmlEntity = document.getTextContent();
+        save(xmlEntity, title, name);
 
         xmlConnectionPool.releaseConnection(conn);
     }
@@ -94,5 +115,58 @@ public class ScientificPublicationRepository {
         processor.execute();
 
         rdfConnectionPool.releaseConnection(conn);
+    }
+
+    public int getLastVersionNumber(String collection) throws XMLDBException {
+        XMLConnectionProperties conn = xmlConnectionPool.getConnection();
+        Collection col = basicOperations.getOrCreateCollection(collectionName + "/" + collection, 0, conn);
+        int lastVersion = col.getResourceCount();
+        xmlConnectionPool.releaseConnection(conn);
+
+        return lastVersion;
+    }
+
+    public ArrayList<SciPubDTO> basicSearch(String parameter) throws XMLDBException {
+        XMLConnectionProperties conn = xmlConnectionPool.getConnection();
+        Collection col = basicOperations.getOrCreateCollection(collectionName, 0, conn);
+        Collection docCol;
+        ArrayList<SciPubDTO> sciPubs = new ArrayList<>();
+        String docName;
+        String title;
+        ArrayList<String> authors = new ArrayList<>();
+        int lastVersion;
+        XPathQueryService xPathService;
+
+        String[] docCollections = col.listChildCollections();
+        for (String docCollection : docCollections) {
+            lastVersion = getLastVersionNumber(docCollection);
+            docCol = basicOperations.getOrCreateCollection(docCollection, 0, conn);
+            docName = docCollection + "/v" + lastVersion;
+            xPathService = (XPathQueryService) docCol.getService("XPathQueryService", "1.0");
+            xPathService.setProperty("indent", "yes");
+            ResourceSet result = xPathService.query("doc(" + docName + ")//title[//*[text()[contains(.," + parameter + ")] " +
+                    "|| //author/name[//*[text()[contains(.," + parameter + ")]");
+            ResourceIterator i = result.getIterator();
+            title = (String) i.nextResource().getContent();
+            Resource res = null;
+
+            while(i.hasMoreResources()) {
+                try {
+                    res = i.nextResource();
+                    authors.add((String) res.getContent());
+                } finally {
+                    try {
+                        ((EXistResource)res).freeResources();
+                    } catch (XMLDBException xe) {
+                        xe.printStackTrace();
+                    }
+                }
+            }
+
+            sciPubs.add(new SciPubDTO(title, authors));
+        }
+
+        xmlConnectionPool.releaseConnection(conn);
+        return sciPubs;
     }
 }

@@ -63,7 +63,7 @@ public class UserRepository {
             col = basicOperations.getOrCreateCollection(usersCollection, 0, conn);
             XPathQueryService xPathService = (XPathQueryService) col.getService("XPathQueryService", "1.0");
             xPathService.setProperty("indent", "yes");
-            ResourceSet result = xPathService.query("//user/[email = " + email + "]");
+            ResourceSet result = xPathService.query("doc(" + usersDocument + ")//user/[email = " + email + "]");
             ResourceIterator i = result.getIterator();
             Resource res = null;
 

@@ -24,6 +24,15 @@ public class UserController {
 
 	@RequestMapping(value = "/authors", method = RequestMethod.POST)
 	public ResponseEntity<?> registerAuthor(@RequestBody UserRegistrationDTO registrationRequest) {
+		return registerUser(registrationRequest, TRole.AUTHOR);
+	}
+	
+	@RequestMapping(value = "/reviewers", method = RequestMethod.POST)
+	public ResponseEntity<?> registerReviewer(@RequestBody UserRegistrationDTO registrationRequest) {
+		return registerUser(registrationRequest, TRole.REVIEWER);
+	}
+	
+	private ResponseEntity<?> registerUser(UserRegistrationDTO registrationRequest, TRole userRole) {
 		TUser newUser = new TUser();
 		newUser.setEmail(registrationRequest.getEmail());
 		newUser.setPassword(registrationRequest.getPassword());
@@ -31,7 +40,7 @@ public class UserController {
 		newUser.setLastName(registrationRequest.getLastName());
 
 		try {
-			newUser = userService.registerUser(newUser, TRole.AUTHOR);
+			newUser = userService.registerUser(newUser, userRole);
 			return new ResponseEntity<>(HttpStatus.CREATED);
 		} catch (UserRetrievingFailedException | UserSavingFailedException e) {
 			return new ResponseEntity<String>("An error occured during registration. Please try again later.",

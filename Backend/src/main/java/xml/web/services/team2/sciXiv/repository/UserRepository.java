@@ -2,6 +2,7 @@ package xml.web.services.team2.sciXiv.repository;
 
 import org.exist.xmldb.EXistResource;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Repository;
 import org.xmldb.api.base.*;
 import org.xmldb.api.modules.XMLResource;
@@ -39,6 +40,9 @@ public class UserRepository {
 
     @Autowired
     XMLConnectionPropertiesFactory connectionPool;
+    
+    @Autowired
+    PasswordEncoder passwordEncoder;
     
     public TUser save(TUser user) throws UserSavingFailedException {
         XMLConnectionProperties conn = null;
@@ -107,7 +111,7 @@ public class UserRepository {
 				Users users = new Users();
 				TUser systemAdmin = new TUser();
 				systemAdmin.setEmail("system@admin.com");
-				systemAdmin.setPassword("admin");
+				systemAdmin.setPassword(passwordEncoder.encode("admin"));
 				systemAdmin.setRole(TRole.EDITOR);
 				systemAdmin.setFirstName("System");
 				systemAdmin.setLastName("Administrator");

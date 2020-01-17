@@ -1,6 +1,7 @@
 package xml.web.services.team2.sciXiv.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import xml.web.services.team2.sciXiv.exception.InvalidDataException;
@@ -17,10 +18,14 @@ public class UserService {
 	@Autowired
 	private UserRepository userRepository;
 	
+	@Autowired
+	private PasswordEncoder passwordEncoder;
+	
 	private static String emailRegex = "[^@]+@[^\\.]+\\..+";
 	
 	public TUser registerUser(TUser newUser, TRole userRole) throws UserRetrievingFailedException, UserSavingFailedException {
 		validateUserData(newUser);
+		newUser.setPassword(passwordEncoder.encode(newUser.getPassword()));
 		newUser.setRole(userRole);
 		newUser.setOwnPublications(new TPublications());
 		newUser.setPublicationsToReview(new TPublications());

@@ -1,5 +1,6 @@
 package xml.web.services.team2.sciXiv.controller;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -18,6 +19,7 @@ import xml.web.services.team2.sciXiv.service.UserService;
 @RequestMapping(value = "/users")
 public class UserController {
 
+	@Autowired
 	private UserService userService;
 
 	@RequestMapping(value = "/authors", method = RequestMethod.POST)

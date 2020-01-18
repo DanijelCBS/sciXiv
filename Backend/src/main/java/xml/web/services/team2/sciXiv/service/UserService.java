@@ -34,24 +34,8 @@ public class UserService {
 	
 	private void validateUserData(TUser user) throws UserRetrievingFailedException {
 		
-		if(user.getEmail().equals("")) {
-			throw new InvalidDataException("user email", "Email is required.");
-		}
-		
 		if(!user.getEmail().matches(emailRegex)) {
 			throw new InvalidDataException("user email", "Email is invalid.");
-		}
-		
-		if(user.getPassword().equals("")) {
-			throw new InvalidDataException("user password", "Password is required.");
-		}
-		
-		if(user.getFirstName().equals("")) {
-			throw new InvalidDataException("user first name", "First name is required.");
-		}
-		
-		if(user.getLastName().equals("")) {
-			throw new InvalidDataException("user last name", "Last name is required.");
 		}
 		
 		if(userRepository.getByEmail(user.getEmail()) != null) {

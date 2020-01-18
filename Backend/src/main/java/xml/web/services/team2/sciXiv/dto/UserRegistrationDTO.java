@@ -1,10 +1,16 @@
 package xml.web.services.team2.sciXiv.dto;
 
+import javax.validation.constraints.NotBlank;
+
 public class UserRegistrationDTO {
 	
+	@NotBlank(message = "Email is required")
 	private String email;
+	@NotBlank(message = "Password is required")
 	private String password;
+	@NotBlank(message = "First name is required")
 	private String firstName;
+	@NotBlank(message = "Last name is required")
 	private String lastName;
 	
 	public UserRegistrationDTO() {

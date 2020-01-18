@@ -1,8 +1,11 @@
 package xml.web.services.team2.sciXiv.controller;
 
+import javax.validation.Valid;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -23,12 +26,13 @@ public class UserController {
 	private UserService userService;
 
 	@RequestMapping(value = "/authors", method = RequestMethod.POST)
-	public ResponseEntity<?> registerAuthor(@RequestBody UserRegistrationDTO registrationRequest) {
+	public ResponseEntity<?> registerAuthor(@RequestBody @Valid UserRegistrationDTO registrationRequest) {
 		return registerUser(registrationRequest, TRole.AUTHOR);
 	}
 	
 	@RequestMapping(value = "/reviewers", method = RequestMethod.POST)
-	public ResponseEntity<?> registerReviewer(@RequestBody UserRegistrationDTO registrationRequest) {
+	@PreAuthorize("hasRole('EDITOR')")
+	public ResponseEntity<?> registerReviewer(@RequestBody @Valid UserRegistrationDTO registrationRequest) {
 		return registerUser(registrationRequest, TRole.REVIEWER);
 	}
 	

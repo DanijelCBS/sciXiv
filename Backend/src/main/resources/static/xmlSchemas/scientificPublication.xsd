@@ -76,14 +76,14 @@
                                 </xs:complexType>
                             </xs:element>
                             <xs:element minOccurs="0" name="status">
-                                <xs:simpleType>
-                                    <xs:restriction base="xs:string">
-                                        <xs:enumeration value="accepted"/>
-                                        <xs:enumeration value="rejected"/>
-                                        <xs:enumeration value="in process"/>
-                                        <xs:enumeration value="withdrawn"/>
-                                    </xs:restriction>
-                                </xs:simpleType>
+                                <xs:complexType>
+                                    <xs:complexContent>
+                                        <xs:extension base="sp:TStatus">
+                                            <xs:anyAttribute
+                                                namespace="www.w3.org/1999/02/22-rdf-syntax-ns#"/>
+                                        </xs:extension>
+                                    </xs:complexContent>
+                                </xs:complexType>
                             </xs:element>
                             <xs:element name="keywords">
                                 <xs:complexType>
@@ -275,6 +275,19 @@
             <xs:extension base="xs:date">
                 <xs:anyAttribute namespace="www.w3.org/1999/02/22-rdf-syntax-ns#"/>
             </xs:extension>
+        </xs:simpleContent>
+    </xs:complexType>
+    <xs:simpleType name="TString">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="accepted"/>
+            <xs:enumeration value="rejected"/>
+            <xs:enumeration value="in process"/>
+            <xs:enumeration value="withdrawn"/>
+        </xs:restriction>
+    </xs:simpleType>
+    <xs:complexType name="TStatus">
+        <xs:simpleContent>
+            <xs:extension base="sp:TString"/>
         </xs:simpleContent>
     </xs:complexType>
 </xs:schema>

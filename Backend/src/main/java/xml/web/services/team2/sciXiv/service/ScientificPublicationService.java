@@ -1,8 +1,6 @@
 package xml.web.services.team2.sciXiv.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.w3c.dom.Document;
@@ -76,16 +74,17 @@ public class ScientificPublicationService {
         return scientificPublicationRepository.save(sciPub, title, name);
     }
 
-    public void withdraw(String title) throws XMLDBException, DocumentLoadingFailedException, DocumentStoringFailedException {
+    public String withdraw(String title) throws XMLDBException, DocumentLoadingFailedException, DocumentStoringFailedException {
         scientificPublicationRepository.withdraw(title);
+        return "Publication successfully withdrawn";
     }
 
-    public ResponseEntity<ArrayList<SciPubDTO>> basicSearch(String parameter) throws XMLDBException {
+    public ArrayList<SciPubDTO> basicSearch(String parameter) throws XMLDBException {
         TUser user = (TUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        return new ResponseEntity<>(scientificPublicationRepository.basicSearch(parameter, user), HttpStatus.OK);
+        return scientificPublicationRepository.basicSearch(parameter, user);
     }
 
-    public ResponseEntity<ArrayList<SciPubDTO>> advancedSearch(SearchPublicationsDTO searchParameters) {
+    public ArrayList<SciPubDTO> advancedSearch(SearchPublicationsDTO searchParameters) {
         String query = "SELECT * FROM <%s>\n" +
                 "WHERE { \n" +
                 "\t?sciPub";
@@ -100,11 +99,11 @@ public class ScientificPublicationService {
 
         query += "\tFILTER (?sciPub IN " + titles + " | ?status = \"accepted\")\n}";
 
-        return new ResponseEntity<>(scientificPublicationRepository.advancedSearch(query), HttpStatus.OK);
+        return scientificPublicationRepository.advancedSearch(query);
     }
 
-    public ResponseEntity<ArrayList<SciPubDTO>> getReferences(String title) {
-        return new ResponseEntity<>(scientificPublicationRepository.getReferences(title), HttpStatus.OK);
+    public ArrayList<SciPubDTO> getReferences(String title) {
+        return scientificPublicationRepository.getReferences(title);
     }
 
     private String makeSparqlQuery(String query, SearchPublicationsDTO parameters) {

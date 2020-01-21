@@ -19,7 +19,7 @@ public class ScientificPublicationController {
     private ScientificPublicationService scientificPublicationService;
 
     @PostMapping
-    public ResponseEntity<Object> addScientificPublication(String sciPub) {
+    public ResponseEntity<Object> addScientificPublication(@RequestBody String sciPub) {
         try {
             return new ResponseEntity<>(scientificPublicationService.save(sciPub), HttpStatus.CREATED);
         } catch (DocumentParsingFailedException e) {
@@ -30,7 +30,7 @@ public class ScientificPublicationController {
     }
 
     @PutMapping(value = "revise")
-    public ResponseEntity<Object> reviseScientificPublication(String sciPub) {
+    public ResponseEntity<Object> reviseScientificPublication(@RequestBody String sciPub) {
         try {
             return new ResponseEntity<>(scientificPublicationService.revise(sciPub), HttpStatus.OK);
         } catch (DocumentParsingFailedException e) {
@@ -41,7 +41,7 @@ public class ScientificPublicationController {
     }
 
     @PutMapping(value = "withdraw")
-    public ResponseEntity<Object> withdrawScientificPublication(String title) {
+    public ResponseEntity<Object> withdrawScientificPublication(@RequestParam String title) {
         try {
             return new ResponseEntity<>(scientificPublicationService.withdraw(title), HttpStatus.OK);
         } catch (Exception e) {
@@ -50,7 +50,7 @@ public class ScientificPublicationController {
     }
 
     @GetMapping(value = "basicSearch")
-    public ResponseEntity<Object> basicSearch(String parameter) {
+    public ResponseEntity<Object> basicSearch(@RequestParam String parameter) {
         try {
             return new ResponseEntity<>(scientificPublicationService.basicSearch(parameter), HttpStatus.OK);
         } catch (Exception e) {
@@ -68,7 +68,7 @@ public class ScientificPublicationController {
     }
 
     @GetMapping(value = "references")
-    public ResponseEntity<ArrayList<SciPubDTO>> getReferences(String title) {
+    public ResponseEntity<ArrayList<SciPubDTO>> getReferences(@RequestParam String title) {
         return new ResponseEntity<>(scientificPublicationService.getReferences(title), HttpStatus.OK);
     }
 }

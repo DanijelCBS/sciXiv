@@ -4,8 +4,7 @@ import org.apache.jena.query.QueryExecution;
 import org.apache.jena.query.QueryExecutionFactory;
 import org.apache.jena.query.QuerySolution;
 import org.apache.jena.query.ResultSet;
-import org.apache.jena.rdf.model.Model;
-import org.apache.jena.rdf.model.ModelFactory;
+import org.apache.jena.rdf.model.*;
 import org.apache.jena.update.UpdateExecutionFactory;
 import org.apache.jena.update.UpdateFactory;
 import org.apache.jena.update.UpdateProcessor;
@@ -13,6 +12,9 @@ import org.apache.jena.update.UpdateRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import org.w3c.dom.Document;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+import org.xmldb.api.base.Resource;
 import org.xmldb.api.base.*;
 import org.xmldb.api.modules.XMLResource;
 import org.xmldb.api.modules.XPathQueryService;
@@ -27,7 +29,9 @@ import xml.web.services.team2.sciXiv.utils.database.SparqlUtil;
 import xml.web.services.team2.sciXiv.utils.database.UpdateTemplate;
 import xml.web.services.team2.sciXiv.utils.factory.RDFConnectionPropertiesFactory;
 import xml.web.services.team2.sciXiv.utils.factory.XMLConnectionPropertiesFactory;
+import xml.web.services.team2.sciXiv.utils.xslt.DOMToXMLTransformer;
 
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
 
@@ -40,12 +44,18 @@ public class ScientificPublicationRepository {
 
     @Autowired
     UpdateTemplate updateService;
+
     @Autowired
     XMLConnectionPropertiesFactory xmlConnectionPool;
+
     @Autowired
     RDFConnectionPropertiesFactory rdfConnectionPool;
+
     @Autowired
-    private BasicOperations basicOperations;
+    BasicOperations basicOperations;
+
+    @Autowired
+    DOMToXMLTransformer transformer;
 
     public String findByName(String name) throws DocumentLoadingFailedException, XMLDBException {
         XMLConnectionProperties conn = xmlConnectionPool.getConnection();
@@ -66,13 +76,19 @@ public class ScientificPublicationRepository {
     public void withdraw(String title) throws XMLDBException, DocumentLoadingFailedException, DocumentStoringFailedException {
         XMLConnectionProperties conn = xmlConnectionPool.getConnection();
         int lastVersion = getLastVersionNumber(title);
-        String name = title + "/v" + lastVersion;
-        Document document = (Document) basicOperations.loadDocument(title, name, conn).getContentAsDOM();
-        document.getElementsByTagName("status").item(0).setNodeValue("withdrawn");
+        String name = title + "-v" + lastVersion;
+        Document document = (Document) basicOperations.loadDocument(collectionName + "/" + title, name, conn)
+                .getContentAsDOM();
+        NodeList nodeList = document.getDocumentElement().getElementsByTagName("sp:status");
+        Node status = nodeList.item(0);
+        status.setTextContent("withdrawn");
 
         delete(title, name, conn);
-        String xmlEntity = document.getTextContent();
+        String xmlEntity = transformer.toXML(document);
         save(xmlEntity, title, name);
+
+        String resourceName = document.getDocumentElement().getAttribute("about");
+        insertMetadata(resourceName, "creativeWorkStatus", "withdrawn");
 
         xmlConnectionPool.releaseConnection(conn);
     }
@@ -80,7 +96,7 @@ public class ScientificPublicationRepository {
     public void saveMetadata(String metadata) {
         RDFConnectionProperties conn = rdfConnectionPool.getConnection();
         Model model = ModelFactory.createDefaultModel();
-        model.read(metadata);
+        model.read(new ByteArrayInputStream(metadata.getBytes()), null);
 
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         model.write(out, SparqlUtil.NTRIPLES);
@@ -115,11 +131,10 @@ public class ScientificPublicationRepository {
         String[] docCollections = col.listChildCollections();
         for (String docCollection : docCollections) {
             if (user.getOwnPublications().getPublicationID().contains(docCollection)) {
-                xPathQuery = "//title[//*[text()[contains(.," + parameter + ")]]]";
+                getTitlesAndAuthorsBasicSearch(docCollection, connXML, connRDF, sciPubs, parameter, true);
             } else {
-                xPathQuery = "//title[//*[text()[contains(.," + parameter + ")]] and //status[text()='accepted']]";
+                getTitlesAndAuthorsBasicSearch(docCollection, connXML, connRDF, sciPubs, parameter, false);
             }
-            getTitlesAndAuthorsBasicSearch(docCollection, connXML, connRDF, sciPubs, xPathQuery);
         }
 
         rdfConnectionPool.releaseConnection(connRDF);
@@ -151,7 +166,7 @@ public class ScientificPublicationRepository {
         ArrayList<SciPubDTO> sciPubs = new ArrayList<>();
         ArrayList<String> authors = new ArrayList<>();
         String sciPub = "sciPub";
-        String author = "author";
+        String name = "name";
         String query, title;
         QuerySolution querySolution;
 
@@ -159,13 +174,15 @@ public class ScientificPublicationRepository {
             querySolution = results.next();
             title = querySolution.get(sciPub).toString();
             query = SparqlUtil.selectData(conn.getDataEndpoint() + SPARQL_NAMED_GRAPH_URI,
-                    title + " <http://schema.org/author> ?author .");
+                    "<" + title + ">" + " <http://schema.org/author> ?author .\n" +
+                            "\t?author <http://schema.org/name> ?name .\n");
             tempResults = executeSparqlQuery(conn, query);
             while (tempResults.hasNext()) {
-                authors.add(results.next().get(author).toString());
+                authors.add(tempResults.next().get(name).toString());
             }
 
             sciPubs.add(new SciPubDTO(title, authors));
+            authors.clear();
         }
 
         return sciPubs;
@@ -173,29 +190,45 @@ public class ScientificPublicationRepository {
 
     private void getTitlesAndAuthorsBasicSearch(String docCollection, XMLConnectionProperties connXML,
                                                 RDFConnectionProperties connRDF, ArrayList<SciPubDTO> sciPubs,
-                                                String query) throws XMLDBException {
+                                                String parameter, boolean ownPublication) throws XMLDBException {
         int lastVersion = getLastVersionNumber(docCollection);
-        Collection docCol = basicOperations.getOrCreateCollection(docCollection, 0, connXML);
-        String docName = docCollection + "/v" + lastVersion;
+        Collection docCol = basicOperations.getOrCreateCollection(collectionName + "/" + docCollection, 0, connXML);
+        String docName = docCollection + "-v" + lastVersion;
         ArrayList<String> authors = new ArrayList<>();
-        String author = "author";
+        String name = "name";
         XPathQueryService xPathService = (XPathQueryService) docCol.getService("XPathQueryService", "1.0");
         xPathService.setProperty("indent", "yes");
+        String xQuery = "declare namespace sp = \"http://ftn.uns.ac.rs/scientificPublication\"; ";
+        String doc = "doc(\"" + docName + "\")";
+        if (ownPublication) {
+            xQuery += "if (" + doc + "/node()[contains(., \"" + parameter + "\")]) then " + doc + "/node()" +
+                    "/sp:metadata/sp:title/text() else \"\"";
+        } else {
+            xQuery += "if (" + doc + "/node()[contains(., \"" + parameter + "\")] and " + doc
+                    + "//sp:status[text()=\"accepted\"]) " +
+                    "then " + doc + "/node()" +
+                    "/sp:metadata/sp:title/text() else \"\"";
+        }
         ResourceSet result = xPathService
-                .query("doc(" + docName + ")" + query);
-        if (result.getSize() != 0) {
-            ResourceIterator i = result.getIterator();
-            String title = (String) i.nextResource().getContent();
+                .query(xQuery);
 
+        ResourceIterator i = result.getIterator();
+        String title = (String) i.nextResource().getContent();
+        String resourceName;
+
+        if (!title.equalsIgnoreCase("")) {
+            resourceName = "<http://ftn.uns.ac.rs/scientificPublication/" + title.replace(" ", "-") + ">";
             String sparqlQuery = SparqlUtil.selectData(connRDF.getDataEndpoint() + SPARQL_NAMED_GRAPH_URI,
-                    title + " <http://schema.org/author> ?author .");
+                    resourceName + " <http://schema.org/author> ?author .\n" +
+                            "\t?author <http://schema.org/name> ?name .\n");
             ResultSet tempResults = executeSparqlQuery(connRDF, sparqlQuery);
             while (tempResults.hasNext()) {
-                authors.add(tempResults.next().get(author).toString());
+                authors.add(tempResults.next().get(name).toString());
             }
 
             sciPubs.add(new SciPubDTO(title, authors));
         }
+
     }
 
     private ResultSet executeSparqlQuery(RDFConnectionProperties conn, String query) {
@@ -210,5 +243,28 @@ public class ScientificPublicationRepository {
         Collection col = basicOperations.getOrCreateCollection(collectionName + "/" + title, 0, conn);
         Resource resource = col.getResource(name);
         col.removeResource(resource);
+    }
+
+    public void insertMetadata(String resourceName, String pred, String object) {
+        RDFConnectionProperties conn = rdfConnectionPool.getConnection();
+        Model model = ModelFactory.createDefaultModel();
+        model.setNsPrefix("pred", "http://schema.org/");
+        org.apache.jena.rdf.model.Resource resource = model.createResource(resourceName);
+        Property property = model.createProperty("http://schema.org/", pred);
+        Literal literal = model.createLiteral(object);
+        Statement statement = model.createStatement(resource, property, literal);
+        model.add(statement);
+
+        ByteArrayOutputStream stream = new ByteArrayOutputStream();
+        model.write(stream, SparqlUtil.NTRIPLES);
+
+        String sparqlUpdate = SparqlUtil
+                .insertData(conn.getDataEndpoint() + SPARQL_NAMED_GRAPH_URI, new String(stream.toByteArray()));
+        UpdateRequest update = UpdateFactory.create(sparqlUpdate);
+
+        UpdateProcessor processor = UpdateExecutionFactory.createRemote(update, conn.getUpdateEndpoint());
+        processor.execute();
+
+        rdfConnectionPool.releaseConnection(conn);
     }
 }

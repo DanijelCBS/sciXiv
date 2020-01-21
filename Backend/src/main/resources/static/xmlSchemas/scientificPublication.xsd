@@ -13,23 +13,23 @@
                                 <xs:complexType>
                                     <xs:simpleContent>
                                         <xs:extension base="xs:string">
-                                            <xs:anyAttribute
-                                                namespace="www.w3.org/1999/02/22-rdf-syntax-ns#"/>
+                                            <xs:anyAttribute namespace="##local"
+                                                processContents="skip"/>
                                         </xs:extension>
                                     </xs:simpleContent>
                                 </xs:complexType>
                             </xs:element>
-                            <xs:element name="version">
+                            <xs:element name="version" minOccurs="0">
                                 <xs:complexType>
                                     <xs:simpleContent>
                                         <xs:extension base="xs:positiveInteger">
-                                            <xs:anyAttribute
-                                                namespace="www.w3.org/1999/02/22-rdf-syntax-ns#"/>
+                                            <xs:anyAttribute namespace="##local"
+                                                processContents="skip"/>
                                         </xs:extension>
                                     </xs:simpleContent>
                                 </xs:complexType>
                             </xs:element>
-                            <xs:element minOccurs="1" name="dateReceived" type="sp:TDate"/>
+                            <xs:element minOccurs="0" name="dateReceived" type="sp:TDate"/>
                             <xs:element minOccurs="0" name="dateRevised" type="sp:TDate"/>
                             <xs:element minOccurs="0" name="dateAccepted" type="sp:TDate"/>
                             <xs:element name="authors">
@@ -42,8 +42,8 @@
                                                   <xs:complexType>
                                                   <xs:simpleContent>
                                                   <xs:extension base="xs:string">
-                                                  <xs:anyAttribute
-                                                  namespace="www.w3.org/1999/02/22-rdf-syntax-ns#"/>
+                                                  <xs:anyAttribute namespace="##local"
+                                                  processContents="skip"/>
                                                   </xs:extension>
                                                   </xs:simpleContent>
                                                   </xs:complexType>
@@ -52,8 +52,8 @@
                                                   <xs:complexType>
                                                   <xs:simpleContent>
                                                   <xs:extension base="xs:string">
-                                                  <xs:anyAttribute
-                                                  namespace="www.w3.org/1999/02/22-rdf-syntax-ns#"/>
+                                                  <xs:anyAttribute namespace="##local"
+                                                  processContents="skip"/>
                                                   </xs:extension>
                                                   </xs:simpleContent>
                                                   </xs:complexType>
@@ -68,8 +68,8 @@
                                                   </xs:simpleType>
                                                   </xs:element>
                                                 </xs:sequence>
-                                                <xs:anyAttribute
-                                                  namespace="www.w3.org/1999/02/22-rdf-syntax-ns#"/>
+                                                <xs:anyAttribute namespace="##local"
+                                                  processContents="skip"/>
                                             </xs:complexType>
                                         </xs:element>
                                     </xs:sequence>
@@ -79,8 +79,8 @@
                                 <xs:complexType>
                                     <xs:complexContent>
                                         <xs:extension base="sp:TStatus">
-                                            <xs:anyAttribute
-                                                namespace="www.w3.org/1999/02/22-rdf-syntax-ns#"/>
+                                            <xs:anyAttribute namespace="##local"
+                                                processContents="skip"/>
                                         </xs:extension>
                                     </xs:complexContent>
                                 </xs:complexType>
@@ -92,8 +92,8 @@
                                             <xs:complexType>
                                                 <xs:simpleContent>
                                                   <xs:extension base="xs:string">
-                                                  <xs:anyAttribute
-                                                  namespace="www.w3.org/1999/02/22-rdf-syntax-ns#"/>
+                                                  <xs:anyAttribute namespace="##local"
+                                                  processContents="skip"/>
                                                   </xs:extension>
                                                 </xs:simpleContent>
                                             </xs:complexType>
@@ -152,8 +152,7 @@
                                             type="xs:string"/>
                                     </xs:sequence>
                                     <xs:attribute ref="sp:id"/>
-                                    <xs:anyAttribute
-                                        namespace="www.w3.org/1999/02/22-rdf-syntax-ns#"/>
+                                    <xs:anyAttribute namespace="##local" processContents="skip"/>
                                 </xs:complexType>
                             </xs:element>
                         </xs:sequence>
@@ -161,7 +160,7 @@
                 </xs:element>
                 <xs:element maxOccurs="unbounded" minOccurs="0" ref="rv:review"/>
             </xs:sequence>
-            <xs:anyAttribute namespace="www.w3.org/1999/02/22-rdf-syntax-ns#"/>
+            <xs:anyAttribute namespace="##local" processContents="skip"/>
         </xs:complexType>
     </xs:element>
     <xs:complexType mixed="true" name="TAbstractParagraph">
@@ -273,7 +272,7 @@
     <xs:complexType name="TDate">
         <xs:simpleContent>
             <xs:extension base="xs:date">
-                <xs:anyAttribute namespace="www.w3.org/1999/02/22-rdf-syntax-ns#"/>
+                <xs:anyAttribute namespace="##local" processContents="skip"/>
             </xs:extension>
         </xs:simpleContent>
     </xs:complexType>

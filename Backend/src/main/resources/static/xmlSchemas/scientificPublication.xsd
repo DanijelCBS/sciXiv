@@ -9,14 +9,55 @@
                 <xs:element name="metadata">
                     <xs:complexType>
                         <xs:sequence>
+                            <xs:element name="title">
+                                <xs:complexType>
+                                    <xs:simpleContent>
+                                        <xs:extension base="xs:string">
+                                            <xs:anyAttribute namespace="##local"
+                                                processContents="skip"/>
+                                        </xs:extension>
+                                    </xs:simpleContent>
+                                </xs:complexType>
+                            </xs:element>
+                            <xs:element name="version" minOccurs="0">
+                                <xs:complexType>
+                                    <xs:simpleContent>
+                                        <xs:extension base="xs:positiveInteger">
+                                            <xs:anyAttribute namespace="##local"
+                                                processContents="skip"/>
+                                        </xs:extension>
+                                    </xs:simpleContent>
+                                </xs:complexType>
+                            </xs:element>
+                            <xs:element minOccurs="0" name="dateReceived" type="sp:TDate"/>
+                            <xs:element minOccurs="0" name="dateRevised" type="sp:TDate"/>
+                            <xs:element minOccurs="0" name="dateAccepted" type="sp:TDate"/>
                             <xs:element name="authors">
                                 <xs:complexType>
                                     <xs:sequence>
                                         <xs:element maxOccurs="unbounded" name="author">
                                             <xs:complexType>
                                                 <xs:sequence>
-                                                  <xs:element name="name" type="xs:string"/>
-                                                  <xs:element name="affiliation" type="xs:string"/>
+                                                  <xs:element name="name">
+                                                  <xs:complexType>
+                                                  <xs:simpleContent>
+                                                  <xs:extension base="xs:string">
+                                                  <xs:anyAttribute namespace="##local"
+                                                  processContents="skip"/>
+                                                  </xs:extension>
+                                                  </xs:simpleContent>
+                                                  </xs:complexType>
+                                                  </xs:element>
+                                                  <xs:element name="affiliation">
+                                                  <xs:complexType>
+                                                  <xs:simpleContent>
+                                                  <xs:extension base="xs:string">
+                                                  <xs:anyAttribute namespace="##local"
+                                                  processContents="skip"/>
+                                                  </xs:extension>
+                                                  </xs:simpleContent>
+                                                  </xs:complexType>
+                                                  </xs:element>
                                                   <xs:element name="city" type="xs:string"/>
                                                   <xs:element name="state" type="xs:string"/>
                                                   <xs:element minOccurs="0" name="email">
@@ -27,25 +68,36 @@
                                                   </xs:simpleType>
                                                   </xs:element>
                                                 </xs:sequence>
+                                                <xs:anyAttribute namespace="##local"
+                                                  processContents="skip"/>
                                             </xs:complexType>
                                         </xs:element>
                                     </xs:sequence>
                                 </xs:complexType>
                             </xs:element>
                             <xs:element minOccurs="0" name="status">
-                                <xs:simpleType>
-                                    <xs:restriction base="xs:string">
-                                        <xs:enumeration value="accepted"/>
-                                        <xs:enumeration value="rejected"/>
-                                        <xs:enumeration value="in process"/>
-                                    </xs:restriction>
-                                </xs:simpleType>
+                                <xs:complexType>
+                                    <xs:complexContent>
+                                        <xs:extension base="sp:TStatus">
+                                            <xs:anyAttribute namespace="##local"
+                                                processContents="skip"/>
+                                        </xs:extension>
+                                    </xs:complexContent>
+                                </xs:complexType>
                             </xs:element>
                             <xs:element name="keywords">
                                 <xs:complexType>
                                     <xs:sequence>
-                                        <xs:element maxOccurs="unbounded" name="keyword"
-                                            type="xs:string"/>
+                                        <xs:element maxOccurs="unbounded" name="keyword">
+                                            <xs:complexType>
+                                                <xs:simpleContent>
+                                                  <xs:extension base="xs:string">
+                                                  <xs:anyAttribute namespace="##local"
+                                                  processContents="skip"/>
+                                                  </xs:extension>
+                                                </xs:simpleContent>
+                                            </xs:complexType>
+                                        </xs:element>
                                     </xs:sequence>
                                 </xs:complexType>
                             </xs:element>
@@ -100,6 +152,7 @@
                                             type="xs:string"/>
                                     </xs:sequence>
                                     <xs:attribute ref="sp:id"/>
+                                    <xs:anyAttribute namespace="##local" processContents="skip"/>
                                 </xs:complexType>
                             </xs:element>
                         </xs:sequence>
@@ -107,10 +160,7 @@
                 </xs:element>
                 <xs:element maxOccurs="unbounded" minOccurs="0" ref="rv:review"/>
             </xs:sequence>
-            <xs:attribute name="title" type="xs:string"/>
-            <xs:attribute name="recieved" type="xs:date" use="required"/>
-            <xs:attribute name="revised" type="xs:date"/>
-            <xs:attribute name="accepted" type="xs:date"/>
+            <xs:anyAttribute namespace="##local" processContents="skip"/>
         </xs:complexType>
     </xs:element>
     <xs:complexType mixed="true" name="TAbstractParagraph">
@@ -218,5 +268,25 @@
                 </xs:complexType>
             </xs:element>
         </xs:choice>
+    </xs:complexType>
+    <xs:complexType name="TDate">
+        <xs:simpleContent>
+            <xs:extension base="xs:date">
+                <xs:anyAttribute namespace="##local" processContents="skip"/>
+            </xs:extension>
+        </xs:simpleContent>
+    </xs:complexType>
+    <xs:simpleType name="TString">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="accepted"/>
+            <xs:enumeration value="rejected"/>
+            <xs:enumeration value="in process"/>
+            <xs:enumeration value="withdrawn"/>
+        </xs:restriction>
+    </xs:simpleType>
+    <xs:complexType name="TStatus">
+        <xs:simpleContent>
+            <xs:extension base="sp:TString"/>
+        </xs:simpleContent>
     </xs:complexType>
 </xs:schema>

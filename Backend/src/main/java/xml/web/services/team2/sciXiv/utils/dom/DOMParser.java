@@ -12,6 +12,8 @@ import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.validation.SchemaFactory;
 
 import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import xml.web.services.team2.sciXiv.exception.DocumentParsingFailedException;
@@ -33,7 +35,7 @@ public class DOMParser {
 
         Document document = builder.parse(new InputSource(new StringReader(xmlFile)));
 
-        if (document != null)
+        if (document == null)
             throw new DocumentParsingFailedException("Failed to parse document");
 
         return document;

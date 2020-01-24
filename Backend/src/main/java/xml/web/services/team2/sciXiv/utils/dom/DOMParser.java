@@ -5,15 +5,22 @@ import org.springframework.stereotype.Component;
 import java.io.File;
 import java.io.IOException;
 import java.io.StringReader;
+import java.io.StringWriter;
 
+import javax.xml.XMLConstants;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerConfigurationException;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
+import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
 
 import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import xml.web.services.team2.sciXiv.exception.DocumentParsingFailedException;
@@ -21,23 +28,95 @@ import xml.web.services.team2.sciXiv.exception.DocumentParsingFailedException;
 @Component
 public class DOMParser {
 
-    @Autowired
-    private DocumentBuilderFactory documentBuilderFactory;
+	@Autowired
+	private DocumentBuilderFactory documentBuilderFactory;
 
-    @Autowired
-    private SchemaFactory schemaFactory;
+	@Autowired
+	private SchemaFactory schemaFactory;
 
-    public DOMParser() {}
+	public DOMParser() {
+	}
 
-    public Document buildAndValidateDocument(String xmlFile, String schemaPath) throws ParserConfigurationException, SAXException, IOException, DocumentParsingFailedException {
-        documentBuilderFactory.setSchema(schemaFactory.newSchema(new File(schemaPath)));
-        DocumentBuilder builder = documentBuilderFactory.newDocumentBuilder();
+	public Document buildAndValidateDocument(String xmlFile, String schemaPath)
+			throws ParserConfigurationException, SAXException, IOException, DocumentParsingFailedException {
+		documentBuilderFactory.setSchema(schemaFactory.newSchema(new File(schemaPath)));
+		DocumentBuilder builder = documentBuilderFactory.newDocumentBuilder();
 
-        Document document = builder.parse(new InputSource(new StringReader(xmlFile)));
+		Document document = builder.parse(new InputSource(new StringReader(xmlFile)));
 
-        if (document == null)
-            throw new DocumentParsingFailedException("Failed to parse document");
+		if (document == null)
+			throw new DocumentParsingFailedException("Failed to parse document");
 
-        return document;
-    }
+		return document;
+	}
+
+	public static Document buildDocument(String xmlString, String schemaPath)
+			throws SAXException, ParserConfigurationException, IOException {
+		// Defines a factory API that enables applications to obtain a parser that
+		// produces DOM object trees from XML documents and obtain a new instance of a
+		// DocumentBuilderFactory.
+		DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
+
+		File f = new File(schemaPath);
+		Document newDocument;
+
+		// Specifies that the parser produced by this code will validate documents as
+		// they are parsed.
+		documentBuilderFactory.setValidating(false);
+
+		// Specifies that the parser produced by this code will provide support for XML
+		// namespaces
+		documentBuilderFactory.setNamespaceAware(true);
+
+		// Specifies that the parser produced by this code will ignore comments.
+		documentBuilderFactory.setIgnoringComments(true);
+
+		// Specifies that the parsers created by this factory must eliminate whitespace
+		// in element content (sometimes known loosely as'ignorable whitespace') when
+		// parsing XML documents
+		documentBuilderFactory.setIgnoringElementContentWhitespace(true);
+
+		// W3C XML Schema Namespace URI. Defined to be
+		// "http://www.w3.org/2001/XMLSchema".
+		String xmlSchemaNamespaceURI = XMLConstants.W3C_XML_SCHEMA_NS_URI;
+
+		// XSD (XML Schema Definition)
+		SchemaFactory xsdSchemaFactory = SchemaFactory.newInstance(xmlSchemaNamespaceURI);
+
+		Schema schema = null;
+
+		// Parses the specified File as a schema and returns it as a Schema.
+		schema = xsdSchemaFactory.newSchema(f);
+
+		// Set the Schema to be used by parsers created from this factory.
+		documentBuilderFactory.setSchema(schema);
+
+		DocumentBuilder documentBuilder = documentBuilderFactory.newDocumentBuilder();
+
+		newDocument = documentBuilder.parse(new InputSource(new StringReader(xmlString)));
+		if (newDocument != null) {
+			System.out.println("[INFO] File successfully parsed.");
+		} else {
+			System.out.println("[WARN] Document is null.");
+		}
+
+		return newDocument;
+	}
+
+	public static String doc2String(Document document) throws ParserConfigurationException, TransformerException {
+		DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
+		documentBuilderFactory.setValidating(false);
+		documentBuilderFactory.setNamespaceAware(true);
+		documentBuilderFactory.setIgnoringComments(true);
+		documentBuilderFactory.setIgnoringElementContentWhitespace(true);
+
+		StringWriter stringWriter = new StringWriter();
+		TransformerFactory tf = TransformerFactory.newInstance();
+		Transformer transformer = tf.newTransformer();
+		StreamResult streamResult = new StreamResult(stringWriter);
+		transformer.transform(new DOMSource(document), streamResult);
+
+		return stringWriter.toString();
+	}
+
 }

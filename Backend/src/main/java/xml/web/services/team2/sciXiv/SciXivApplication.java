@@ -8,6 +8,7 @@ public class SciXivApplication {
 
 	public static void main(String[] args) {
 		SpringApplication.run(SciXivApplication.class, args);
+
 	}
 
 }

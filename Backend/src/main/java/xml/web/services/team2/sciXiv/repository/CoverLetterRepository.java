@@ -129,7 +129,7 @@ public class CoverLetterRepository {
 
 		XMLConnectionProperties conn = xmlConnectionPool.getConnection();
 
-		delete(id, conn);
+		delete(id);
 
 		basicOperations.storeDocument(collectionName + "/", id, coverLetter, conn);
 		xmlConnectionPool.releaseConnection(conn);
@@ -143,4 +143,9 @@ public class CoverLetterRepository {
 		col.removeResource(resource);
 	}
 
+	public void delete(String id) throws XMLDBException {
+		XMLConnectionProperties conn = xmlConnectionPool.getConnection();
+		delete(id, conn);
+		xmlConnectionPool.releaseConnection(conn);
+	}
 }

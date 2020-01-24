@@ -43,7 +43,7 @@ public class CoverLetterController {
 	}
 
 	@PostMapping(consumes = MediaType.APPLICATION_XML_VALUE, produces = MediaType.APPLICATION_XML_VALUE)
-	public ResponseEntity<String> addCoverLeter(@RequestBody String coverLetter)
+	public ResponseEntity<String> addCoverLetter(@RequestBody String coverLetter)
 			throws SAXException, ParserConfigurationException, IOException, TransformerException,
 			DocumentStoringFailedException, DocumentLoadingFailedException, XMLDBException {
 		String id = coverLetterService.save(coverLetter);
@@ -61,7 +61,7 @@ public class CoverLetterController {
 
 	@DeleteMapping(value = "/{id}", produces = MediaType.APPLICATION_XML_VALUE)
 	public ResponseEntity<String> deleteCoverLetter(@PathVariable("id") String id) throws XMLDBException {
-		coverLetterService.delete(id, conn);
+		coverLetterService.delete(id);
 		return new ResponseEntity<>(HttpStatus.ACCEPTED);
 	}
 }

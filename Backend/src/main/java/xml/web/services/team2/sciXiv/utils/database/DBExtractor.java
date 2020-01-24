@@ -14,7 +14,7 @@ import xml.web.services.team2.sciXiv.utils.connection.AuthenticationUtilities.XM
 
 public class DBExtractor {
 
-	static String TARGET_NAMESPACE = "http://ftn.uns.ac.rs/";
+	static String TARGET_NAMESPACE = "http://ftn.uns.ac.rs/coverLetter";
 
 	public static ResourceSet executeXPathQuery(String collectionNameInDb, String xPathQuery, String targetNamespace)
 			throws IOException, XMLDBException {

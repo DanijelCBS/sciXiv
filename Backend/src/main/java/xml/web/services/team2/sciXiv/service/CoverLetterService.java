@@ -93,10 +93,10 @@ public class CoverLetterService {
 		String coverLetterId = coverLetterRepository.save(coverLetter);
 
 		// scientific publication name
-		String spName = getScientificPublicationsID(coverLetter);
+		// String spName = getScientificPublicationsID(coverLetter);
 
 		// set cover letter for publication id=name
-		setCoverLetter(spName, coverLetterId);
+		// setCoverLetter(spName, coverLetterId);
 
 		return coverLetterId;
 	}
@@ -108,8 +108,8 @@ public class CoverLetterService {
 		return coverLetterId;
 	}
 
-	public void delete(String id, XMLConnectionProperties conn) throws XMLDBException {
-		coverLetterRepository.delete(id, conn);
+	public void delete(String id) throws XMLDBException {
+		coverLetterRepository.delete(id);
 	}
 
 }

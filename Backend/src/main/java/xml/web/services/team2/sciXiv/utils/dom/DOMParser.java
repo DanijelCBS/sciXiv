@@ -118,4 +118,25 @@ public class DOMParser {
 		return stringWriter.toString();
 	}
 
+	public static Document buildDocumentNoSchema(String xmlString)
+			throws ParserConfigurationException, SAXException, IOException {
+		DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
+		documentBuilderFactory.setValidating(false);
+		documentBuilderFactory.setNamespaceAware(true);
+		documentBuilderFactory.setIgnoringComments(true);
+		documentBuilderFactory.setIgnoringElementContentWhitespace(true);
+
+		Document document;
+		DocumentBuilder documentBuilder = documentBuilderFactory.newDocumentBuilder();
+
+		document = documentBuilder.parse(new InputSource(new StringReader(xmlString)));
+
+		if (document == null) {
+			System.out.println("[WARN] Document is null.");
+		} else {
+			System.out.println("[INFO] File successfully parsed.");
+		}
+		return document;
+	}
+
 }

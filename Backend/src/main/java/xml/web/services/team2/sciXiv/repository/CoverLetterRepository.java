@@ -1,9 +1,15 @@
 package xml.web.services.team2.sciXiv.repository;
 
 import java.io.IOException;
+import java.math.BigInteger;
+import java.util.UUID;
+
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.TransformerException;
 
 import org.exist.xmldb.EXistResource;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.rest.webmvc.ResourceNotFoundException;
 import org.springframework.stereotype.Repository;
 import org.xmldb.api.base.Collection;
 import org.xmldb.api.base.Resource;
@@ -11,6 +17,8 @@ import org.xmldb.api.base.ResourceIterator;
 import org.xmldb.api.base.ResourceSet;
 import org.xmldb.api.base.XMLDBException;
 import org.xmldb.api.modules.XMLResource;
+import org.w3c.dom.Document;
+import org.xml.sax.SAXException;
 
 import xml.web.services.team2.sciXiv.exception.DocumentLoadingFailedException;
 import xml.web.services.team2.sciXiv.exception.DocumentStoringFailedException;
@@ -27,6 +35,8 @@ import xml.web.services.team2.sciXiv.utils.xslt.DOMToXMLTransformer;
 public class CoverLetterRepository {
 
 	private static final String collectionName = "/db/sciXiv/coverLetters";
+
+	private static final String coverLetterXsdSchemaPath = "src/main/resources/static/xmlSchemas/coverLetter.xsd";
 
 	private static final String SPARQL_NAMED_GRAPH_URI = "/coverLetter/metadata";
 
@@ -46,7 +56,7 @@ public class CoverLetterRepository {
 	DOMToXMLTransformer transformer;
 
 	public String findById(String id) throws DocumentLoadingFailedException, XMLDBException, IOException {
-		String coverLetterStr = "";
+		String coverLetterStr = null;
 		String xPath = "//coverLetter[@id=\"" + id + "\"]";
 
 		// ResourceSet is a container for a set of resources. Generally a ResourceSet is
@@ -90,13 +100,47 @@ public class CoverLetterRepository {
 		return null;
 	}
 
-	public String save(String coverLetter) {
-		
+	public String save(String coverLetter) throws SAXException, ParserConfigurationException, IOException,
+			TransformerException, DocumentStoringFailedException {
+		Document document = DOMParser.buildDocument(coverLetter, coverLetterXsdSchemaPath);
+		String lUUID = String.format("%d", new BigInteger(UUID.randomUUID().toString().replace("-", ""), 16));
+		String id = "cl" + lUUID;
+		document.getElementsByTagName("coverLetter").item(0).getAttributes().getNamedItem("id").setTextContent(id);
+
+		String saveCoverLetter = DOMParser.doc2String(document);
+
+		XMLConnectionProperties conn = xmlConnectionPool.getConnection();
+		basicOperations.storeDocument(collectionName + "/", id, saveCoverLetter, conn);
+		xmlConnectionPool.releaseConnection(conn);
+
+		return id;
 	}
 
-	private void delete(String id) throws XMLDBException {
-		String xPath = "/coverLetters";
+	public String update(String coverLetter) throws SAXException, ParserConfigurationException, IOException,
+			DocumentLoadingFailedException, XMLDBException, DocumentStoringFailedException {
+		Document document = DOMParser.buildDocument(coverLetter, coverLetterXsdSchemaPath);
+		String id = document.getDocumentElement().getAttribute("id");
 
+		String oldCoverLetter = findById(id);
+
+		if (oldCoverLetter == null) {
+			throw new ResourceNotFoundException("ResourceNotFoundException; Cover letter with [id: " + id + "]");
+		}
+
+		XMLConnectionProperties conn = xmlConnectionPool.getConnection();
+
+		delete(id, conn);
+
+		basicOperations.storeDocument(collectionName + "/", id, coverLetter, conn);
+		xmlConnectionPool.releaseConnection(conn);
+
+		return id;
+	}
+
+	public void delete(String id, XMLConnectionProperties conn) throws XMLDBException {
+		Collection col = basicOperations.getOrCreateCollection(collectionName + "/", 0, conn);
+		Resource resource = col.getResource(id);
+		col.removeResource(resource);
 	}
 
 }

@@ -57,12 +57,14 @@ public class ScientificPublicationRepository {
 	@Autowired
 	DOMToXMLTransformer transformer;
 
-	public String findByName(String name) throws DocumentLoadingFailedException, XMLDBException {
+	public String findByNameAndVersion(String name, int version) throws DocumentLoadingFailedException, XMLDBException {
 		XMLConnectionProperties conn = xmlConnectionPool.getConnection();
-		XMLResource resource = basicOperations.loadDocument(collectionName, name, conn);
+		Document document = (Document) basicOperations.loadDocument(collectionName + "/" + name, name + "-v" + version, conn)
+				.getContentAsDOM();
+		String xmlEntity = transformer.toXML(document);
 		xmlConnectionPool.releaseConnection(conn);
 
-		return resource.getContent().toString();
+		return xmlEntity;
 	}
 
 	public String save(String xmlEntity, String title, String name) throws DocumentStoringFailedException {

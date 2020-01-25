@@ -6,6 +6,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import xml.web.services.team2.sciXiv.dto.SciPubDTO;
 import xml.web.services.team2.sciXiv.dto.SearchPublicationsDTO;
+import xml.web.services.team2.sciXiv.exception.DocumentLoadingFailedException;
 import xml.web.services.team2.sciXiv.exception.DocumentParsingFailedException;
 import xml.web.services.team2.sciXiv.service.ScientificPublicationService;
 
@@ -17,6 +18,17 @@ public class ScientificPublicationController {
 
     @Autowired
     private ScientificPublicationService scientificPublicationService;
+
+    @GetMapping
+    public ResponseEntity<Object> findByNameAndVersion(@RequestParam String name, @RequestParam int version) {
+        try {
+            return new ResponseEntity<>(scientificPublicationService.findByNameAndVersion(name, version), HttpStatus.OK);
+        } catch (DocumentLoadingFailedException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+        } catch (Exception e) {
+            return new ResponseEntity<>("An error occurred while saving document", HttpStatus.BAD_REQUEST);
+        }
+    }
 
     @PostMapping
     public ResponseEntity<Object> addScientificPublication(@RequestBody String sciPub) {

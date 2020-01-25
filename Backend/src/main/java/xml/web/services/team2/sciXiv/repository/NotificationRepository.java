@@ -17,8 +17,9 @@ import xml.web.services.team2.sciXiv.utils.dom.DOMParser;
 @Repository
 public class NotificationRepository {
 
-	private static final String notificationXsdSchemaPath = "src/main/resources/static/xmlSchemas/notification.xsd";
-	private static final String notificationTemplate = "src/main/resources/static/templates/notificationTemplate.xml";
+	public static final String notificationXsdSchemaPath = "src/main/resources/static/xmlSchemas/notification.xsd";
+	public static final String notificationTemplate = "src/main/resources/static/templates/notificationTemplate.xml";
+	public static final String notificationXSLPath = "src/main/resources/static/xsl/notification.xsl";
 
 	public static Document retrieveNotification() throws IOException, SAXException, ParserConfigurationException {
 		File f = new File(notificationTemplate);

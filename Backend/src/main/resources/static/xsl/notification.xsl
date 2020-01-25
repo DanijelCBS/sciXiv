@@ -10,8 +10,35 @@
             <body>
                 <xsl:variable name="scientificId" select="document(concat('http://', n:notification/n:publicationName))"/>
                 <h3>
-                    Notification regarding scientific publication 
-                    "<xsl:value-of select="$scientificId/n:publicationName"/>"<br/>
+                    Notification regarding scientific publication titled: 
+                    "<xsl:value-of select="n:notification/n:publicationName"/>"<br></br>
+                </h3>
+                Notification type: <i><xsl:value-of select="n:notification/n:notificationType"/></i>
+                <br></br><br></br>
+                <b>Information about sender/reciever:</b>
+                    <table border="1">
+                        <tr>
+                            <th></th>
+                            <th>Name</th>
+                            <th>Role</th> 
+                            <th>Email</th>
+                        </tr>
+                        <tr>
+                            <td>Sender</td>
+                            <td><xsl:value-of select="n:notification/n:sender/n:name"/></td>
+                            <td><xsl:value-of select="n:notification/n:sender/n:role"/></td> 
+                            <td><xsl:value-of select="n:notification/n:sender/n:email"/></td>
+                        </tr>
+                        <tr>
+                            <td>Reciever</td>
+                            <td><xsl:value-of select="n:notification/n:reciever/n:name"/></td>
+                            <td><xsl:value-of select="n:notification/n:reciever/n:role"/></td> 
+                            <td><xsl:value-of select="n:notification/n:reciever/n:email"/></td>
+                        </tr>
+                    </table>
+                <br></br>
+                <b>Content:</b>
+                <p><xsl:value-of select="n:notification/n:content"/></p>
             </body>
         </html>
     </xsl:template>

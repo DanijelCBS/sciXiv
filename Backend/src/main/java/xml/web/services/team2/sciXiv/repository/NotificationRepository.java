@@ -21,7 +21,6 @@ public class NotificationRepository {
 	private static final String notificationTemplate = "src/main/resources/static/templates/notificationTemplate.xml";
 
 	public static Document retrieveNotification() throws IOException, SAXException, ParserConfigurationException {
-		// readFile(NotificationTemplate)
 		File f = new File(notificationTemplate);
 		BufferedReader br = new BufferedReader(new FileReader(f));
 		StringBuilder sb = new StringBuilder("");

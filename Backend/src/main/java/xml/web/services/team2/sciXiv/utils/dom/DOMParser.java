@@ -20,12 +20,16 @@ import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
 
 import org.w3c.dom.Document;
+import org.xml.sax.ErrorHandler;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
+import org.xml.sax.SAXParseException;
+
 import xml.web.services.team2.sciXiv.exception.DocumentParsingFailedException;
+import xml.web.services.team2.sciXiv.exception.InvalidXmlException;
 
 @Component
-public class DOMParser {
+public class DOMParser implements ErrorHandler{
 
 	@Autowired
 	private DocumentBuilderFactory documentBuilderFactory;
@@ -38,8 +42,10 @@ public class DOMParser {
 
 	public Document buildAndValidateDocument(String xmlFile, String schemaPath)
 			throws ParserConfigurationException, SAXException, IOException, DocumentParsingFailedException {
-		documentBuilderFactory.setSchema(schemaFactory.newSchema(new File(schemaPath)));
+		documentBuilderFactory.setValidating(false); // disable validation against DTD
+		documentBuilderFactory.setSchema(schemaFactory.newSchema(new File(schemaPath))); // enable validation against XML Schema	
 		DocumentBuilder builder = documentBuilderFactory.newDocumentBuilder();
+		builder.setErrorHandler(this);
 
 		Document document = builder.parse(new InputSource(new StringReader(xmlFile)));
 
@@ -137,6 +143,23 @@ public class DOMParser {
 			System.out.println("[INFO] File successfully parsed.");
 		}
 		return document;
+	}
+
+	@Override
+	public void error(SAXParseException exception) throws SAXException {
+		exception.printStackTrace();
+		throw new InvalidXmlException("Failed to parse document. Please check if document is valid.");
+		
+	}
+
+	@Override
+	public void fatalError(SAXParseException exception) throws SAXException {
+		throw new InvalidXmlException("Failed to parse document. Please check if document is valid.");
+	}
+
+	@Override
+	public void warning(SAXParseException exception) throws SAXException {
+		throw new InvalidXmlException("Failed to parse document. Please check if document is valid.");
 	}
 
 }

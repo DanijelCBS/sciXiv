@@ -8,7 +8,8 @@
                     <xs:complexType>
                         <xs:sequence>
                             <xs:element minOccurs="0" name="reviewer" type="xs:string"/>
-                            <xs:element name="publicationName" type="xs:string"/>
+                            <xs:element name="publicationTitle" type="xs:string"/>
+                            <xs:element name="publicationVersion" type="xs:positiveInteger"/>
                             <xs:element name="submissionDate">
                                 <xs:simpleType>
                                     <xs:restriction base="xs:date"/>
@@ -64,6 +65,7 @@
                     </xs:complexType>
                 </xs:element>
             </xs:sequence>
+            <xs:attribute name="id" type="xs:string"/>
         </xs:complexType>
     </xs:element>
     <xs:simpleType name="TCriteriaGrade">

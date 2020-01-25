@@ -8,6 +8,7 @@ import javax.xml.transform.TransformerException;
 import javax.xml.xpath.XPathExpressionException;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.rest.webmvc.ResourceNotFoundException;
 import org.springframework.stereotype.Service;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
@@ -46,6 +47,10 @@ public class ReviewService {
 
 	@Autowired
 	private XPathExpressionHandler xpathExecuter;
+	
+	public String findById(String reviewId) throws DocumentStoringFailedException, ParserConfigurationException, TransformerException, IOException, XMLDBException, DocumentLoadingFailedException {
+		return this.reviewRepository.findById(reviewId);
+	}
 
 	public String submitReview(String reviewXml) throws ParserConfigurationException, IOException, 
 	XPathExpressionException, XMLDBException, DocumentStoringFailedException, TransformerException {
@@ -67,6 +72,13 @@ public class ReviewService {
 		String id = document.getDocumentElement().getAttribute("id");
 		
 		return this.reviewRepository.update(document, id);
+	}
+	
+	public void deleteReview(String reviewId) throws XMLDBException {
+		boolean success = this.reviewRepository.delete(reviewId);
+		if(!success) {
+			throw new ResourceNotFoundException("ResourceNotFoundException; Review with [id: " + reviewId + "]");
+		}
 	}
 	
 	private Document buildAndValidateReview(String reviewXml) throws ParserConfigurationException, IOException {

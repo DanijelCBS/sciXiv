@@ -101,49 +101,35 @@ public class ReviewRepository {
 		return id;
     }
     
-    public String findById(String id) throws DocumentStoringFailedException, ParserConfigurationException, TransformerException, IOException, XMLDBException {
-    	String reviewXml = null;
-		String xPath = "//review[@id=\"" + id + "\"]";
-
-		ResourceSet resourceSet = DBExtractor.executeXPathQuery(publicationReviewsCollection, xPath,
-				DBExtractor.getTARGET_NAMESPACE());
-
-		if (resourceSet == null) {
-			return reviewXml;
+    public String findById(String id) throws DocumentStoringFailedException, ParserConfigurationException, TransformerException, IOException, XMLDBException, DocumentLoadingFailedException {
+    	XMLConnectionProperties conn = connectionPool.getConnection();
+    	String reviewDocumentName = String.format("%s.xml", id);
+		XMLResource resource = basicOperations.loadDocument(publicationReviewsCollection, reviewDocumentName, conn);
+		connectionPool.releaseConnection(conn);
+		
+		if(resource == null) {
+			throw new ResourceNotFoundException(String.format("ResourceNotFoundException; Review with [id: %s]", id));
 		}
 
-		ResourceIterator rit = resourceSet.getIterator();
-
-		XMLResource xmlResource = null;
-
-		while (rit.hasMoreResources()) {
-			try {
-				xmlResource = (XMLResource) rit.nextResource();
-
-				reviewXml = xmlResource.getContent().toString();
-
-				return reviewXml;
-			} finally {
-				try {
-					((EXistResource) xmlResource).freeResources();
-				} catch (XMLDBException xmldbe) {
-					xmldbe.printStackTrace();
-				}
-			}
-		}
-		return null;
+		return resource.getContent().toString();
     }
     
-    public void delete(String id, XMLConnectionProperties conn) throws XMLDBException {
-		Collection col = basicOperations.getOrCreateCollection(publicationReviewsCollection + "/", 0, conn);
-		Resource resource = col.getResource(id);
-		col.removeResource(resource);
+    public boolean delete(String id, XMLConnectionProperties conn) throws XMLDBException {
+		Collection col = basicOperations.getOrCreateCollection(publicationReviewsCollection, 0, conn);
+		String reviewDocumentId = String.format("%s.xml", id);
+		Resource resource = col.getResource(reviewDocumentId);
+		if(resource != null) {
+			col.removeResource(resource);
+			return true;
+		}
+		return false;
 	}
 
-	public void delete(String id) throws XMLDBException {
+	public boolean delete(String id) throws XMLDBException {
 		XMLConnectionProperties conn = connectionPool.getConnection();
-		delete(id, conn);
+		boolean success = delete(id, conn);
 		connectionPool.releaseConnection(conn);
+		return success;
 	}
 	
 	public String update(Document updatedReviewValid, String id) throws SAXException, ParserConfigurationException, IOException,
@@ -151,9 +137,9 @@ public class ReviewRepository {
 		//Document document = DOMParser.buildDocument(coverLetter, PATH);
 		//String id = document.getDocumentElement().getAttribute("id");
 		
-		String oldCoverLetter = findById(id);
+		String odlReview = findById(id);
 		
-		if (oldCoverLetter == null) {
+		if (odlReview == null) {
 			throw new ResourceNotFoundException("ResourceNotFoundException; Review with [id: " + id + "]");
 		}
 		
@@ -165,7 +151,7 @@ public class ReviewRepository {
 		
 		connectionPool.releaseConnection(conn);
 		
-		return id;
+		return DOMParser.doc2String(updatedReviewValid);
 	}
     
     /*

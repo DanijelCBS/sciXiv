@@ -98,6 +98,6 @@ public class XSLTranspiler {
 				+ "    <content>Nam id pretium tortor, vel condimentum urna. Maecenas vestibulum vehicula tincidunt. Vestibulum rutrum dui condimentum nisl elementum, ac semper magna aliquam. Proin sed porttitor turpis, at fringilla eros. Nam sagittis leo et pharetra pretium. In hac habitasse platea dictumst. In consectetur maximus lorem, eu ullamcorper felis hendrerit iaculis. \r\n"
 				+ "    </content>\r\n" + "</notification>\r\n" + "";
 		String notificationHTML = generateHTML(notificationStr, NotificationRepository.notificationXSLPath);
-		System.out.println(notificationHTML);
+		// System.out.println(notificationHTML);
 	}
 }

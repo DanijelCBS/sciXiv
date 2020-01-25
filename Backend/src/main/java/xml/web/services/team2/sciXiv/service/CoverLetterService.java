@@ -58,14 +58,14 @@ public class CoverLetterService {
 	public String setCoverLetter(String scientificPublicationId, String coverLetterId)
 			throws DocumentLoadingFailedException, XMLDBException, ParserConfigurationException, SAXException,
 			IOException, TransformerException {
-		/*String scientificPublication = scientificPublicationRepository.findByName(scientificPublicationId);
+		String scientificPublication = scientificPublicationRepository.findByNameAndVersion(scientificPublicationId, 1);
 		Document spDocument = DOMParser.buildDocumentNoSchema(scientificPublication);
 		spDocument.getElementsByTagName("coverLetter").item(0).setTextContent(coverLetterId);
 
 		Element root = spDocument.getDocumentElement();
 		String rootAttribute = root.getAttribute("id");
 
-		String docStr = DOMParser.doc2String(spDocument);*/
+		String docStr = DOMParser.doc2String(spDocument);
 
 		return null;
 	}

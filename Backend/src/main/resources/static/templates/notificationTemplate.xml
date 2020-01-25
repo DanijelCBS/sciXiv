@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<notification date="2012-12-13" xmlns="http://ftn.uns.ac.rs/notification"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <sender>
+    <name>First</name>
+    <role>author</role>
+    <email>something@gmail.com</email>
+  </sender>
+  <reciever>
+    <name>Second</name>
+    <role>author</role>
+    <email>someone@gmail.com</email>
+  </reciever>
+  <publicationName>My favourite work</publicationName>
+  <notificationType>publication submitted</notificationType>
+  <content>Great content of this one</content>
+</notification>

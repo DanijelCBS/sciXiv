@@ -49,7 +49,7 @@ public class ReviewService {
 		
 		Node publicationNameNode = xpathExecuter.findSingleNodeByXPath(document, "//metadata/publicationName");
 		String publicationName = publicationNameNode.getNodeValue();
-		String sciPub = scientificPublicationService.findByName(publicationName); // checks if publication exists
+		//String sciPub = scientificPublicationService.findByName(publicationName); // checks if publication exists
 		String reviewId = reviewRepository.save(reviewXml, publicationName);
 		
 		//TODO: remove review assignment for reviewer

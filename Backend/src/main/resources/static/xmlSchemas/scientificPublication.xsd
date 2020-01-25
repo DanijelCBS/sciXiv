@@ -19,16 +19,6 @@
                                     </xs:simpleContent>
                                 </xs:complexType>
                             </xs:element>
-                            <xs:element name="version" minOccurs="0">
-                                <xs:complexType>
-                                    <xs:simpleContent>
-                                        <xs:extension base="xs:positiveInteger">
-                                            <xs:anyAttribute namespace="##local"
-                                                processContents="skip"/>
-                                        </xs:extension>
-                                    </xs:simpleContent>
-                                </xs:complexType>
-                            </xs:element>
                             <xs:element minOccurs="0" name="dateReceived" type="sp:TDate"/>
                             <xs:element minOccurs="0" name="dateRevised" type="sp:TDate"/>
                             <xs:element minOccurs="0" name="dateAccepted" type="sp:TDate"/>
@@ -148,8 +138,6 @@
                                         <xs:element name="referenceTitle" type="xs:string"/>
                                         <xs:element minOccurs="0" name="publisherName"
                                             type="xs:string"/>
-                                        <xs:element minOccurs="0" name="referenceURL"
-                                            type="xs:string"/>
                                     </xs:sequence>
                                     <xs:attribute ref="sp:id"/>
                                     <xs:anyAttribute namespace="##local" processContents="skip"/>
@@ -221,7 +209,7 @@
                         <xs:complexType>
                             <xs:simpleContent>
                                 <xs:extension base="xs:string">
-                                    <xs:attribute name="refId" type="sp:TId"/>
+                                    <xs:attribute name="refId" type="xs:string"/>
                                 </xs:extension>
                             </xs:simpleContent>
                         </xs:complexType>

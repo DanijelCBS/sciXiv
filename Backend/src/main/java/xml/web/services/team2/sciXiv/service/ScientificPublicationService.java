@@ -48,8 +48,8 @@ public class ScientificPublicationService {
     @Autowired
     DOMToXMLTransformer transformer;
 
-    public String findByName(String name) throws XMLDBException, DocumentLoadingFailedException {
-        return scientificPublicationRepository.findByName(name);
+    public String findByNameAndVersion(String name, int version) throws XMLDBException, DocumentLoadingFailedException {
+        return scientificPublicationRepository.findByNameAndVersion(name.replace(' ', '-'), version);
     }
 
     public String save(String sciPub) throws ParserConfigurationException, DocumentParsingFailedException, SAXException, IOException, DocumentStoringFailedException, TransformerException, UserSavingFailedException, UserRetrievingFailedException {

@@ -36,11 +36,13 @@ public class ReviewController {
 
 	@Autowired
 	private ReviewService reviewService;
-	
+
 	@RequestMapping(value = "/{reviewId}", method = RequestMethod.GET, produces = "application/xml")
-	public ResponseEntity<String> getReview(@PathVariable("reviewId") String reviewId) throws DocumentStoringFailedException, ParserConfigurationException, TransformerException, IOException, XMLDBException, DocumentLoadingFailedException {
+	public ResponseEntity<String> getReview(@PathVariable("reviewId") String reviewId)
+			throws DocumentStoringFailedException, ParserConfigurationException, TransformerException, IOException,
+			XMLDBException, DocumentLoadingFailedException {
 		String reviewXml = this.reviewService.findById(reviewId);
-		if(reviewXml != null) {
+		if (reviewXml != null) {
 			return new ResponseEntity<String>(reviewXml, HttpStatus.OK);
 		} else {
 			return new ResponseEntity<String>("Review with given id does not exist.", HttpStatus.NOT_FOUND);
@@ -49,23 +51,38 @@ public class ReviewController {
 
 	@RequestMapping(method = RequestMethod.POST, consumes = "application/xml")
 	@PreAuthorize("hasRole('REVIEWER')")
-	public ResponseEntity<String> submitReview(@RequestBody String reviewXml) throws XPathExpressionException, ParserConfigurationException, IOException, XMLDBException, DocumentStoringFailedException, TransformerException {
+	public ResponseEntity<String> submitReview(@RequestBody String reviewXml)
+			throws XPathExpressionException, ParserConfigurationException, IOException, XMLDBException,
+			DocumentStoringFailedException, TransformerException {
 		String id = this.reviewService.submitReview(reviewXml);
 		return new ResponseEntity<String>(id, HttpStatus.CREATED);
 	}
-	
+
 	@RequestMapping(method = RequestMethod.PUT, produces = "application/xml")
 	@PreAuthorize("hasRole('REVIEWER')")
-	public ResponseEntity<String> updateReview(@RequestBody String updatedReviewXml) throws ParserConfigurationException, IOException, SAXException, DocumentLoadingFailedException, XMLDBException, DocumentStoringFailedException, TransformerException {
+	public ResponseEntity<String> updateReview(@RequestBody String updatedReviewXml)
+			throws ParserConfigurationException, IOException, SAXException, DocumentLoadingFailedException,
+			XMLDBException, DocumentStoringFailedException, TransformerException {
 		updatedReviewXml = this.reviewService.updateReview(updatedReviewXml);
 		return new ResponseEntity<String>(updatedReviewXml, HttpStatus.OK);
 	}
-	
+
 	@DeleteMapping(value = "/{reviewId}")
 	@PreAuthorize("hasRole('REVIEWER')")
 	public ResponseEntity<?> deleteReview(@PathVariable("reviewId") String reviewId) throws XMLDBException {
 		this.reviewService.deleteReview(reviewId);
 		return ResponseEntity.ok("Review deleted.");
+	}
+
+	@RequestMapping(value = "/publication/{pubTitle}/version/{pubVersion}", 
+			method = RequestMethod.GET,
+			produces = "application/xml")
+	@PreAuthorize("hasRole('EDITOR')")
+	public ResponseEntity<String> getPublicationWithReviews(@PathVariable("pubTitle") String publicationTitle,
+			@PathVariable("pubVersion") int publicationVersion) throws XMLDBException, DocumentLoadingFailedException,
+			ParserConfigurationException, SAXException, IOException, TransformerException {
+		String xml = this.reviewService.mergePublicationAndReviews(publicationTitle, publicationVersion);
+		return new ResponseEntity<String>(xml, HttpStatus.OK);
 	}
 
 }

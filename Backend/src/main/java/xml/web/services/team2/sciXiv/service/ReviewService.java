@@ -1,16 +1,25 @@
 package xml.web.services.team2.sciXiv.service;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.StringReader;
+import java.io.StringWriter;
 import java.util.List;
 
+import javax.annotation.PostConstruct;
 import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
 import javax.xml.xpath.XPathExpressionException;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.rest.webmvc.ResourceNotFoundException;
 import org.springframework.stereotype.Service;
 import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
@@ -81,7 +90,7 @@ public class ReviewService {
 		}
 	}
 	
-	private Document buildAndValidateReview(String reviewXml) throws ParserConfigurationException, IOException {
+	private Document buildAndValidateReview(String reviewXml) throws ParserConfigurationException, IOException, XMLDBException {
 		Document document;
 		try {
 			document = domParser.buildAndValidateDocument(reviewXml, schemaPath);
@@ -93,16 +102,42 @@ public class ReviewService {
 		Node publicationTitleNode = document.getElementsByTagName("publicationTitle").item(0);
 		String publicationTitle = publicationTitleNode.getTextContent();
 		Node publicationVersionNode = document.getElementsByTagName("publicationVersion").item(0);
-		Long version = Long.parseLong(publicationVersionNode.getTextContent());
-		String publicationToReviewId = String.format("%s-v-%d", publicationTitle, version);
-		/*
+		int version = Integer.parseInt(publicationVersionNode.getTextContent());
+		
 		try {
-			String sciPub = scientificPublicationService.findByName(publicationToReviewId); // checks if publication exists
+			String sciPub = scientificPublicationService.findByNameAndVersion(publicationTitle, version); // checks if publication exists
 		} catch (DocumentLoadingFailedException e) {
 			throw new InvalidDataException("Publication id", "Can not find scientific publication with given title and version.");
 		} 
-		*/
+		
 		return document;
+	}
+	
+	public String mergePublicationAndReviews(String publicationTitle, int publicationVersion) throws XMLDBException, DocumentLoadingFailedException, ParserConfigurationException, SAXException, IOException, TransformerException {
+		String publication = this.scientificPublicationService.findByNameAndVersion(publicationTitle, publicationVersion);
+		Document publicationDOM = domParser.buildDocumentNoSchema(publication);
+		List<Node> publicationReviews = this.getReviewsOfPublicationAsDomNodes(publicationTitle, publicationVersion);
+		Element publicationElement = (Element) publicationDOM.getElementsByTagNameNS("http://ftn.uns.ac.rs/scientificPublication", "scientificPublication").item(0);
+		for (Node reviewNode : publicationReviews) {
+			Element reviewElement = (Element) reviewNode;
+			Node reviewImported = publicationDOM.importNode(reviewNode, true);
+			Element reviewImportedElement = (Element) reviewImported;
+			publicationElement.appendChild(reviewImportedElement);
+		}
+		return DOMParser.doc2String(publicationDOM);
+	}
+	
+	private String nodeToXmlString(Node node) throws TransformerException {
+		StringWriter stringWriter = new StringWriter();
+		TransformerFactory tf = TransformerFactory.newInstance();
+		Transformer transformer = tf.newTransformer();
+		StreamResult streamResult = new StreamResult(stringWriter);
+		transformer.transform(new DOMSource(node), streamResult);
+		return stringWriter.toString();
+	}
+	
+	public List<Node> getReviewsOfPublicationAsDomNodes(String publicationTitle, int publicationVersion) throws XMLDBException {
+		return this.reviewRepository.findReviewsOfPublicationAsDomNodes(publicationTitle, publicationVersion);
 	}
 	
 	/*

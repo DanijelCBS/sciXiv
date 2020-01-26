@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.rest.webmvc.ResourceNotFoundException;
 import org.springframework.stereotype.Repository;
 import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.xml.sax.SAXException;
 import org.xmldb.api.base.Collection;
@@ -22,6 +23,7 @@ import org.xmldb.api.base.ResourceIterator;
 import org.xmldb.api.base.ResourceSet;
 import org.xmldb.api.base.XMLDBException;
 import org.xmldb.api.modules.XMLResource;
+import org.xmldb.api.modules.XPathQueryService;
 
 import xml.web.services.team2.sciXiv.exception.DocumentLoadingFailedException;
 import xml.web.services.team2.sciXiv.exception.DocumentStoringFailedException;
@@ -152,6 +154,40 @@ public class ReviewRepository {
 		connectionPool.releaseConnection(conn);
 		
 		return DOMParser.doc2String(updatedReviewValid);
+	}
+	
+	public List<Node> findReviewsOfPublicationAsDomNodes(String publicationTitle, int publicationVersion) throws XMLDBException {
+		XMLConnectionProperties conn = connectionPool.getConnection();
+		Collection col = basicOperations.getOrCreateCollection(publicationReviewsCollection, 0, conn);
+		
+		String xQuery = String.format(
+				"declare namespace rvw = \"http://ftn.uns.ac.rs/review\";\n"
+				+ "collection(\"%s\")//rvw:review[rvw:metadata/rvw:publicationTitle = \"%s\""
+				+ " and rvw:metadata/rvw:publicationVersion = %d]",
+				publicationReviewsCollection, publicationTitle, publicationVersion);
+		
+		XPathQueryService xPathService = (XPathQueryService) col.getService("XPathQueryService", "1.0");
+		xPathService.setProperty("indent", "yes");
+		ResourceSet result = xPathService.query(xQuery);
+		
+		ResourceIterator rit = result.getIterator();
+		XMLResource reviewXmlResource = null;
+		List<Node> reviews = new ArrayList<Node>();
+		
+		while (rit.hasMoreResources()) {
+			try {
+				reviewXmlResource = (XMLResource) rit.nextResource();
+				reviews.add(reviewXmlResource.getContentAsDOM());
+			} finally {
+				try {
+					((EXistResource) reviewXmlResource).freeResources();
+				} catch (XMLDBException xmldbe) {
+					xmldbe.printStackTrace();
+				}
+			}
+		}
+		
+		return reviews;
 	}
     
     /*

@@ -12,10 +12,12 @@ public class SearchPublicationsDTO {
     private String authorAffiliation;
     private String keyword;
     private ArrayList<String> authors;
+    private ArrayList<String> authorsAffiliations;
     private ArrayList<String> keywords;
 
     public SearchPublicationsDTO() {
         authors = new ArrayList<>();
+        authorsAffiliations = new ArrayList<>();
         keywords = new ArrayList<>();
     }
 
@@ -92,6 +94,14 @@ public class SearchPublicationsDTO {
 
     public void setAuthors(ArrayList<String> authors) {
         this.authors = authors;
+    }
+
+    public ArrayList<String> getAuthorsAffiliations() {
+        return authorsAffiliations;
+    }
+
+    public void setAuthorsAffiliations(ArrayList<String> authorsAffiliations) {
+        this.authorsAffiliations = authorsAffiliations;
     }
 
     public ArrayList<String> getKeywords() {

@@ -16,9 +16,9 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xmldb.api.base.Resource;
 import org.xmldb.api.base.*;
-import org.xmldb.api.modules.XMLResource;
 import org.xmldb.api.modules.XPathQueryService;
 import xml.web.services.team2.sciXiv.dto.SciPubDTO;
+import xml.web.services.team2.sciXiv.dto.SearchPublicationsDTO;
 import xml.web.services.team2.sciXiv.exception.DocumentLoadingFailedException;
 import xml.web.services.team2.sciXiv.exception.DocumentStoringFailedException;
 import xml.web.services.team2.sciXiv.model.TUser;
@@ -129,7 +129,6 @@ public class ScientificPublicationRepository {
 		RDFConnectionProperties connRDF = rdfConnectionPool.getConnection();
 		Collection col = basicOperations.getOrCreateCollection(collectionName, 0, connXML);
 		ArrayList<SciPubDTO> sciPubs = new ArrayList<>();
-		String xPathQuery;
 
 		String[] docCollections = col.listChildCollections();
 		for (String docCollection : docCollections) {
@@ -216,7 +215,7 @@ public class ScientificPublicationRepository {
 		String resourceName;
 
 		if (!title.equalsIgnoreCase("")) {
-			resourceName = "<http://ftn.uns.ac.rs/scientificPublication/" + title.replace(" ", "-") + ">";
+			resourceName = "<http://ftn.uns.ac.rs/scientificPublication/" + title.replace(" ", "") + ">";
 			String sparqlQuery = SparqlUtil.selectData(connRDF.getDataEndpoint() + SPARQL_NAMED_GRAPH_URI, resourceName
 					+ " <http://schema.org/author> ?author .\n" + "\t?author <http://schema.org/name> ?name .\n");
 			ResultSet tempResults = executeSparqlQuery(connRDF, sparqlQuery);
@@ -263,5 +262,53 @@ public class ScientificPublicationRepository {
 		processor.execute();
 
 		rdfConnectionPool.releaseConnection(conn);
+	}
+
+	public SearchPublicationsDTO getPublicationsMetadata(String title) {
+		RDFConnectionProperties conn = rdfConnectionPool.getConnection();
+		String resourceName = "<http://ftn.uns.ac.rs/scientificPublication/" + title + ">";
+		String sparqlQuery = SparqlUtil.selectData(conn.getDataEndpoint() + SPARQL_NAMED_GRAPH_URI,
+				resourceName + "?pred ?obj .");
+		ResultSet results = executeSparqlQuery(conn, sparqlQuery);
+		SearchPublicationsDTO metadata = new SearchPublicationsDTO();
+		QuerySolution querySolution;
+
+		while (results.hasNext()) {
+			querySolution = results.next();
+			extractMetadata(querySolution, metadata, conn);
+		}
+
+		rdfConnectionPool.releaseConnection(conn);
+
+		return metadata;
+	}
+
+	private void extractMetadata(QuerySolution querySolution, SearchPublicationsDTO metadata, RDFConnectionProperties conn) {
+		String obj = querySolution.get("obj").toString();
+		String pred = querySolution.get("pred").toString();
+		String query;
+		ResultSet tempResults;
+		if (pred.contains("author")) {
+			query = SparqlUtil.selectData(conn.getDataEndpoint() + SPARQL_NAMED_GRAPH_URI, obj +
+					" <http://schema.org/name> ?name .\n");
+			tempResults = executeSparqlQuery(conn, query);
+			querySolution = tempResults.next();
+			metadata.getAuthors().add(querySolution.get("name").toString());
+		}
+		else if (pred.contains("keywords")) {
+			metadata.getKeywords().add(obj);
+		}
+		else if (pred.contains("dateCreated")) {
+			metadata.setDateReceived(obj);
+		}
+		else if (pred.contains("dateModified")) {
+			metadata.setDateRevised(obj);
+		}
+		else if (pred.contains("datePublished")) {
+			metadata.setDateAccepted(obj);
+		}
+		else if (pred.contains("headline")) {
+			metadata.setTitle(obj);
+		}
 	}
 }

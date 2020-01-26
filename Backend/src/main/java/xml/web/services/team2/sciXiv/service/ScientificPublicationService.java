@@ -18,6 +18,8 @@ import xml.web.services.team2.sciXiv.repository.UserRepository;
 import xml.web.services.team2.sciXiv.utils.dom.DOMParser;
 import xml.web.services.team2.sciXiv.utils.xslt.DOMToXMLTransformer;
 import xml.web.services.team2.sciXiv.utils.xslt.MetadataExtractor;
+import xml.web.services.team2.sciXiv.utils.xslt.XSLFOTransformer;
+import xml.web.services.team2.sciXiv.utils.xslt.XSLTranspiler;
 
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
@@ -32,6 +34,8 @@ import java.util.Date;
 public class ScientificPublicationService {
 
     private static String schemaPath = "src/main/resources/static/xmlSchemas/scientificPublication.xsd";
+
+    private static String xslPath = "src/main/resources/static/xsl/scientificPublicationToHTML.xsl";
 
     @Autowired
     ScientificPublicationRepository scientificPublicationRepository;
@@ -48,15 +52,21 @@ public class ScientificPublicationService {
     @Autowired
     DOMToXMLTransformer transformer;
 
+    @Autowired
+    XSLFOTransformer xslTransformer;
+
+    @Autowired
+    XSLTranspiler xslTranspiler;
+
     public String findByNameAndVersion(String name, int version) throws XMLDBException, DocumentLoadingFailedException {
-        return scientificPublicationRepository.findByNameAndVersion(name.replace(' ', '-'), version);
+        return scientificPublicationRepository.findByNameAndVersion(name.replace(" ", ""), version);
     }
 
     public String save(String sciPub) throws ParserConfigurationException, DocumentParsingFailedException, SAXException, IOException, DocumentStoringFailedException, TransformerException, UserSavingFailedException, UserRetrievingFailedException {
         Document document = domParser.buildAndValidateDocument(sciPub, schemaPath);
         NodeList nodeList = document.getElementsByTagName("sp:title");
         String title = nodeList.item(0).getTextContent();
-        title = title.replace(' ', '-');
+        title = title.replace(" ", "");
         String name = title + "-v1";
 
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
@@ -97,7 +107,7 @@ public class ScientificPublicationService {
         Document document = domParser.buildAndValidateDocument(sciPub, schemaPath);
         NodeList nodeList = document.getElementsByTagName("sp:title");
         String title = nodeList.item(0).getTextContent();
-        title = title.replace(' ', '-');
+        title = title.replace(" ", "");
         int lastVersion = scientificPublicationRepository.getLastVersionNumber(title);
         lastVersion++;
         String name = title + "-v" + lastVersion;
@@ -129,7 +139,7 @@ public class ScientificPublicationService {
     }
 
     public String withdraw(String title) throws XMLDBException, DocumentLoadingFailedException, DocumentStoringFailedException {
-        scientificPublicationRepository.withdraw(title.replace(' ', '-'));
+        scientificPublicationRepository.withdraw(title.replace(" ", ""));
         return "Publication successfully withdrawn";
     }
 
@@ -163,6 +173,17 @@ public class ScientificPublicationService {
 
     public ArrayList<SciPubDTO> getReferences(String title) {
         return scientificPublicationRepository.getReferences(title);
+    }
+
+    public String getScientificPublicationAsXHTML(String title) throws XMLDBException, DocumentLoadingFailedException, TransformerException {
+        int lastVersion = scientificPublicationRepository.getLastVersionNumber(title.replace(" ", ""));
+        String xmlDocument = scientificPublicationRepository.findByNameAndVersion(title, lastVersion);
+
+        return xslTranspiler.generateHTML(xmlDocument, xslPath);
+    }
+
+    public SearchPublicationsDTO getPublicationsMetadata(String title) {
+        return scientificPublicationRepository.getPublicationsMetadata(title.replace(" ", ""));
     }
 
     private String makeSparqlQuery(String query, SearchPublicationsDTO parameters) {

@@ -2,6 +2,7 @@ package xml.web.services.team2.sciXiv.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import xml.web.services.team2.sciXiv.dto.SciPubDTO;
@@ -19,7 +20,7 @@ public class ScientificPublicationController {
     @Autowired
     private ScientificPublicationService scientificPublicationService;
 
-    @GetMapping
+    @GetMapping(produces = MediaType.APPLICATION_XML_VALUE)
     public ResponseEntity<Object> findByNameAndVersion(@RequestParam String name, @RequestParam int version) {
         try {
             return new ResponseEntity<>(scientificPublicationService.findByNameAndVersion(name, version), HttpStatus.OK);
@@ -30,7 +31,23 @@ public class ScientificPublicationController {
         }
     }
 
-    @PostMapping
+    @GetMapping(value = "xhtml", produces = MediaType.TEXT_HTML_VALUE)
+    public ResponseEntity<Object> getScientificPublicationAsXHTML(@RequestParam String title) {
+        try {
+            return new ResponseEntity<>(scientificPublicationService.getScientificPublicationAsXHTML(title), HttpStatus.OK);
+        } catch (DocumentLoadingFailedException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+        } catch (Exception e) {
+            return new ResponseEntity<>("An error occurred while retrieving document", HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @GetMapping(value = "metadata")
+    public ResponseEntity<Object> getPublicationsMetadata(@RequestParam String title) {
+        return new ResponseEntity<>(scientificPublicationService.getPublicationsMetadata(title), HttpStatus.OK);
+    }
+
+    @PostMapping(consumes = MediaType.APPLICATION_XML_VALUE, produces = MediaType.APPLICATION_XML_VALUE)
     public ResponseEntity<Object> addScientificPublication(@RequestBody String sciPub) {
         try {
             return new ResponseEntity<>(scientificPublicationService.save(sciPub), HttpStatus.CREATED);
@@ -41,7 +58,7 @@ public class ScientificPublicationController {
         }
     }
 
-    @PutMapping(value = "revise")
+    @PutMapping(value = "revise", consumes = MediaType.APPLICATION_XML_VALUE, produces = MediaType.APPLICATION_XML_VALUE)
     public ResponseEntity<Object> reviseScientificPublication(@RequestBody String sciPub) {
         try {
             return new ResponseEntity<>(scientificPublicationService.revise(sciPub), HttpStatus.OK);

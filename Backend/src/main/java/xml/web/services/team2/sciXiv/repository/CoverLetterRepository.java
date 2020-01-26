@@ -55,6 +55,8 @@ public class CoverLetterRepository {
 	@Autowired
 	DOMToXMLTransformer transformer;
 
+	// findByTitleAndVersion
+
 	public String findById(String id) throws DocumentLoadingFailedException, XMLDBException, IOException {
 		String coverLetterStr = null;
 		String xPath = "//coverLetter[@id=\"" + id + "\"]";
@@ -106,6 +108,9 @@ public class CoverLetterRepository {
 		String lUUID = String.format("%d", new BigInteger(UUID.randomUUID().toString().replace("-", ""), 16));
 		String id = "cl" + lUUID;
 		document.getElementsByTagName("coverLetter").item(0).getAttributes().getNamedItem("id").setTextContent(id);
+
+		// izvucem title rada, pozovem metodu getLastVersionNumber(prosljedis ime rada
+		// tj pubTitle)
 
 		String saveCoverLetter = DOMParser.doc2String(document);
 

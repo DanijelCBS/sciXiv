@@ -2,7 +2,7 @@
 <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
     xmlns:sp="http://ftn.uns.ac.rs/scientificPublication"
     version="2.0">
-    <xsl:import href="./templates.xsl"/>
+    <xsl:import href="templates.xsl"/>
     
     <xsl:template match="/">
         <html>

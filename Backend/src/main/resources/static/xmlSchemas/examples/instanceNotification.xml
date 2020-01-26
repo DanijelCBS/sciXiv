@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<notification xmlns="http://ftn.uns.ac.rs/notification"
+ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+ xsi:schemaLocation="http://ftn.uns.ac.rs/notification file:/C:/Users/Nikola%20Zubic/Desktop/XMLWEB/sciXiv/Backend/src/main/resources/static/xmlSchemas/notification.xsd" date="2006-05-04">
+    <sender>
+        <name>Gvido od Areca</name>
+        <role>author</role>
+        <email>nestosedesilo@gmail.com</email>
+    </sender>
+    <reciever>
+        <name>Semso od Areca</name>
+        <role>author</role>
+        <email>nestosezbiva@gmail.com</email>
+    </reciever>
+    <publicationName>publicationName0</publicationName>
+    <notificationType>publication submitted</notificationType>
+    <content>Nam id pretium tortor, vel condimentum urna. Maecenas vestibulum vehicula tincidunt. Vestibulum rutrum dui condimentum nisl elementum, ac semper magna aliquam. Proin sed porttitor turpis, at fringilla eros. Nam sagittis leo et pharetra pretium. In hac habitasse platea dictumst. In consectetur maximus lorem, eu ullamcorper felis hendrerit iaculis. 
+    </content>
+</notification>

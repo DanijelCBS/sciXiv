@@ -1,5 +1,7 @@
 package xml.web.services.team2.sciXiv.dto;
 
+import java.util.ArrayList;
+
 public class SearchPublicationsDTO {
 
     private String title;
@@ -9,8 +11,12 @@ public class SearchPublicationsDTO {
     private String authorName;
     private String authorAffiliation;
     private String keyword;
+    private ArrayList<String> authors;
+    private ArrayList<String> keywords;
 
     public SearchPublicationsDTO() {
+        authors = new ArrayList<>();
+        keywords = new ArrayList<>();
     }
 
     public SearchPublicationsDTO(String title, String dateReceived, String dateRevised,
@@ -78,5 +84,21 @@ public class SearchPublicationsDTO {
 
     public void setKeyword(String keyword) {
         this.keyword = keyword;
+    }
+
+    public ArrayList<String> getAuthors() {
+        return authors;
+    }
+
+    public void setAuthors(ArrayList<String> authors) {
+        this.authors = authors;
+    }
+
+    public ArrayList<String> getKeywords() {
+        return keywords;
+    }
+
+    public void setKeywords(ArrayList<String> keywords) {
+        this.keywords = keywords;
     }
 }

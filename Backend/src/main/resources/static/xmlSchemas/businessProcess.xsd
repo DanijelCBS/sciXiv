@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified"
+    targetNamespace="http://ftn.uns.ac.rs/businessProcess"
+    xmlns:bp="http://ftn.uns.ac.rs/businessProcess">
+    <xs:element name="businessProcess">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="scientificPublicationTitle" type="xs:string"/>
+                <xs:element name="version" type="xs:positiveInteger"/>
+                <xs:element name="processState" type="bp:TProcessStateEnum"/>
+                <xs:element name="reviewerAssignments">
+                    <xs:complexType>
+                        <xs:sequence>
+                            <xs:element maxOccurs="unbounded" minOccurs="0"
+                                name="reviewerAssignment" type="bp:TReviewerAssignment"/>
+                        </xs:sequence>
+                    </xs:complexType>
+                </xs:element>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+    <xs:simpleType name="TProcessStateEnum">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="published"/>
+            <xs:enumeration value="rejected"/>
+            <xs:enumeration value="withdrawn"/>
+            <xs:enumeration value="on_review"/>
+            <xs:enumeration value="on_revision"/>
+            <xs:enumeration value="submitted"/>
+            <xs:enumeration value="revised"/>
+        </xs:restriction>
+    </xs:simpleType>
+    <xs:simpleType name="TReviewStatus">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="accepted"/>
+            <xs:enumeration value="rejected"/>
+            <xs:enumeration value="submitted"/>
+            <xs:enumeration value="assigned"/>
+        </xs:restriction>
+    </xs:simpleType>
+    <xs:complexType name="TReviewerAssignment">
+        <xs:sequence>
+            <xs:element name="reviewerEmail" type="xs:string"/>
+            <xs:element name="status" type="bp:TReviewStatus"/>
+        </xs:sequence>
+    </xs:complexType>
+</xs:schema>

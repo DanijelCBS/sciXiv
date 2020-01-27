@@ -52,6 +52,8 @@ public class ScientificPublicationService {
 
     private static String xslPath = "src/main/resources/static/xsl/scientificPublicationToHTML.xsl";
 
+    private static String xslFOPath = "src/main/resources/static/xsl/xsl-fo/scientificPublicationToPDF.xsl";
+
     @Autowired
     ScientificPublicationRepository scientificPublicationRepository;
 
@@ -233,6 +235,27 @@ public class ScientificPublicationService {
         query += sciPub + " <http://schema.org/creativeWorkStatus> ?status .\n";
 
         return query;
+    }
+
+    public Resource exportScientificPublicationAsXHTML(String title) throws XMLDBException, DocumentLoadingFailedException, TransformerException, IOException {
+        String sciPubHTML = getScientificPublicationAsXHTML(title);
+
+        Path file = Paths.get(title + ".html");
+        Files.write(file, sciPubHTML.getBytes(StandardCharsets.UTF_8));
+
+        return new UrlResource(file.toUri());
+    }
+
+    public Resource exportScientificPublicationAsPDF(String title) throws Exception {
+        int lastVersion = scientificPublicationRepository.getLastVersionNumber(title.replace(" ", ""));
+        String xmlDocument = scientificPublicationRepository.findByNameAndVersion(title, lastVersion);
+
+        ByteArrayOutputStream outputStream = xslTranspiler.generatePDF(xmlDocument, xslFOPath);
+
+        Path file = Paths.get(title + ".pdf");
+        Files.write(file, outputStream.toByteArray());
+
+        return new UrlResource(file.toUri());
     }
 
     public Resource getPublicationsMetadataAsRDF(String title) throws XMLDBException, DocumentLoadingFailedException, TransformerException, IOException {

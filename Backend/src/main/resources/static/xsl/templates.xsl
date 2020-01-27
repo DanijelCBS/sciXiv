@@ -14,9 +14,23 @@
     </xsl:template>
     
     <xsl:template name="TempChapter">
-        <h2>
-            <xsl:value-of select="./sp:title"/>
-        </h2>
+        <xsl:choose>
+            <xsl:when test="@level=1">
+                <h2>
+                    <xsl:value-of select="./sp:title"/>
+                </h2>
+            </xsl:when>
+            <xsl:when test="@level=2">
+                <h3>
+                    <xsl:value-of select="./sp:title"/>
+                </h3>
+            </xsl:when>
+            <xsl:when test="@level=3">
+                <h4>
+                    <xsl:value-of select="./sp:title"/>
+                </h4>
+            </xsl:when>
+        </xsl:choose>
         <xsl:for-each select="./sp:paragraph">
             <xsl:apply-templates/>
         </xsl:for-each>
@@ -47,7 +61,7 @@
     <xsl:template match="sp:figure">
         <div style="text-align:center"><br/>
             <img>
-                <xsl:attribute name="src"><xsl:value-of select="./sp:image"/></xsl:attribute>
+                <xsl:attribute name="src">data:image/jpeg;base64,<xsl:value-of select="./sp:image"/></xsl:attribute>
                 <xsl:attribute name="width">
                     <xsl:value-of select="./@width"/>
                 </xsl:attribute>
@@ -85,12 +99,11 @@
         <code>
             <xsl:value-of select="."/>
         </code>
-        <span><xsl:value-of select="./sp:description"/></span>
     </xsl:template>
     
     <xsl:template match="sp:table">
         <div style="text-align: center;"><br/>
-            <table border="1" align="center" style="width:30%">
+            <table border="1" style="width:30%; text-align:center; margin: 0 auto;">
                 <xsl:for-each select="./sp:tableRow">
                     <tr>
                         <xsl:for-each select="./sp:tableCell">
@@ -131,12 +144,11 @@
     </xsl:template>
     
     <xsl:template name="TempReference">
-        <xsl:param name="pos"/>
         <div>
             <xsl:attribute name="id">
-                <xsl:value-of select="@sp:id"/>
+                <xsl:value-of select="@refPartId"/>
             </xsl:attribute>
-            <xsl:value-of select="@sp:id"/>. <a>
+            <xsl:value-of select="@refPartId"/>. <a>
                 <xsl:attribute name="href">/<xsl:value-of select="./sp:referenceTitle"/></xsl:attribute>
                 <xsl:for-each select="./sp:referenceAuthors/sp:referenceAuthor">
                     <xsl:value-of select="."/><xsl:if test="not(position()=last())">, </xsl:if>

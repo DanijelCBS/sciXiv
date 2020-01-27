@@ -47,6 +47,32 @@ public class ScientificPublicationController {
         }
     }
 
+    @GetMapping(value = "export/xhtml")
+    public ResponseEntity<Object> exportScientificPublicationAsXHTML(@RequestParam String title) {
+        try {
+            Resource resource = scientificPublicationService.exportScientificPublicationAsXHTML(title);
+            return ResponseEntity.ok()
+                    .contentType(MediaType.APPLICATION_OCTET_STREAM)
+                    .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + resource.getFilename() + "\"")
+                    .body(resource);
+        } catch (Exception e) {
+            return new ResponseEntity<>("An error occurred while exporting publication as HTML", HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @GetMapping(value = "export/pdf")
+    public ResponseEntity<Object> exportScientificPublicationAsPDF(@RequestParam String title) {
+        try {
+            Resource resource = scientificPublicationService.exportScientificPublicationAsPDF(title);
+            return ResponseEntity.ok()
+                    .contentType(MediaType.APPLICATION_OCTET_STREAM)
+                    .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + resource.getFilename() + "\"")
+                    .body(resource);
+        } catch (Exception e) {
+            return new ResponseEntity<>("An error occurred while exporting publication as PDF", HttpStatus.BAD_REQUEST);
+        }
+    }
+
     @GetMapping(value = "metadata")
     public ResponseEntity<Object> getPublicationsMetadata(@RequestParam String title) {
         return new ResponseEntity<>(scientificPublicationService.getPublicationsMetadata(title), HttpStatus.OK);

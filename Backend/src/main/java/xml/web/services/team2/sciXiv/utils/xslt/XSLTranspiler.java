@@ -26,6 +26,7 @@ import org.xml.sax.SAXException;
 import org.apache.fop.apps.MimeConstants;
 
 import net.sf.saxon.TransformerFactoryImpl;
+import xml.web.services.team2.sciXiv.repository.CoverLetterRepository;
 import xml.web.services.team2.sciXiv.repository.NotificationRepository;
 import xml.web.services.team2.sciXiv.utils.dom.DOMParser;
 
@@ -99,5 +100,50 @@ public class XSLTranspiler {
 				+ "    </content>\r\n" + "</notification>\r\n" + "";
 		String notificationHTML = generateHTML(notificationStr, NotificationRepository.notificationXSLPath);
 		// System.out.println(notificationHTML);
+	}
+
+	@PostConstruct
+	public void testXSLTranspiler2() throws TransformerException {
+		String notificationStr = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n"
+				+ "<coverLetter xmlns=\"http://ftn.uns.ac.rs/coverLetter\"\r\n"
+				+ "    xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"\r\n"
+				+ "    xsi:schemaLocation=\"http://ftn.uns.ac.rs/coverLetter file:/C:/Users/Nikola%20Zubic/Desktop/XMLWEB/sciXiv/Backend/src/main/resources/static/xmlSchemas/coverLetter.xsd\" submissionDate=\"2006-05-04\" id=\"id1\">\r\n"
+				+ "    <publicationTitle>publicationTitle0</publicationTitle>\r\n" + "    <version>50</version>\r\n"
+				+ "    <author>\r\n" + "        <name>Ian Goodfellow</name>\r\n"
+				+ "        <educationTitle>phD</educationTitle>\r\n" + "        <affiliation>Apple</affiliation>\r\n"
+				+ "        <city>Los Angeles</city>\r\n" + "        <state>California, USA</state>\r\n"
+				+ "        <phoneNumber>12948824895325779</phoneNumber>\r\n"
+				+ "        <email>iangoodfellow@apple.com</email>\r\n"
+				+ "        <signature>ZGVmYXVsdA==</signature>\r\n" + "    </author>\r\n" + "    <targetPublisher>\r\n"
+				+ "        <editor>Machine Learning</editor>\r\n" + "        <journal>Apple AI journal</journal>\r\n"
+				+ "    </targetPublisher>\r\n" + "    <content>\r\n" + "        <paragraph>\r\n"
+				+ "            <boldText>Ovo je boldovan tekst.</boldText>\r\n"
+				+ "            <emphasizedText>Ovo je emphasized tekst.</emphasizedText>\r\n"
+				+ "            <quote>\r\n" + "                <source>Nikola Zubic</source>\r\n"
+				+ "                <quoteContent>Stize AI, ne plasite se braco, sve cemo mi to kroz mreze da propustimo. Neka bude feed-forward propagacija neprestana, nek se ori aktivacija za aktivacijom.</quoteContent>\r\n"
+				+ "            </quote>\r\n" + "            <list ordered=\"true\">\r\n"
+				+ "                <listItem>Jabuka</listItem>\r\n" + "                <listItem>Kruska</listItem>\r\n"
+				+ "            </list>\r\n" + "            <boldText>Boldovani tekst..</boldText>\r\n"
+				+ "            <emphasizedText>Emphasized tekst...</emphasizedText>\r\n" + "            <quote>\r\n"
+				+ "                <source>Izvor</source>\r\n"
+				+ "                <quoteContent>Evo citira se nesto iz izvora</quoteContent>\r\n"
+				+ "            </quote>\r\n" + "            <list ordered=\"false\">\r\n"
+				+ "                <listItem>Nije ordered</listItem>\r\n"
+				+ "                <listItem>Sta da se radi</listItem>\r\n" + "            </list>\r\n"
+				+ "        </paragraph>\r\n" + "        <paragraph>\r\n" + "        <boldText>boldText2</boldText>\r\n"
+				+ "        <emphasizedText>emphasizedText2</emphasizedText>\r\n" + "        <quote>\r\n"
+				+ "            <source>source2</source>\r\n"
+				+ "            <quoteContent>quoteContent2</quoteContent>\r\n" + "            </quote>\r\n"
+				+ "            <list ordered=\"true\">\r\n" + "                <listItem>Ordered je</listItem>\r\n"
+				+ "                <listItem>Svi srecni</listItem>\r\n" + "            </list>\r\n"
+				+ "            <boldText>boldText3</boldText>\r\n"
+				+ "            <emphasizedText>emphasizedText3</emphasizedText>\r\n" + "            <quote>\r\n"
+				+ "                <source>source3</source>\r\n"
+				+ "                <quoteContent>quoteContent3</quoteContent>\r\n" + "            </quote>-->\r\n"
+				+ "            <list ordered=\"false\">\r\n" + "                <listItem>listItem6</listItem>\r\n"
+				+ "                <listItem>listItem7</listItem>\r\n" + "            </list>\r\n"
+				+ "        </paragraph>\r\n" + "    </content>\r\n" + "</coverLetter>";
+		String notificationHTML = generateHTML(notificationStr, CoverLetterRepository.coverLetterXSLPath);
+		System.out.println(notificationHTML);
 	}
 }

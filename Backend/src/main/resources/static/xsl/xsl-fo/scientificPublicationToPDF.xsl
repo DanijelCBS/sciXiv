@@ -23,14 +23,14 @@
             </fo:layout-master-set>
             
             <fo:page-sequence master-reference="sciPubPage">
-                <fo:flow flow-name="xsl-region-body" font-size="12px" font-family="Baskerville" text-align="justify">
+                <fo:flow flow-name="xsl-region-body" font-size="12px" font-family="Times" text-align="justify">
                     
                     <fo:block text-align="center" font-size="22px" space-after="16px">
                         <xsl:value-of select="sp:scientificPublication/sp:metadata/sp:title"/>
                     </fo:block>
                     
                     <fo:block space-after="18px">
-                        <fo:table width="100%">
+                        <fo:table width="100%" table-layout="fixed" inline-progression-dimension="100%">
                             <fo:table-body>
                                 <fo:table-row>
                                     <xsl:for-each select="sp:scientificPublication/sp:metadata/sp:authors/sp:author">

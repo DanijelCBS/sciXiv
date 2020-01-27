@@ -103,9 +103,9 @@
     
     <xsl:template match="sp:table">
         <div style="text-align: center;"><br/>
-            <table border="1" style="width:30%">
+            <table border="1" style="width:30%; text-align:center; margin: 0 auto;">
                 <xsl:for-each select="./sp:tableRow">
-                    <tr align="center">
+                    <tr>
                         <xsl:for-each select="./sp:tableCell">
                             <td>
                                 <xsl:apply-templates></xsl:apply-templates>

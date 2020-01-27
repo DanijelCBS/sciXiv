@@ -1,6 +1,8 @@
 package xml.web.services.team2.sciXiv.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.Resource;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -45,6 +47,32 @@ public class ScientificPublicationController {
     @GetMapping(value = "metadata")
     public ResponseEntity<Object> getPublicationsMetadata(@RequestParam String title) {
         return new ResponseEntity<>(scientificPublicationService.getPublicationsMetadata(title), HttpStatus.OK);
+    }
+
+    @GetMapping(value = "export/xhtml")
+    public ResponseEntity<Object> exportScientificPublicationAsXHTML(@RequestParam String title) {
+        try {
+            Resource resource = scientificPublicationService.exportScientificPublicationAsXHTML(title);
+            return ResponseEntity.ok()
+                    .contentType(MediaType.APPLICATION_OCTET_STREAM)
+                    .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + resource.getFilename() + "\"")
+                    .body(resource);
+        } catch (Exception e) {
+            return new ResponseEntity<>("An error occurred while exporting publication as HTML", HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @GetMapping(value = "export/pdf")
+    public ResponseEntity<Object> exportScientificPublicationAsPDF(@RequestParam String title) {
+        try {
+            Resource resource = scientificPublicationService.exportScientificPublicationAsPDF(title);
+            return ResponseEntity.ok()
+                    .contentType(MediaType.APPLICATION_OCTET_STREAM)
+                    .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + resource.getFilename() + "\"")
+                    .body(resource);
+        } catch (Exception e) {
+            return new ResponseEntity<>("An error occurred while exporting publication as PDF", HttpStatus.BAD_REQUEST);
+        }
     }
 
     @PostMapping(consumes = MediaType.APPLICATION_XML_VALUE, produces = MediaType.APPLICATION_XML_VALUE)

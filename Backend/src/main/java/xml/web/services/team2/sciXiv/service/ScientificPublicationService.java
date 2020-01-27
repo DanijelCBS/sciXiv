@@ -1,6 +1,8 @@
 package xml.web.services.team2.sciXiv.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.UrlResource;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
@@ -26,6 +28,10 @@ import javax.xml.transform.TransformerException;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -36,6 +42,8 @@ public class ScientificPublicationService {
     private static String schemaPath = "src/main/resources/static/xmlSchemas/scientificPublication.xsd";
 
     private static String xslPath = "src/main/resources/static/xsl/scientificPublicationToHTML.xsl";
+
+    private static String xslFOPath = "src/main/resources/static/xsl/xsl-fo/scientificPublicationToPDF.xsl";
 
     @Autowired
     ScientificPublicationRepository scientificPublicationRepository;
@@ -218,5 +226,26 @@ public class ScientificPublicationService {
         query += sciPub + " <http://schema.org/creativeWorkStatus> ?status .\n";
 
         return query;
+    }
+
+    public Resource exportScientificPublicationAsXHTML(String title) throws XMLDBException, DocumentLoadingFailedException, TransformerException, IOException {
+        String sciPubHTML = getScientificPublicationAsXHTML(title);
+
+        Path file = Paths.get(title + ".html");
+        Files.write(file, sciPubHTML.getBytes(StandardCharsets.UTF_8));
+
+        return new UrlResource(file.toUri());
+    }
+
+    public Resource exportScientificPublicationAsPDF(String title) throws Exception {
+        int lastVersion = scientificPublicationRepository.getLastVersionNumber(title.replace(" ", ""));
+        String xmlDocument = scientificPublicationRepository.findByNameAndVersion(title, lastVersion);
+
+        ByteArrayOutputStream outputStream = xslTranspiler.generatePDF(xmlDocument, xslFOPath);
+
+        Path file = Paths.get(title + ".pdf");
+        Files.write(file, outputStream.toByteArray());
+
+        return new UrlResource(file.toUri());
     }
 }

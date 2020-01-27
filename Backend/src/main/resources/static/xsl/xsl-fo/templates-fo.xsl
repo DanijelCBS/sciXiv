@@ -41,22 +41,12 @@
         </fo:block>
     </xsl:template>
     
-    <xsl:template match="sp:paragraph/text()">
-        <fo:inline>
-            <xsl:copy-of select="." />
-        </fo:inline>
-    </xsl:template>
-    
     <xsl:template match="sp:emphasizedText">
-        <fo:inline font-style="italic">
-            <xsl:copy-of select="." />
-        </fo:inline>
+        <fo:inline font-style="italic"><xsl:apply-templates/></fo:inline>
     </xsl:template>
     
     <xsl:template match="sp:boldText">
-        <fo:inline font-weight="bold">
-            <xsl:copy-of select="." />
-        </fo:inline>
+        <fo:inline font-weight="bold"><xsl:apply-templates/></fo:inline>
     </xsl:template>
     
     <xsl:template match="sp:quote">
@@ -66,7 +56,7 @@
     </xsl:template>
     
     <xsl:template match="sp:figure">
-        <fo:block text-align="center">
+        <fo:block text-align="center" space-after="10px">
             <fo:block><fo:external-graphic>
                 <xsl:attribute name="src">data:image/jpeg;base64,<xsl:value-of select="./sp:image"/></xsl:attribute>
                 <xsl:attribute name="content-width">
@@ -125,7 +115,7 @@
     
     <xsl:template match="sp:table">
         <fo:block margin="10px" text-align="center">
-            <fo:table break-before="page">
+            <fo:table break-before="page" table-layout="fixed" inline-progression-dimension="100%">
                 <fo:table-body>
                     <xsl:for-each select="./sp:tableRow">
                         <fo:table-row>

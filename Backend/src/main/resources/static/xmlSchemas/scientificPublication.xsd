@@ -111,10 +111,10 @@
                                 type="sp:TChapterParagraph"/>
                         </xs:sequence>
                         <xs:attribute ref="sp:id"/>
-                        <xs:attribute name="level">
+                        <xs:attribute name="level" default="1">
                             <xs:simpleType>
                                 <xs:restriction base="xs:positiveInteger">
-                                    <xs:maxInclusive value="5"/>
+                                    <xs:maxInclusive value="3"/>
                                 </xs:restriction>
                             </xs:simpleType>
                         </xs:attribute>
@@ -140,6 +140,7 @@
                                             type="xs:string"/>
                                     </xs:sequence>
                                     <xs:attribute ref="sp:id"/>
+                                    <xs:attribute name="refPartId" type="xs:positiveInteger"/>
                                     <xs:anyAttribute namespace="##local" processContents="skip"/>
                                 </xs:complexType>
                             </xs:element>
@@ -177,6 +178,8 @@
                                 <xs:element name="image" type="xs:base64Binary"/>
                             </xs:sequence>
                             <xs:attribute ref="sp:id"/>
+                            <xs:attribute name="width" type="xs:positiveInteger"/>
+                            <xs:attribute name="height" type="xs:positiveInteger"/>
                         </xs:complexType>
                     </xs:element>
                     <xs:element name="list" maxOccurs="1" minOccurs="1">
@@ -255,6 +258,7 @@
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
+            <xs:element name="anyExpression" type="xs:string"/>
         </xs:choice>
     </xs:complexType>
     <xs:complexType name="TDate">

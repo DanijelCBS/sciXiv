@@ -13,7 +13,7 @@ public class RDFConnectionPropertiesFactory implements FactoryBean<RDFConnection
 
     private List<RDFConnectionProperties> connectionPool;
     private List<RDFConnectionProperties> usedConnections = new ArrayList<>();
-    private int initialPoolSize = 10;
+    private int initialPoolSize = 20;
 
     public RDFConnectionProperties getConnection() {
         if (connectionPool.isEmpty()) {
@@ -21,12 +21,14 @@ public class RDFConnectionPropertiesFactory implements FactoryBean<RDFConnection
         }
 
         RDFConnectionProperties connection = connectionPool.remove(connectionPool.size() - 1);
+        System.out.println("connection removed - " + connectionPool.size());
         usedConnections.add(connection);
         return connection;
     }
 
     public boolean releaseConnection(RDFConnectionProperties connection) {
         connectionPool.add(connection);
+        System.out.println("connection added - " + connectionPool.size());
         return usedConnections.remove(connection);
     }
 

@@ -15,7 +15,8 @@ public class SparqlUtil {
     private static final String UPDATE_TEMPLATE_NAMED_GRAPH = "INSERT DATA { GRAPH <%1$s> { %2$s } }";
 
     /* Simple SPARQL query on a named graph */
-    private static final String SELECT_NAMED_GRAPH_TEMPLATE = "SELECT * FROM <%1$s> WHERE { %2$s }";
+    private static final String SELECT_NAMED_GRAPH_TEMPLATE_SIMPLE = "SELECT * FROM <%1$s> WHERE { %2$s }";
+    private static final String SELECT_NAMED_GRAPH_TEMPLATE = "SELECT %1$s %2$s (str(%3$s) AS %4$s) FROM <%5$s> WHERE { %6$s }";
 
     /* Plain text RDF serialization format */
     public static final String NTRIPLES = "N-TRIPLES";
@@ -41,6 +42,10 @@ public class SparqlUtil {
     }
 
     public static String selectData(String graphURI, String sparqlCondition) {
-        return String.format(SELECT_NAMED_GRAPH_TEMPLATE, graphURI, sparqlCondition);
+        return String.format(SELECT_NAMED_GRAPH_TEMPLATE_SIMPLE, graphURI, sparqlCondition);
+    }
+
+    public static String selectDataWithAlias(String graphURI, String sparqlCondition, String subject, String predicate, String object, String objectAlias) {
+        return String.format(SELECT_NAMED_GRAPH_TEMPLATE, subject, predicate, object, objectAlias, graphURI, sparqlCondition);
     }
 }

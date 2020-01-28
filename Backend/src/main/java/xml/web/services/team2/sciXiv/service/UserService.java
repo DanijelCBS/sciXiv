@@ -1,5 +1,7 @@
 package xml.web.services.team2.sciXiv.service;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -34,6 +36,10 @@ public class UserService {
 	
 	public TUser findByEmail(String email) throws UserRetrievingFailedException {
 		return this.userRepository.getByEmail(email);
+	}
+	
+	public List<TUser> getPossibleReviewersForPublication(String publicationTitle) throws UserRetrievingFailedException {
+		return this.userRepository.getPossibleReviewersForPublicaton(publicationTitle);
 	}
 	
 	private void validateUserData(TUser user) throws UserRetrievingFailedException {

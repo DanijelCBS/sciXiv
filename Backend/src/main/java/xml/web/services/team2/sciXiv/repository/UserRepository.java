@@ -25,6 +25,8 @@ import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 import java.io.ByteArrayOutputStream;
 import java.io.OutputStream;
+import java.util.ArrayList;
+import java.util.List;
 
 @Repository
 public class UserRepository {
@@ -82,6 +84,7 @@ public class UserRepository {
                 try {
                     res = it.nextResource();
                     user = unmarshal((XMLResource) res);
+                    break;
                 } finally {
                     try {
                         ((EXistResource)res).freeResources();
@@ -100,6 +103,54 @@ public class UserRepository {
         }
 
         return user;
+    }
+    
+    public List<TUser> getPossibleReviewersForPublicaton(String publicationTitle) throws UserRetrievingFailedException {
+    	List<TUser> reviewers = new ArrayList<TUser>();
+    	publicationTitle = publicationTitle.replace(" ", "");
+    	String xQuery = String.format(
+    			"for $user in doc(\"%s\")//user\n" + 
+    			"where $user/role = \"reviewer\"\n" + 
+    			"and not (\"%s\" = $user/ownPublications/publicationID)\n" + 
+    			"return $user", 
+    			usersCollection + "/" + usersDocument, publicationTitle);
+    	
+    	Collection col;
+        TUser user = null;
+        XMLConnectionProperties conn = null;
+        try {
+            conn = connectionPool.getConnection();
+            col = basicOperations.getOrCreateCollection(usersCollection, 0, conn);
+            XPathQueryService xPathService = (XPathQueryService) col.getService("XPathQueryService", "1.0");
+            xPathService.setProperty("indent", "yes");
+            ResourceSet result = xPathService.query(xQuery);
+            ResourceIterator it = result.getIterator();
+            Resource res = null;
+
+            while(it.hasMoreResources()) {
+                try {
+                    res = it.nextResource();
+                    user = unmarshal((XMLResource) res);
+                    reviewers.add(user);
+                } finally {
+                    try {
+                        ((EXistResource)res).freeResources();
+                    } catch (XMLDBException xe) {
+                        xe.printStackTrace();
+                    }
+                }
+            }
+        }
+        catch (Exception e) {
+        	e.printStackTrace();
+            throw new UserRetrievingFailedException("Failed to get user from database");
+        }
+        finally {
+            connectionPool.releaseConnection(conn);
+        }
+    	
+    	
+    	return reviewers;
     }
     
     @PostConstruct

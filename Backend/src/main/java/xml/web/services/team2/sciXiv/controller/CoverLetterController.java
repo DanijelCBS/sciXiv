@@ -35,6 +35,14 @@ public class CoverLetterController {
 
 	XMLConnectionProperties conn;
 
+	@GetMapping(value = "/{title}/version/{version}", produces = MediaType.APPLICATION_XML_VALUE)
+	public ResponseEntity<String> getCoverLetterById(@PathVariable("title") String title,
+			@PathVariable("version") String version)
+			throws DocumentLoadingFailedException, XMLDBException, IOException {
+		String coverLetter = coverLetterService.findByTitleAndVersion(title, version);
+		return new ResponseEntity<>(coverLetter, HttpStatus.OK);
+	}
+
 	@GetMapping(value = "/{id}", produces = MediaType.APPLICATION_XML_VALUE)
 	public ResponseEntity<String> getCoverLetterById(@PathVariable("id") String id)
 			throws DocumentLoadingFailedException, XMLDBException, IOException {

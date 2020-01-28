@@ -1,5 +1,6 @@
 package xml.web.services.team2.sciXiv.controller;
 
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 
 import java.io.IOException;
@@ -8,6 +9,7 @@ import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.Resource;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -36,7 +38,7 @@ public class CoverLetterController {
 	XMLConnectionProperties conn;
 
 	@GetMapping(value = "/{title}/version/{version}", produces = MediaType.APPLICATION_XML_VALUE)
-	public ResponseEntity<String> getCoverLetterById(@PathVariable("title") String title,
+	public ResponseEntity<String> getCoverLetterByTitleAndVersion(@PathVariable("title") String title,
 			@PathVariable("version") String version)
 			throws DocumentLoadingFailedException, XMLDBException, IOException {
 		String coverLetter = coverLetterService.findByTitleAndVersion(title, version);
@@ -71,5 +73,83 @@ public class CoverLetterController {
 	public ResponseEntity<String> deleteCoverLetter(@PathVariable("id") String id) throws XMLDBException {
 		coverLetterService.delete(id);
 		return new ResponseEntity<>(HttpStatus.ACCEPTED);
+	}
+
+	@GetMapping(value = "xhtml/{id}", produces = MediaType.TEXT_HTML_VALUE)
+	public ResponseEntity<Object> getCoverLetterByIdAndReturnAsXHTML(@PathVariable("id") String id) {
+		try {
+			return new ResponseEntity<>(coverLetterService.getCoverLetterByIdAndReturnAsXHTML(id), HttpStatus.OK);
+		} catch (DocumentLoadingFailedException e) {
+			return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+		} catch (Exception e) {
+			return new ResponseEntity<>("An error occurred while retrieving document", HttpStatus.BAD_REQUEST);
+		}
+	}
+
+	@GetMapping(value = "xhtml/{title}/version/{version}", produces = MediaType.TEXT_HTML_VALUE)
+	public ResponseEntity<Object> getCoverLetterByTitleAndVersionAndReturnAsXHTML(@PathVariable("title") String title,
+			@PathVariable("version") String version) {
+		try {
+			return new ResponseEntity<>(
+					coverLetterService.getCoverLetterByTitleAndVersionAndReturnAsXHTML(title, version), HttpStatus.OK);
+		} catch (DocumentLoadingFailedException e) {
+			return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+		} catch (Exception e) {
+			return new ResponseEntity<>("An error occurred while retrieving document", HttpStatus.BAD_REQUEST);
+		}
+	}
+
+	@GetMapping(value = "export/xhtml/{id}")
+	public ResponseEntity<Object> exportCoverLetterByIdAsXHTML(@PathVariable("id") String id) {
+		try {
+			Resource resource = coverLetterService.exportCoverLetterByIdAsXHTML(id);
+			return ResponseEntity.ok().contentType(MediaType.APPLICATION_OCTET_STREAM)
+					.header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + resource.getFilename() + "\"")
+					.body(resource);
+		} catch (Exception e) {
+			return new ResponseEntity<>("An error occurred while exporting cover letter as HTML",
+					HttpStatus.BAD_REQUEST);
+		}
+	}
+
+	@GetMapping(value = "export/xhtml/{title}/version/{version}")
+	public ResponseEntity<Object> exportCoverLetterByTitleAndVersionAsXHTML(@PathVariable("title") String title,
+			@PathVariable("version") String version) {
+		try {
+			Resource resource = coverLetterService.exportCoverLetterByTitleAndVersionAsXHTML(title, version);
+			return ResponseEntity.ok().contentType(MediaType.APPLICATION_OCTET_STREAM)
+					.header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + resource.getFilename() + "\"")
+					.body(resource);
+		} catch (Exception e) {
+			return new ResponseEntity<>("An error occurred while exporting cover letter as HTML",
+					HttpStatus.BAD_REQUEST);
+		}
+	}
+
+	@GetMapping(value = "export/pdf/{id}")
+	public ResponseEntity<Object> exportCoverLetterByIdAsPDF(@PathVariable("id") String id) {
+		try {
+			Resource resource = coverLetterService.exportCoverLetterByIdAsPDF(id);
+			return ResponseEntity.ok().contentType(MediaType.APPLICATION_OCTET_STREAM)
+					.header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + resource.getFilename() + "\"")
+					.body(resource);
+		} catch (Exception e) {
+			return new ResponseEntity<>("An error occurred while exporting cover letter as PDF",
+					HttpStatus.BAD_REQUEST);
+		}
+	}
+
+	@GetMapping(value = "export/pdf/{title}/version/{version}")
+	public ResponseEntity<Object> exportCoverLetterByTitleAndVersionAsPDF(@PathVariable("title") String title,
+			@PathVariable("version") String version) {
+		try {
+			Resource resource = coverLetterService.exportCoverLetterByTitleAndVersionAsPDF(title, version);
+			return ResponseEntity.ok().contentType(MediaType.APPLICATION_OCTET_STREAM)
+					.header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + resource.getFilename() + "\"")
+					.body(resource);
+		} catch (Exception e) {
+			return new ResponseEntity<>("An error occurred while exporting cover letter as PDF",
+					HttpStatus.BAD_REQUEST);
+		}
 	}
 }

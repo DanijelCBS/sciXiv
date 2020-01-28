@@ -7,6 +7,8 @@ import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.UrlResource;
 import org.springframework.data.rest.webmvc.ResourceNotFoundException;
 import org.springframework.stereotype.Service;
 import org.xml.sax.SAXException;
@@ -22,6 +24,12 @@ import xml.web.services.team2.sciXiv.utils.connection.XMLConnectionProperties;
 import xml.web.services.team2.sciXiv.utils.database.BasicOperations;
 import xml.web.services.team2.sciXiv.utils.dom.DOMParser;
 import xml.web.services.team2.sciXiv.utils.factory.XMLConnectionPropertiesFactory;
+import xml.web.services.team2.sciXiv.utils.xslt.XSLTranspiler;
+
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 @Service
 public class CoverLetterService {
@@ -41,6 +49,9 @@ public class CoverLetterService {
 
 	@Autowired
 	XMLConnectionPropertiesFactory xmlConnectionPool;
+
+	@Autowired
+	XSLTranspiler xslTranspiler;
 
 	public String getScientificPublicationsID(String coverLetterStr) throws ParserConfigurationException, SAXException,
 			IOException, DocumentLoadingFailedException, XMLDBException {
@@ -124,4 +135,72 @@ public class CoverLetterService {
 		coverLetterRepository.delete(id);
 	}
 
+	public String getCoverLetterByIdAndReturnAsXHTML(String id)
+			throws DocumentLoadingFailedException, XMLDBException, IOException, TransformerException {
+		String coverLetter = coverLetterRepository.findById(id);
+
+		if (coverLetter == null) {
+			throw new ResourceNotFoundException("ResourceNotFoundException; Cover letter with [id: " + id + "]");
+		}
+
+		return xslTranspiler.generateHTML(coverLetter, CoverLetterRepository.coverLetterXSLPath);
+	}
+
+	public String getCoverLetterByTitleAndVersionAndReturnAsXHTML(String title, String version)
+			throws DocumentLoadingFailedException, XMLDBException, IOException, TransformerException {
+		String coverLetter = coverLetterRepository.findByTitleAndVersion(title, version);
+
+		if (coverLetter == null) {
+			throw new ResourceNotFoundException(
+					"ResourceNotFoundException; Cover letter with [title: " + title + " and version: " + version + "]");
+		}
+
+		return xslTranspiler.generateHTML(coverLetter, CoverLetterRepository.coverLetterXSLPath);
+	}
+
+	public Resource exportCoverLetterByIdAsXHTML(String id)
+			throws DocumentLoadingFailedException, XMLDBException, IOException, TransformerException {
+		String coverLetterXHTML = getCoverLetterByIdAndReturnAsXHTML(id);
+
+		Path file = Paths.get("coverLetterId" + id + ".html");
+		Files.write(file, coverLetterXHTML.getBytes(StandardCharsets.UTF_8));
+
+		return new UrlResource(file.toUri());
+	}
+
+	public Resource exportCoverLetterByTitleAndVersionAsXHTML(String title, String version)
+			throws DocumentLoadingFailedException, XMLDBException, IOException, TransformerException {
+		String coverLetterXHTML = getCoverLetterByTitleAndVersionAndReturnAsXHTML(title, version);
+
+		Path file = Paths.get("coverLetterForPublication" + title + "AndVersion" + version + ".html");
+		Files.write(file, coverLetterXHTML.getBytes(StandardCharsets.UTF_8));
+
+		return new UrlResource(file.toUri());
+	}
+
+	public Resource exportCoverLetterByIdAsPDF(String id)
+			throws TransformerException, IOException, DocumentLoadingFailedException, XMLDBException {
+		String coverLetterStr = coverLetterRepository.findById(id);
+
+		ByteArrayOutputStream outputStream = xslTranspiler.generatePDF(coverLetterStr,
+				CoverLetterRepository.coverLetterXSLPath, CoverLetterRepository.coverLetterXSLFOPath);
+
+		Path file = Paths.get("coverLetterId" + id + ".pdf");
+		Files.write(file, outputStream.toByteArray());
+
+		return new UrlResource(file.toUri());
+	}
+
+	public Resource exportCoverLetterByTitleAndVersionAsPDF(String title, String version)
+			throws TransformerException, IOException, DocumentLoadingFailedException, XMLDBException {
+		String coverLetterStr = coverLetterRepository.findByTitleAndVersion(title, version);
+
+		ByteArrayOutputStream outputStream = xslTranspiler.generatePDF(coverLetterStr,
+				CoverLetterRepository.coverLetterXSLPath, CoverLetterRepository.coverLetterXSLFOPath);
+
+		Path file = Paths.get("coverLetterForPublication" + title + "AndVersion" + version + ".pdf");
+		Files.write(file, outputStream.toByteArray());
+
+		return new UrlResource(file.toUri());
+	}
 }

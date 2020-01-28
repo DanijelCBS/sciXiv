@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <coverLetter xmlns="http://ftn.uns.ac.rs/coverLetter"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:cl="http://ftn.uns.ac.rs/coverLetter"
     xsi:schemaLocation="http://ftn.uns.ac.rs/coverLetter file:/C:/Users/Nikola%20Zubic/Desktop/XMLWEB/sciXiv/Backend/src/main/resources/static/xmlSchemas/coverLetter.xsd" submissionDate="2006-05-04" id="id1">
-    <publicationTitle>publicationTitle0</publicationTitle>
+    <publicationTitle>Moja publikacija</publicationTitle>
     <version>50</version>
     <author>
         <name>Ian Goodfellow</name>

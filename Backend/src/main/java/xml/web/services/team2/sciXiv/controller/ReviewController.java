@@ -83,7 +83,7 @@ public class ReviewController {
 	public ResponseEntity<String> getPublicationWithReviews(@PathVariable("pubTitle") String publicationTitle,
 			@PathVariable("pubVersion") int publicationVersion) throws XMLDBException, DocumentLoadingFailedException,
 			ParserConfigurationException, SAXException, IOException, TransformerException, DOMException, UserRetrievingFailedException {
-		String xml = this.reviewService.mergePublicationAndReviews(publicationTitle, publicationVersion, false);
+		String xml = this.reviewService.mergePublicationAndReviews(publicationTitle, publicationVersion);
 		return new ResponseEntity<String>(xml, HttpStatus.OK);
 	}
 
@@ -93,6 +93,16 @@ public class ReviewController {
 			throws TransformerException, XMLDBException, DocumentLoadingFailedException, ParserConfigurationException, SAXException, IOException, DOMException, UserRetrievingFailedException {
 		
 		String ret = this.reviewService.mergePublicationAndNonCensoredReviewsToXHTML(publicationTitle,
+				publicationVersion);
+		return new ResponseEntity<Object>(ret, HttpStatus.OK);
+	}
+	
+	@GetMapping(value = "/mergeBlind/{pubTitle}/version/{pubVersion}", produces = MediaType.TEXT_HTML_VALUE)
+	public ResponseEntity<Object> getScientificPublicationWithBlindReviewsAsXHTML(
+			@PathVariable("pubTitle") String publicationTitle, @PathVariable("pubVersion") int publicationVersion)
+			throws TransformerException, XMLDBException, DocumentLoadingFailedException, ParserConfigurationException, SAXException, IOException, DOMException, UserRetrievingFailedException {
+		
+		String ret = this.reviewService.mergePublicationAndBlindReviewsToXHTML(publicationTitle,
 				publicationVersion);
 		return new ResponseEntity<Object>(ret, HttpStatus.OK);
 	}

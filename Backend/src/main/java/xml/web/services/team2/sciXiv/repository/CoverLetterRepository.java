@@ -17,6 +17,7 @@ import org.xmldb.api.base.ResourceIterator;
 import org.xmldb.api.base.ResourceSet;
 import org.xmldb.api.base.XMLDBException;
 import org.xmldb.api.modules.XMLResource;
+import org.xmldb.api.modules.XPathQueryService;
 import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
 
@@ -51,7 +52,7 @@ public class CoverLetterRepository {
 	XMLConnectionPropertiesFactory xmlConnectionPool;
 
 	@Autowired
-    RDFConnectionFactory rdfConnectionPool;
+	RDFConnectionFactory rdfConnectionPool;
 
 	@Autowired
 	BasicOperations basicOperations;
@@ -62,16 +63,20 @@ public class CoverLetterRepository {
 	@Autowired
 	ScientificPublicationRepository scientificPublicationRepository;
 
-	// findByTitleAndVersion
-	public String findByTitleAndVersion(String title, String version)
-			throws DocumentLoadingFailedException, XMLDBException, IOException {
+	public String findByTitleAndVersion(String title, String version) throws XMLDBException {
 		String coverLetterStr = null;
-		String xPath = "//coverLetter[/publicationTitle=\"" + title + "\" and /version=" + version + "]";
+		XMLConnectionProperties conn = xmlConnectionPool.getConnection();
+		Collection col = basicOperations.getOrCreateCollection(collectionName, 0, conn);
 
-		// ResourceSet is a container for a set of resources. Generally a ResourceSet is
-		// obtained as the result of a query.
-		ResourceSet resourceSet = DBExtractor.executeXPathQuery(collectionName, xPath,
-				DBExtractor.getTARGET_NAMESPACE());
+		XPathQueryService xPathService = (XPathQueryService) col.getService("XPathQueryService", "1.0");
+
+		xPathService.setProperty("indent", "yes");
+
+		String xQuery = "declare namespace cl = \"http://ftn.uns.ac.rs/coverLetter\";";
+		xQuery += "\n";
+		xQuery += "//cl:coverLetter[cl:publicationTitle=\"" + title + "\" and cl:version=" + version + "]";
+
+		ResourceSet resourceSet = xPathService.query(xQuery);
 
 		if (resourceSet == null) {
 			return coverLetterStr;

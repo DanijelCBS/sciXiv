@@ -18,10 +18,12 @@ import javax.xml.xpath.XPathExpressionException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.rest.webmvc.ResourceNotFoundException;
 import org.springframework.stereotype.Service;
+import org.w3c.dom.DOMException;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
+import org.w3c.dom.Text;
 import org.xml.sax.SAXException;
 import org.xmldb.api.base.XMLDBException;
 
@@ -37,11 +39,14 @@ import xml.web.services.team2.sciXiv.repository.ReviewRepository;
 import xml.web.services.team2.sciXiv.repository.UserRepository;
 import xml.web.services.team2.sciXiv.utils.dom.DOMParser;
 import xml.web.services.team2.sciXiv.utils.dom.XPathExpressionHandler;
+import xml.web.services.team2.sciXiv.utils.xslt.XSLTranspiler;
 
 @Service
 public class ReviewService {
 
 	private static String schemaPath = "src/main/resources/static/xmlSchemas/review.xsd";
+	
+	private static String PUBLICATION_REVIEWS_MERGED_TO_HTML_XSL = "src/main/resources/static/xsl/publicationWithReviewsToHTML.xsl";
 	
 	@Autowired
 	private ScientificPublicationService scientificPublicationService;
@@ -49,13 +54,18 @@ public class ReviewService {
 	@Autowired
 	private ReviewRepository reviewRepository;
 	
-	private UserRepository userRepository;
+	
+	@Autowired
+	private UserService userService;
 
 	@Autowired
 	private DOMParser domParser;
 
 	@Autowired
 	private XPathExpressionHandler xpathExecuter;
+	
+	@Autowired
+    private XSLTranspiler xslTranspiler;
 	
 	public String findById(String reviewId) throws DocumentStoringFailedException, ParserConfigurationException, TransformerException, IOException, XMLDBException, DocumentLoadingFailedException {
 		return this.reviewRepository.findById(reviewId);
@@ -90,6 +100,33 @@ public class ReviewService {
 		}
 	}
 	
+	public List<Node> getReviewsOfPublicationAsDomNodes(String publicationTitle, int publicationVersion) throws XMLDBException {
+		return this.reviewRepository.findReviewsOfPublicationAsDomNodes(publicationTitle, publicationVersion);
+	}
+	
+	public String mergePublicationAndReviews(String publicationTitle, int publicationVersion, boolean blind) throws XMLDBException, DocumentLoadingFailedException, ParserConfigurationException, SAXException, IOException, TransformerException, DOMException, UserRetrievingFailedException {
+		String publication = this.scientificPublicationService.findByNameAndVersion(publicationTitle, publicationVersion);
+		Document publicationDOM = domParser.buildDocumentNoSchema(publication);
+		List<Node> publicationReviews = this.getReviewsOfPublicationAsDomNodes(publicationTitle, publicationVersion);
+		
+		for (Node reviewNode : publicationReviews) {
+			publicationDOM.importNode(reviewNode, true);
+		}
+		
+		return DOMParser.doc2String(publicationDOM);
+	}
+	
+	public String mergePublicationAndNonCensoredReviewsToXHTML(String publicationTitle, int publicationVersion) throws TransformerException, XMLDBException, DocumentLoadingFailedException, ParserConfigurationException, SAXException, IOException, DOMException, UserRetrievingFailedException {
+		String mergeToXml = this.mergePublicationAndReviews(publicationTitle, publicationVersion, false);
+		System.out.println(mergeToXml);
+		return xslTranspiler.generateHTML(mergeToXml, PUBLICATION_REVIEWS_MERGED_TO_HTML_XSL);
+	}
+	
+	public void removeReviewAssignment(String reviewerId, String publicationToReviewId) throws UserRetrievingFailedException {
+		TUser reviewer = this.userService.findByEmail(reviewerId);
+		reviewer.getPublicationsToReview().getPublicationID().remove(publicationToReviewId);
+	}
+	
 	private Document buildAndValidateReview(String reviewXml) throws ParserConfigurationException, IOException, XMLDBException {
 		Document document;
 		try {
@@ -113,20 +150,6 @@ public class ReviewService {
 		return document;
 	}
 	
-	public String mergePublicationAndReviews(String publicationTitle, int publicationVersion) throws XMLDBException, DocumentLoadingFailedException, ParserConfigurationException, SAXException, IOException, TransformerException {
-		String publication = this.scientificPublicationService.findByNameAndVersion(publicationTitle, publicationVersion);
-		Document publicationDOM = domParser.buildDocumentNoSchema(publication);
-		List<Node> publicationReviews = this.getReviewsOfPublicationAsDomNodes(publicationTitle, publicationVersion);
-		Element publicationElement = (Element) publicationDOM.getElementsByTagNameNS("http://ftn.uns.ac.rs/scientificPublication", "scientificPublication").item(0);
-		for (Node reviewNode : publicationReviews) {
-			Element reviewElement = (Element) reviewNode;
-			Node reviewImported = publicationDOM.importNode(reviewNode, true);
-			Element reviewImportedElement = (Element) reviewImported;
-			publicationElement.appendChild(reviewImportedElement);
-		}
-		return DOMParser.doc2String(publicationDOM);
-	}
-	
 	private String nodeToXmlString(Node node) throws TransformerException {
 		StringWriter stringWriter = new StringWriter();
 		TransformerFactory tf = TransformerFactory.newInstance();
@@ -136,25 +159,4 @@ public class ReviewService {
 		return stringWriter.toString();
 	}
 	
-	public List<Node> getReviewsOfPublicationAsDomNodes(String publicationTitle, int publicationVersion) throws XMLDBException {
-		return this.reviewRepository.findReviewsOfPublicationAsDomNodes(publicationTitle, publicationVersion);
-	}
-	
-	/*
-	public void deleteReviewsForPublication(String publicationName) throws XMLDBException {
-		reviewRepository.deleteReviewsForPublication(publicationName);
-	}
-	
-	public List<Node> getReviewsOfPublicationAsDom(String publicationName) throws XMLDBException {
-		return reviewRepository.findAllByPublicationAsDom(publicationName);
-	}
-	*/
-	
-	
-	
-	public void removeReviewAssignment(String reviewerId, String publicationToReviewId) throws UserRetrievingFailedException {
-		TUser reviewer = userRepository.getByEmail(reviewerId);
-		reviewer.getPublicationsToReview().getPublicationID().remove(publicationToReviewId);
-	}
-
 }

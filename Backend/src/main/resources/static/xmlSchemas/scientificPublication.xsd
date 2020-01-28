@@ -226,7 +226,7 @@
     </xs:simpleType>
     <xs:attribute name="id" type="sp:TId"/>
     <xs:complexType mixed="true" name="TMathExpression">
-        <xs:choice maxOccurs="unbounded">
+        <xs:choice maxOccurs="unbounded" minOccurs="0">
             <xs:element name="sum">
                 <xs:complexType>
                     <xs:sequence>

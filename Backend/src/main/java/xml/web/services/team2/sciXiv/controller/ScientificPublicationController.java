@@ -52,8 +52,10 @@ public class ScientificPublicationController {
         try {
             return new ResponseEntity<>(scientificPublicationService.save(sciPub), HttpStatus.CREATED);
         } catch (DocumentParsingFailedException e) {
+        	e.printStackTrace();
             return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
         } catch (Exception e) {
+        	e.printStackTrace();
             return new ResponseEntity<>("An error occurred while saving document", HttpStatus.BAD_REQUEST);
         }
     }

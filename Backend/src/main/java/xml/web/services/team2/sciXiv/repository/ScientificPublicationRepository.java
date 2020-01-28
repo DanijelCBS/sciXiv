@@ -59,6 +59,7 @@ public class ScientificPublicationRepository {
 
 	public String findByNameAndVersion(String name, int version) throws DocumentLoadingFailedException, XMLDBException {
 		XMLConnectionProperties conn = xmlConnectionPool.getConnection();
+		name = name.replace(" ", "");
 		Document document = (Document) basicOperations.loadDocument(collectionName + "/" + name, name + "-v" + version, conn)
 				.getContentAsDOM();
 		String xmlEntity = transformer.toXML(document);

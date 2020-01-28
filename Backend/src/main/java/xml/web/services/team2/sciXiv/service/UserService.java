@@ -32,6 +32,10 @@ public class UserService {
 		return userRepository.save(newUser);
 	}
 	
+	public TUser findByEmail(String email) throws UserRetrievingFailedException {
+		return this.userRepository.getByEmail(email);
+	}
+	
 	private void validateUserData(TUser user) throws UserRetrievingFailedException {
 		
 		if(!user.getEmail().matches(emailRegex)) {

@@ -11,7 +11,7 @@
                 </title>
                 <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
             </head>
-            <body style="background-color:#e8e8e8; text-align: justify; text-justify: inter-word; margin: auto 50px auto 50px;">
+            <body style="text-align: justify; text-justify: inter-word; margin: auto 50px auto 50px;">
                 <h1 align="center">
                     Cover letter for publication: "<xsl:value-of select="cl:coverLetter/cl:publicationTitle"/>" version No. <xsl:value-of select="cl:coverLetter/cl:version"/>
                 </h1>

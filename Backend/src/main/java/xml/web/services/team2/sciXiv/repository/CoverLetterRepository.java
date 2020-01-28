@@ -39,7 +39,9 @@ public class CoverLetterRepository {
 	private static final String coverLetterXsdSchemaPath = "src/main/resources/static/xmlSchemas/coverLetter.xsd";
 
 	public static final String coverLetterXSLPath = "src/main/resources/static/xsl/coverLetter.xsl";
-	
+
+	public static final String coverLetterXSLFOPath = "src/main/resources/static/xslfo/coverLetter.xsl";
+
 	private static final String SPARQL_NAMED_GRAPH_URI = "/coverLetter/metadata";
 
 	@Autowired

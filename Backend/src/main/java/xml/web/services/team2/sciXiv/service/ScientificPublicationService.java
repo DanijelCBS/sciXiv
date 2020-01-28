@@ -109,11 +109,11 @@ public class ScientificPublicationService {
         metadataExtractor.extractMetadata(new ByteArrayInputStream(sciPub.getBytes()), metadataStream);
         String metadata = new String(metadataStream.toByteArray());
 
-        String email = ((UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal())
+        /*String email = ((UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal())
                 .getUsername();
         TUser user = userRepository.getByEmail(email);
         user.getOwnPublications().getPublicationID().add(title);
-        userRepository.save(user);
+        userRepository.save(user);*/
 
         scientificPublicationRepository.saveMetadata(metadata);
 
@@ -172,7 +172,7 @@ public class ScientificPublicationService {
                 "WHERE { \n" +
                 "\t?sciPub";
         query = makeSparqlQuery(query, searchParameters);
-        String email = ((UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal())
+        /*String email = ((UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal())
                 .getUsername();
         TUser user = userRepository.getByEmail(email);
         ArrayList<String> userDocuments = (ArrayList<String>) user.getOwnPublications().getPublicationID();
@@ -183,7 +183,8 @@ public class ScientificPublicationService {
         }
         titles.delete(titles.length() - 2, titles.length()).append(")");
 
-        query += "\tFILTER (?sciPub IN " + titles + " || ?status = \"accepted\")\n}";
+        query += "\tFILTER (?sciPub IN " + titles + " || ?status = \"accepted\")\n}";*/
+        query += "\n}";
 
         return scientificPublicationRepository.advancedSearch(query);
     }
@@ -205,30 +206,31 @@ public class ScientificPublicationService {
 
     private String makeSparqlQuery(String query, SearchPublicationsDTO parameters) {
         String sciPub = "";
+        String literalType = "^^<http://www.w3.org/1999/02/22-rdf-syntax-ns#XMLLiteral>";
 
         if (!parameters.getTitle().equals("")) {
-            query += " <http://schema.org/headline> " + parameters.getTitle() + " ;\n";
+            query += " <http://schema.org/headline> " + "\"" + parameters.getTitle() + "\"" + literalType + " ;\n";
         }
         if (!parameters.getDateReceived().equals("")) {
-            query += " <http://schema.org/dateCreated> " + parameters.getDateReceived() + " ;\n";
+            query += " <http://schema.org/dateCreated> " + "\"" + parameters.getDateReceived() + "\"" + literalType + " ;\n";
         }
         if (!parameters.getDateRevised().equals("")) {
-            query += " <http://schema.org/dateModified> " + parameters.getDateRevised() + " ;\n";
+            query += " <http://schema.org/dateModified> " + "\"" + parameters.getDateRevised() + "\"" + literalType + " ;\n";
         }
         if (!parameters.getDateAccepted().equals("")) {
-            query += " <http://schema.org/datePublished> " + parameters.getDateAccepted() + " ;\n";
+            query += " <http://schema.org/datePublished> " + "\"" + parameters.getDateAccepted() + "\"" + literalType + " ;\n";
         }
         if (!parameters.getKeyword().equals("")) {
-            query += " <http://schema.org/keywords> " + parameters.getKeyword() + " ;\n";
+            query += " <http://schema.org/keywords> " + "\"" + parameters.getKeyword() + "\"" + literalType + " ;\n";
         }
         if (!parameters.getAuthorName().equals("")) {
             query += " <http://schema.org/author> ?author .\n" +
-                    "\t?author <http://schema.org/name> " + parameters.getAuthorName() + " .\n";
+                    "\t?author <http://schema.org/name> " + "\"" + parameters.getAuthorName() + "\"" + literalType + " .\n";
             sciPub = "?sciPub";
         }
         if (!parameters.getAuthorAffiliation().equals("")) {
             query += sciPub + " <http://schema.org/author> ?author .\n" +
-                    "\t?author <http://schema.org/affiliation> " + parameters.getAuthorAffiliation() + " .\n";
+                    "\t?author <http://schema.org/affiliation> " + "\"" + parameters.getAuthorAffiliation() + "\"" + literalType + " .\n";
             sciPub = "?sciPub";
         }
 
@@ -250,7 +252,7 @@ public class ScientificPublicationService {
         int lastVersion = scientificPublicationRepository.getLastVersionNumber(title.replace(" ", ""));
         String xmlDocument = scientificPublicationRepository.findByNameAndVersion(title, lastVersion);
 
-        ByteArrayOutputStream outputStream = xslTranspiler.generatePDF(xmlDocument, xslFOPath);
+        ByteArrayOutputStream outputStream = xslTranspiler.generatePDf(xmlDocument, xslFOPath);
 
         Path file = Paths.get(title + ".pdf");
         Files.write(file, outputStream.toByteArray());

@@ -80,6 +80,18 @@ public class CoverLetterService {
 		return coverLetter;
 	}
 
+	public String findByTitleAndVersion(String title, String version)
+			throws DocumentLoadingFailedException, XMLDBException, IOException {
+		String coverLetter = coverLetterRepository.findByTitleAndVersion(title, version);
+
+		if (coverLetter == null) {
+			throw new ResourceNotFoundException(
+					"ResourceNotFoundException; Cover letter with [title: " + title + " and version: " + version + "]");
+		}
+
+		return coverLetter;
+	}
+
 	public String findByIdHTML(String id) {
 		throw new UnsupportedOperationException();
 	}

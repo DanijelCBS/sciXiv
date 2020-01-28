@@ -50,6 +50,8 @@ public class UserRepository {
             conn = connectionPool.getConnection();
             String userXML = createUserXmlFragment(user);
             Collection col = basicOperations.getOrCreateCollection(usersCollection, 0, conn);
+            // delete old data
+            this.deleteUser(user.getEmail(), col);
             updateService.append(col, usersDocument, "", "/users", userXML);
         }
         catch (Exception e) {
@@ -131,6 +133,19 @@ public class UserRepository {
     	finally {
             connectionPool.releaseConnection(conn);
         }
+    }
+    
+    private void deleteUser(String userEmail, Collection usersCollection) throws UserRetrievingFailedException, XMLDBException {
+    	String xQuery = String.format(
+    			"for $user in doc(\"%s\")//user\n" + 
+    			"where $user/email = \"%s\"\n" + 
+    			"return (update delete $user)", 
+    			this.usersCollection + "/" + this.usersDocument,
+    			userEmail);
+    	
+    	XPathQueryService xPathService = (XPathQueryService) usersCollection.getService("XPathQueryService", "1.0");
+		xPathService.setProperty("indent", "yes");
+		xPathService.query(xQuery);
     }
 
     private String createUserXmlFragment(TUser user) throws JAXBException {

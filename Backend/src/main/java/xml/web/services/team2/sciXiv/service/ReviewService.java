@@ -115,9 +115,19 @@ public class ReviewService {
 				publicationVersion);
 		Document publicationDOM = domParser.buildDocumentNoSchema(publication);
 		List<Node> publicationReviews = this.getReviewsOfPublicationAsDomNodes(publicationTitle, publicationVersion);
+		Element publicationRoot = (Element) publicationDOM.getElementsByTagNameNS("http://ftn.uns.ac.rs/scientificPublication", "scientificPublication").item(0);
 
+		int i = 0;
 		for (Node reviewNode : publicationReviews) {
-			publicationDOM.importNode(reviewNode, true);
+			Node importedReviewNode = publicationDOM.importNode(reviewNode, true);
+			Element importedReviewElement = (Element) importedReviewNode;
+			Node reviewerNode = (Node) importedReviewElement.getElementsByTagNameNS("http://ftn.uns.ac.rs/review", "reviewer").item(0);
+			TUser reviewer = this.userService.findByEmail(reviewerNode.getTextContent());
+			if(reviewer != null) {
+				String fullName = String.format("%s %s", reviewer.getFirstName(), reviewer.getLastName());
+				reviewerNode.setTextContent(fullName);
+			}
+			publicationRoot.appendChild(importedReviewElement);
 		}
 
 		return DOMParser.doc2String(publicationDOM);

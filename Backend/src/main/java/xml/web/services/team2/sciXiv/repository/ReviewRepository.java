@@ -187,6 +187,7 @@ public class ReviewRepository {
 			}
 		}
 		
+		connectionPool.releaseConnection(conn);
 		return reviews;
 	}
     

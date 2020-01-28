@@ -191,7 +191,7 @@ public class CoverLetterService {
 		return new UrlResource(file.toUri());
 	}
 
-	public Resource exportCoverLetterByIdAsPDF(String title, String version)
+	public Resource exportCoverLetterByTitleAndVersionAsPDF(String title, String version)
 			throws TransformerException, IOException, DocumentLoadingFailedException, XMLDBException {
 		String coverLetterStr = coverLetterRepository.findByTitleAndVersion(title, version);
 

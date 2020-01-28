@@ -36,6 +36,8 @@ public class ScientificPublicationService {
     private static String schemaPath = "src/main/resources/static/xmlSchemas/scientificPublication.xsd";
 
     private static String xslPath = "src/main/resources/static/xsl/scientificPublicationToHTML.xsl";
+    
+    private static String xslForAnonymusPublicatonPath = "src/main/resources/static/xsl/publicationAnonymusToHTML.xsl";
 
     @Autowired
     ScientificPublicationRepository scientificPublicationRepository;
@@ -180,6 +182,12 @@ public class ScientificPublicationService {
         String xmlDocument = scientificPublicationRepository.findByNameAndVersion(title, lastVersion);
 
         return xslTranspiler.generateHTML(xmlDocument, xslPath);
+    }
+    
+    public String getAnonymusScientificPublicationAsXHTML(String title, int version) throws XMLDBException, DocumentLoadingFailedException, TransformerException {
+        String xmlDocument = scientificPublicationRepository.findByNameAndVersion(title, version);
+
+        return xslTranspiler.generateHTML(xmlDocument, xslForAnonymusPublicatonPath);
     }
 
     public SearchPublicationsDTO getPublicationsMetadata(String title) {

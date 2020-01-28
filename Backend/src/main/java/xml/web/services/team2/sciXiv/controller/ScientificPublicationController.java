@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import xml.web.services.team2.sciXiv.dto.SciPubDTO;
 import xml.web.services.team2.sciXiv.dto.SearchPublicationsDTO;
@@ -35,6 +36,17 @@ public class ScientificPublicationController {
     public ResponseEntity<Object> getScientificPublicationAsXHTML(@RequestParam String title) {
         try {
             return new ResponseEntity<>(scientificPublicationService.getScientificPublicationAsXHTML(title), HttpStatus.OK);
+        } catch (DocumentLoadingFailedException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+        } catch (Exception e) {
+            return new ResponseEntity<>("An error occurred while retrieving document", HttpStatus.BAD_REQUEST);
+        }
+    }
+    
+    @GetMapping(value = "anonymus/xhtml", produces = MediaType.TEXT_HTML_VALUE)
+    public ResponseEntity<Object> getAnonymusScientificPublicationAsXHTML(@RequestParam String title, @RequestParam int version) {
+        try {
+            return new ResponseEntity<>(scientificPublicationService.getAnonymusScientificPublicationAsXHTML(title, version), HttpStatus.OK);
         } catch (DocumentLoadingFailedException e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
         } catch (Exception e) {

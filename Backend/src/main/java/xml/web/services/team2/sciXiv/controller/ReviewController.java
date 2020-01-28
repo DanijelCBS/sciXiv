@@ -88,6 +88,7 @@ public class ReviewController {
 	}
 
 	@GetMapping(value = "/merge/{pubTitle}/version/{pubVersion}", produces = MediaType.TEXT_HTML_VALUE)
+	@PreAuthorize("hasRole('EDITOR')")
 	public ResponseEntity<Object> getScientificPublicationWithReviewsAsXHTML(
 			@PathVariable("pubTitle") String publicationTitle, @PathVariable("pubVersion") int publicationVersion)
 			throws TransformerException, XMLDBException, DocumentLoadingFailedException, ParserConfigurationException, SAXException, IOException, DOMException, UserRetrievingFailedException {
@@ -98,6 +99,7 @@ public class ReviewController {
 	}
 	
 	@GetMapping(value = "/mergeBlind/{pubTitle}/version/{pubVersion}", produces = MediaType.TEXT_HTML_VALUE)
+	@PreAuthorize("hasRole('REVIEWER')")
 	public ResponseEntity<Object> getScientificPublicationWithBlindReviewsAsXHTML(
 			@PathVariable("pubTitle") String publicationTitle, @PathVariable("pubVersion") int publicationVersion)
 			throws TransformerException, XMLDBException, DocumentLoadingFailedException, ParserConfigurationException, SAXException, IOException, DOMException, UserRetrievingFailedException {

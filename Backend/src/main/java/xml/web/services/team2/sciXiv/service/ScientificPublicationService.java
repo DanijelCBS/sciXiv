@@ -252,7 +252,7 @@ public class ScientificPublicationService {
         int lastVersion = scientificPublicationRepository.getLastVersionNumber(title.replace(" ", ""));
         String xmlDocument = scientificPublicationRepository.findByNameAndVersion(title, lastVersion);
 
-        ByteArrayOutputStream outputStream = xslTranspiler.generatePDF(xmlDocument, xslFOPath);
+        ByteArrayOutputStream outputStream = xslTranspiler.generatePDf(xmlDocument, xslFOPath);
 
         Path file = Paths.get(title + ".pdf");
         Files.write(file, outputStream.toByteArray());

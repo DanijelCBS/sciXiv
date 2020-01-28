@@ -27,7 +27,7 @@ import xml.web.services.team2.sciXiv.utils.database.BasicOperations;
 import xml.web.services.team2.sciXiv.utils.database.DBExtractor;
 import xml.web.services.team2.sciXiv.utils.database.UpdateTemplate;
 import xml.web.services.team2.sciXiv.utils.dom.DOMParser;
-import xml.web.services.team2.sciXiv.utils.factory.RDFConnectionPropertiesFactory;
+import xml.web.services.team2.sciXiv.utils.factory.RDFConnectionFactory;
 import xml.web.services.team2.sciXiv.utils.factory.XMLConnectionPropertiesFactory;
 import xml.web.services.team2.sciXiv.utils.xslt.DOMToXMLTransformer;
 
@@ -51,7 +51,7 @@ public class CoverLetterRepository {
 	XMLConnectionPropertiesFactory xmlConnectionPool;
 
 	@Autowired
-	RDFConnectionPropertiesFactory rdfConnectionPool;
+    RDFConnectionFactory rdfConnectionPool;
 
 	@Autowired
 	BasicOperations basicOperations;

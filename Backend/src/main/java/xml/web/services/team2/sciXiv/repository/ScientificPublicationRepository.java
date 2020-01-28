@@ -3,7 +3,6 @@ package xml.web.services.team2.sciXiv.repository;
 import org.apache.jena.query.*;
 import org.apache.jena.rdf.model.*;
 import org.apache.jena.rdfconnection.RDFConnection;
-import org.apache.jena.rdfconnection.RDFConnectionFactory;
 import org.apache.jena.update.UpdateExecutionFactory;
 import org.apache.jena.update.UpdateFactory;
 import org.apache.jena.update.UpdateProcessor;
@@ -26,7 +25,7 @@ import xml.web.services.team2.sciXiv.utils.connection.XMLConnectionProperties;
 import xml.web.services.team2.sciXiv.utils.database.BasicOperations;
 import xml.web.services.team2.sciXiv.utils.database.SparqlUtil;
 import xml.web.services.team2.sciXiv.utils.database.UpdateTemplate;
-import xml.web.services.team2.sciXiv.utils.factory.RDFConnectionPropertiesFactory;
+import xml.web.services.team2.sciXiv.utils.factory.RDFConnectionFactory;
 import xml.web.services.team2.sciXiv.utils.factory.XMLConnectionPropertiesFactory;
 import xml.web.services.team2.sciXiv.utils.xslt.DOMToXMLTransformer;
 
@@ -48,7 +47,7 @@ public class ScientificPublicationRepository {
     XMLConnectionPropertiesFactory xmlConnectionPool;
 
     @Autowired
-    RDFConnectionPropertiesFactory rdfConnectionPool;
+    RDFConnectionFactory rdfConnectionPool;
 
     @Autowired
     BasicOperations basicOperations;
@@ -97,7 +96,8 @@ public class ScientificPublicationRepository {
     }
 
     public void saveMetadata(String metadata) {
-        RDFConnectionProperties conn = rdfConnectionPool.getConnection();
+        RDFConnection connection = rdfConnectionPool.getConnection();
+        RDFConnectionProperties conn = rdfConnectionPool.getConnectionProperties();
         Model model = ModelFactory.createDefaultModel();
         model.read(new ByteArrayInputStream(metadata.getBytes()), null);
 
@@ -112,7 +112,7 @@ public class ScientificPublicationRepository {
         UpdateProcessor processor = UpdateExecutionFactory.createRemote(update, conn.getUpdateEndpoint());
         processor.execute();
 
-        rdfConnectionPool.releaseConnection(conn);
+        rdfConnectionPool.releaseConnection(connection);
     }
 
     public int getLastVersionNumber(String collection) throws XMLDBException {
@@ -143,27 +143,30 @@ public class ScientificPublicationRepository {
     }
 
     public ArrayList<SciPubDTO> advancedSearch(String query) {
-        //RDFConnectionProperties conn = rdfConnectionPool.getConnection();
-        ArrayList<SciPubDTO> sciPubs = getTitlesAndAuthors(query);
-        //rdfConnectionPool.releaseConnection(conn);
-        System.out.println();
+        RDFConnection connection = rdfConnectionPool.getConnection();
+
+        RDFConnectionProperties conn = rdfConnectionPool.getConnectionProperties();
+        ArrayList<SciPubDTO> sciPubs = getTitlesAndAuthors(query, connection, conn);
+
+        rdfConnectionPool.releaseConnection(connection);
         return sciPubs;
     }
 
     public ArrayList<SciPubDTO> getReferences(String title) {
-        RDFConnectionProperties conn = rdfConnectionPool.getConnection();
+        RDFConnection connection = rdfConnectionPool.getConnection();
+
+        RDFConnectionProperties conn = rdfConnectionPool.getConnectionProperties();
         String sparqlQuery = SparqlUtil.selectData(conn.getDataEndpoint() + SPARQL_NAMED_GRAPH_URI,
                 "?sciPub <http://schema.org/citation> " + title + " .");
-        ArrayList<SciPubDTO> sciPubs = getTitlesAndAuthors(sparqlQuery);
-        rdfConnectionPool.releaseConnection(conn);
+        ArrayList<SciPubDTO> sciPubs = getTitlesAndAuthors(sparqlQuery, connection, conn);
+
+        rdfConnectionPool.releaseConnection(connection);
 
         return sciPubs;
     }
 
-    private ArrayList<SciPubDTO> getTitlesAndAuthors(String sparqlQuery) {
-        RDFConnectionProperties conn = rdfConnectionPool.getConnection();
-        RDFConnection connection = RDFConnectionFactory.connectFuseki(conn.getEndpoint() + "/" + conn.getDataset() + "/data", conn.getQueryEndpoint(), conn.getUpdateEndpoint(), conn.getDataEndpoint());
-        QueryExecution queryExecution = executeSparqlQuery(sparqlQuery, connection);
+    private ArrayList<SciPubDTO> getTitlesAndAuthors(String sparqlQuery, RDFConnection connection, RDFConnectionProperties conn) {
+        QueryExecution queryExecution = executeSparqlQuery(sparqlQuery, connection, conn);
         ResultSet results = queryExecution.execSelect();
         QueryExecution tempQueryExecution;
         ResultSet tempResults;
@@ -177,25 +180,24 @@ public class ScientificPublicationRepository {
         while (results.hasNext()) {
             querySolution = results.next();
             title = querySolution.get(sciPub).toString();
-            System.out.println("--");
             query = SparqlUtil.selectDataWithAlias(conn.getDataEndpoint() + SPARQL_NAMED_GRAPH_URI, "<" + title + ">"
                     + " <http://schema.org/author> ?author .\n" + "\t?author <http://schema.org/name> ?nameAuthor .\n",
                     "?author", "?pred", "?nameAuthor", "?name");
-            System.out.print("--");
-            tempQueryExecution = executeSparqlQuery(query, connection);
+            tempQueryExecution = executeSparqlQuery(query, connection, conn);
             tempResults = tempQueryExecution.execSelect();
             while (tempResults.hasNext()) {
                 authors.add(tempResults.next().get(name).toString());
             }
 
+            title = title.replace("http://ftn.uns.ac.rs/scientificPublication/","");
             sciPubs.add(new SciPubDTO(title, new ArrayList<>(authors)));
             authors.clear();
             tempQueryExecution.close();
         }
 
         queryExecution.close();
-        connection.close();
-        rdfConnectionPool.releaseConnection(conn);
+        rdfConnectionPool.releaseConnection(connection);
+
         return sciPubs;
     }
 
@@ -223,32 +225,34 @@ public class ScientificPublicationRepository {
         ResourceIterator i = result.getIterator();
         String title = (String) i.nextResource().getContent();
         String resourceName;
-        RDFConnectionProperties connRDF = rdfConnectionPool.getConnection();
+        RDFConnection connection = rdfConnectionPool.getConnection();
+        RDFConnectionProperties connRDF = rdfConnectionPool.getConnectionProperties();
+        QueryExecution queryExecution = null;
 
         if (!title.equalsIgnoreCase("")) {
             resourceName = "<http://ftn.uns.ac.rs/scientificPublication/" + title.replace(" ", "") + ">";
             String sparqlQuery = SparqlUtil.selectDataWithAlias(connRDF.getDataEndpoint() + SPARQL_NAMED_GRAPH_URI, resourceName
                     + " <http://schema.org/author> ?author .\n" + "\t?author <http://schema.org/name> ?authorName .\n",
                     "?author", "?pred", "?authorName", "?name");
-            rdfConnectionPool.releaseConnection(connRDF);
-            QueryExecution qe = executeSparqlQuery(sparqlQuery, null);
-            ResultSet tempResults = qe.execSelect();
+            queryExecution = executeSparqlQuery(sparqlQuery, connection, connRDF);
+            ResultSet tempResults = queryExecution.execSelect();
             while (tempResults.hasNext()) {
                 authors.add(tempResults.next().get(name).toString());
             }
 
+            title = title.replace("http://ftn.uns.ac.rs/scientificPublication/","");
             sciPubs.add(new SciPubDTO(title, authors));
         }
 
+        if (queryExecution != null)
+            queryExecution.close();
+
     }
 
-    private QueryExecution executeSparqlQuery(String query, RDFConnection connection) {
-        RDFConnectionProperties conn = rdfConnectionPool.getConnection();
+    private QueryExecution executeSparqlQuery(String query, RDFConnection connection, RDFConnectionProperties conn) {
         String completeQuery = String.format(query, conn.getDataEndpoint() + SPARQL_NAMED_GRAPH_URI);
-        QueryExecution queryExecution = connection.query(completeQuery) ;
-        rdfConnectionPool.releaseConnection(conn);
 
-        return queryExecution;
+        return connection.query(completeQuery);
     }
 
     private void delete(String title, String name, XMLConnectionProperties conn) throws XMLDBException {
@@ -258,7 +262,7 @@ public class ScientificPublicationRepository {
     }
 
     public void insertMetadata(String resourceName, String pred, String object) {
-        RDFConnectionProperties conn = rdfConnectionPool.getConnection();
+        RDFConnectionProperties conn = rdfConnectionPool.getConnectionProperties();
         Model model = ModelFactory.createDefaultModel();
         model.setNsPrefix("pred", "http://schema.org/");
         org.apache.jena.rdf.model.Resource resource = model.createResource(resourceName);
@@ -276,50 +280,52 @@ public class ScientificPublicationRepository {
 
         UpdateProcessor processor = UpdateExecutionFactory.createRemote(update, conn.getUpdateEndpoint());
         processor.execute();
-
-        rdfConnectionPool.releaseConnection(conn);
     }
 
     public SearchPublicationsDTO getPublicationsMetadata(String title) {
-        RDFConnectionProperties conn = rdfConnectionPool.getConnection();
+        RDFConnection connection = rdfConnectionPool.getConnection();
+        RDFConnectionProperties conn = rdfConnectionPool.getConnectionProperties();
         String resourceName = "<http://ftn.uns.ac.rs/scientificPublication/" + title + ">";
         String sparqlQuery = SparqlUtil.selectDataWithAlias(conn.getDataEndpoint() + SPARQL_NAMED_GRAPH_URI,
                 resourceName + "?pred ?object .", "?subj", "?pred", "?object", "?obj");
-        QueryExecution qe = executeSparqlQuery(sparqlQuery, null);
-        ResultSet results = qe.execSelect();
+        QueryExecution queryExecution = executeSparqlQuery(sparqlQuery, connection, conn);
+        ResultSet results = queryExecution.execSelect();
         SearchPublicationsDTO metadata = new SearchPublicationsDTO();
         QuerySolution querySolution;
 
         while (results.hasNext()) {
             querySolution = results.next();
-            extractMetadata(querySolution, metadata);
+            extractMetadata(querySolution, metadata, connection, conn);
         }
 
-        rdfConnectionPool.releaseConnection(conn);
+        queryExecution.close();
+        rdfConnectionPool.releaseConnection(connection);
 
         return metadata;
     }
 
-    private void extractMetadata(QuerySolution querySolution, SearchPublicationsDTO metadata) {
+    private void extractMetadata(QuerySolution querySolution, SearchPublicationsDTO metadata, RDFConnection connection,
+                                 RDFConnectionProperties conn) {
         String obj = querySolution.get("obj").toString();
         String pred = querySolution.get("pred").toString();
-        RDFConnectionProperties conn = rdfConnectionPool.getConnection();
         String query;
         ResultSet tempResults;
         if (pred.contains("author")) {
             query = SparqlUtil.selectDataWithAlias(conn.getDataEndpoint() + SPARQL_NAMED_GRAPH_URI, "<" + obj + ">" +
                     " <http://schema.org/name> ?nameAuthor .", "?subj", "?pred", "?nameAuthor", "?name");
-            QueryExecution qe = executeSparqlQuery(query, null);
-            tempResults = qe.execSelect();
+            QueryExecution queryExecution = executeSparqlQuery(query, connection, conn);
+            tempResults = queryExecution.execSelect();
             querySolution = tempResults.next();
             metadata.getAuthors().add(querySolution.get("name").toString());
+            queryExecution.close();
 
             query = SparqlUtil.selectDataWithAlias(conn.getDataEndpoint() + SPARQL_NAMED_GRAPH_URI, "<" + obj + ">" +
                     " <http://schema.org/affiliation> ?affiliationAuthor .", "?subj", "?pred", "?affiliationAuthor", "?affiliation");
-            qe = executeSparqlQuery(query, null);
-            tempResults = qe.execSelect();
+            queryExecution = executeSparqlQuery(query, connection, conn);
+            tempResults = queryExecution.execSelect();
             querySolution = tempResults.next();
             metadata.getAuthorsAffiliations().add(querySolution.get("affiliation").toString());
+            queryExecution.close();
         } else if (pred.contains("keywords")) {
             metadata.getKeywords().add(obj);
         } else if (pred.contains("dateCreated")) {
@@ -331,7 +337,5 @@ public class ScientificPublicationRepository {
         } else if (pred.contains("headline")) {
             metadata.setTitle(obj);
         }
-
-        rdfConnectionPool.releaseConnection(conn);
     }
 }

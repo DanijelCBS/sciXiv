@@ -83,7 +83,7 @@ public class BusinessProcessRepository {
 	}
 
 	public List<BusinessProcess> findAll() throws IOException, XMLDBException {
-		String xPathSelector = "//PoslovniProces";
+		String xPathSelector = "//businessProcess";
 		ResourceSet resultSet = DBExtractor.executeXPathQuery(collectionName, xPathSelector,
 				TARGET_NAMESPACE_BUSINESS_PROCESS);
 

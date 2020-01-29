@@ -10,6 +10,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.xmldb.api.base.XMLDBException;
 
+import xml.web.services.team2.sciXiv.exception.ChangeProcessStateException;
 import xml.web.services.team2.sciXiv.exception.ChangeReviewStatusException;
 import xml.web.services.team2.sciXiv.exception.NotOnTheReviewerListException;
 import xml.web.services.team2.sciXiv.exception.UserRetrievingFailedException;
@@ -156,6 +157,27 @@ public class BusinessProcessService {
 		}
 
 		reviewerAssignment.setStatus(reviewStatus);
+		businessProcessRepository.saveObject(businessProcess);
+	}
+
+	public void changeProcessState(String scientificPublicationTitle, TProcessStateEnum processState) throws Exception {
+		BusinessProcess businessProcess = businessProcessRepository
+				.findObjectByScientificPublicationTitle(scientificPublicationTitle);
+
+		if (businessProcess == null) {
+			throw new ResourceNotFoundException(
+					"[ResourceNotFoundException] Business process with scientific publication title: \""
+							+ scientificPublicationTitle + "\" does not exist.");
+		}
+
+		if (businessProcess.getProcessState().equals(TProcessStateEnum.PUBLISHED)
+				|| businessProcess.getProcessState().equals(TProcessStateEnum.REJECTED)
+				|| businessProcess.getProcessState().equals(TProcessStateEnum.WITHDRAWN)) {
+			throw new ChangeProcessStateException(
+					"[ChangeProcessStateException] PUBLISHED, REJECTED and WITHDRAWN are terminal states.");
+		}
+
+		businessProcess.setProcessState(processState);
 		businessProcessRepository.saveObject(businessProcess);
 	}
 

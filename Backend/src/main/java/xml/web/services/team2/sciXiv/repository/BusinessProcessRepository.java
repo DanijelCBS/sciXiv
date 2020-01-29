@@ -7,6 +7,8 @@ import java.util.List;
 import org.exist.xmldb.EXistResource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
+import org.xmldb.api.base.Collection;
+import org.xmldb.api.base.Resource;
 import org.xmldb.api.base.ResourceIterator;
 import org.xmldb.api.base.ResourceSet;
 import org.xmldb.api.base.XMLDBException;
@@ -15,7 +17,9 @@ import org.xmldb.api.modules.XMLResource;
 import xml.web.services.team2.sciXiv.model.businessProcess.BusinessProcess;
 import xml.web.services.team2.sciXiv.service.MarshallerService;
 import xml.web.services.team2.sciXiv.service.UnmarshallerService;
+import xml.web.services.team2.sciXiv.utils.database.BasicOperations;
 import xml.web.services.team2.sciXiv.utils.database.DBExtractor;
+import xml.web.services.team2.sciXiv.utils.factory.XMLConnectionPropertiesFactory;
 
 @Repository
 public class BusinessProcessRepository {
@@ -29,6 +33,12 @@ public class BusinessProcessRepository {
 
 	@Autowired
 	private UnmarshallerService unMarshallerService;
+
+	@Autowired
+	BasicOperations basicOperations;
+
+	@Autowired
+	XMLConnectionPropertiesFactory xmlConnectionPool;
 
 	public String save(String xmlProcess, String scientificPublicationTitle) throws Exception {
 		DBExtractor.save(collectionName, scientificPublicationTitle, xmlProcess);

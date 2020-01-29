@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<businessProcess xmlns="http://ftn.uns.ac.rs/businessProcess"
+ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+ xsi:schemaLocation="http://ftn.uns.ac.rs/businessProcess file:/C:/Users/Nikola%20Zubic/Desktop/XMLWEB/sciXiv/Backend/src/main/resources/static/xmlSchemas/businessProcess.xsd">
+    <scientificPublicationTitle>scientificPublicationTitle0</scientificPublicationTitle>
+    <version>50</version>
+    <processState>published</processState>
+    <reviewerAssignments>
+        <reviewerAssignment>
+            <reviewerEmail>reviewerEmail0</reviewerEmail>
+            <status>accepted</status>
+        </reviewerAssignment>
+        <reviewerAssignment>
+            <reviewerEmail>reviewerEmail1</reviewerEmail>
+            <status>accepted</status>
+        </reviewerAssignment>
+    </reviewerAssignments>
+</businessProcess>

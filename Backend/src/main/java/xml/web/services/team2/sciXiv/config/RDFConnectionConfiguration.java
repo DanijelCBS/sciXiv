@@ -1,21 +1,21 @@
 package xml.web.services.team2.sciXiv.config;
 
+import org.apache.jena.rdfconnection.RDFConnection;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import xml.web.services.team2.sciXiv.utils.connection.RDFConnectionProperties;
-import xml.web.services.team2.sciXiv.utils.factory.RDFConnectionPropertiesFactory;
+import xml.web.services.team2.sciXiv.utils.factory.RDFConnectionFactory;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @Configuration
-public class RDFConnectionPropertiesConfiguration {
+public class RDFConnectionConfiguration {
 
     @Bean
-    public RDFConnectionPropertiesFactory rdfConnectionPropertiesFactory() {
-        RDFConnectionPropertiesFactory connectionPool = new RDFConnectionPropertiesFactory();
+    public RDFConnectionFactory rdfConnectionPropertiesFactory() {
+        RDFConnectionFactory connectionPool = new RDFConnectionFactory();
         int initialPoolSize = connectionPool.getInitialPoolSize();
-        List<RDFConnectionProperties> pool = new ArrayList<>(initialPoolSize);
+        List<RDFConnection> pool = new ArrayList<>(initialPoolSize);
         for (int i = 0; i < initialPoolSize; i++) {
             pool.add(connectionPool.getObject());
         }
@@ -25,7 +25,7 @@ public class RDFConnectionPropertiesConfiguration {
     }
 
     @Bean
-    public RDFConnectionProperties rdfConnectionProperties() {
+    public RDFConnection rdfConnectionProperties() {
         return rdfConnectionPropertiesFactory().getObject();
     }
 }

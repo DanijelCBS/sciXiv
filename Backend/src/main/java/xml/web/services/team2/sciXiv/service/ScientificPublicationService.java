@@ -1,9 +1,19 @@
 package xml.web.services.team2.sciXiv.service;
 
+import org.apache.jena.rdf.model.Model;
+import org.apache.jena.rdf.model.ModelFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.UrlResource;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
+import org.springframework.web.client.RestTemplate;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
@@ -15,6 +25,7 @@ import xml.web.services.team2.sciXiv.exception.*;
 import xml.web.services.team2.sciXiv.model.TUser;
 import xml.web.services.team2.sciXiv.repository.ScientificPublicationRepository;
 import xml.web.services.team2.sciXiv.repository.UserRepository;
+import xml.web.services.team2.sciXiv.utils.database.SparqlUtil;
 import xml.web.services.team2.sciXiv.utils.dom.DOMParser;
 import xml.web.services.team2.sciXiv.utils.xslt.DOMToXMLTransformer;
 import xml.web.services.team2.sciXiv.utils.xslt.MetadataExtractor;
@@ -26,6 +37,10 @@ import javax.xml.transform.TransformerException;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -38,6 +53,8 @@ public class ScientificPublicationService {
     private static String xslPath = "src/main/resources/static/xsl/scientificPublicationToHTML.xsl";
     
     private static String xslForAnonymusPublicatonPath = "src/main/resources/static/xsl/publicationAnonymusToHTML.xsl";
+
+    private static String xslFOPath = "src/main/resources/static/xsl/xsl-fo/scientificPublicationToPDF.xsl";
 
     @Autowired
     ScientificPublicationRepository scientificPublicationRepository;
@@ -94,11 +111,11 @@ public class ScientificPublicationService {
         metadataExtractor.extractMetadata(new ByteArrayInputStream(sciPub.getBytes()), metadataStream);
         String metadata = new String(metadataStream.toByteArray());
 
-        String email = ((UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal())
+        /*String email = ((UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal())
                 .getUsername();
         TUser user = userRepository.getByEmail(email);
         user.getOwnPublications().getPublicationID().add(title);
-        userRepository.save(user);
+        userRepository.save(user);*/
 
         scientificPublicationRepository.saveMetadata(metadata);
 
@@ -157,7 +174,7 @@ public class ScientificPublicationService {
                 "WHERE { \n" +
                 "\t?sciPub";
         query = makeSparqlQuery(query, searchParameters);
-        String email = ((UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal())
+        /*String email = ((UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal())
                 .getUsername();
         TUser user = userRepository.getByEmail(email);
         ArrayList<String> userDocuments = (ArrayList<String>) user.getOwnPublications().getPublicationID();
@@ -168,7 +185,8 @@ public class ScientificPublicationService {
         }
         titles.delete(titles.length() - 2, titles.length()).append(")");
 
-        query += "\tFILTER (?sciPub IN " + titles + " || ?status = \"accepted\")\n}";
+        query += "\tFILTER (?sciPub IN " + titles + " || ?status = \"accepted\")\n}";*/
+        query += "\n}";
 
         return scientificPublicationRepository.advancedSearch(query);
     }
@@ -196,35 +214,99 @@ public class ScientificPublicationService {
 
     private String makeSparqlQuery(String query, SearchPublicationsDTO parameters) {
         String sciPub = "";
+        String literalType = "^^<http://www.w3.org/1999/02/22-rdf-syntax-ns#XMLLiteral>";
 
         if (!parameters.getTitle().equals("")) {
-            query += " <http://schema.org/headline> " + parameters.getTitle() + " ;\n";
+            query += " <http://schema.org/headline> " + "\"" + parameters.getTitle() + "\"" + literalType + " ;\n";
         }
         if (!parameters.getDateReceived().equals("")) {
-            query += " <http://schema.org/dateCreated> " + parameters.getDateReceived() + " ;\n";
+            query += " <http://schema.org/dateCreated> " + "\"" + parameters.getDateReceived() + "\"" + literalType + " ;\n";
         }
         if (!parameters.getDateRevised().equals("")) {
-            query += " <http://schema.org/dateModified> " + parameters.getDateRevised() + " ;\n";
+            query += " <http://schema.org/dateModified> " + "\"" + parameters.getDateRevised() + "\"" + literalType + " ;\n";
         }
         if (!parameters.getDateAccepted().equals("")) {
-            query += " <http://schema.org/datePublished> " + parameters.getDateAccepted() + " ;\n";
+            query += " <http://schema.org/datePublished> " + "\"" + parameters.getDateAccepted() + "\"" + literalType + " ;\n";
         }
         if (!parameters.getKeyword().equals("")) {
-            query += " <http://schema.org/keywords> " + parameters.getKeyword() + " ;\n";
+            query += " <http://schema.org/keywords> " + "\"" + parameters.getKeyword() + "\"" + literalType + " ;\n";
         }
         if (!parameters.getAuthorName().equals("")) {
             query += " <http://schema.org/author> ?author .\n" +
-                    "\t?author <http://schema.org/name> " + parameters.getAuthorName() + " .\n";
+                    "\t?author <http://schema.org/name> " + "\"" + parameters.getAuthorName() + "\"" + literalType + " .\n";
             sciPub = "?sciPub";
         }
         if (!parameters.getAuthorAffiliation().equals("")) {
             query += sciPub + " <http://schema.org/author> ?author .\n" +
-                    "\t?author <http://schema.org/affiliation> " + parameters.getAuthorAffiliation() + " .\n";
+                    "\t?author <http://schema.org/affiliation> " + "\"" + parameters.getAuthorAffiliation() + "\"" + literalType + " .\n";
             sciPub = "?sciPub";
         }
 
         query += sciPub + " <http://schema.org/creativeWorkStatus> ?status .\n";
 
         return query;
+    }
+
+    public Resource exportScientificPublicationAsXHTML(String title) throws XMLDBException, DocumentLoadingFailedException, TransformerException, IOException {
+        String sciPubHTML = getScientificPublicationAsXHTML(title);
+
+        Path file = Paths.get(title + ".html");
+        Files.write(file, sciPubHTML.getBytes(StandardCharsets.UTF_8));
+
+        return new UrlResource(file.toUri());
+    }
+
+    public Resource exportScientificPublicationAsPDF(String title) throws Exception {
+        int lastVersion = scientificPublicationRepository.getLastVersionNumber(title.replace(" ", ""));
+        String xmlDocument = scientificPublicationRepository.findByNameAndVersion(title, lastVersion);
+
+        ByteArrayOutputStream outputStream = xslTranspiler.generatePDf(xmlDocument, xslFOPath);
+
+        Path file = Paths.get(title + ".pdf");
+        Files.write(file, outputStream.toByteArray());
+
+        return new UrlResource(file.toUri());
+    }
+
+    public Resource getPublicationsMetadataAsRDF(String title) throws XMLDBException, DocumentLoadingFailedException, TransformerException, IOException {
+        int lastVersion = scientificPublicationRepository.getLastVersionNumber(title.replace(" ", ""));
+        String xmlDocument = scientificPublicationRepository.findByNameAndVersion(title, lastVersion);
+        ByteArrayOutputStream metadataStream = new ByteArrayOutputStream();
+
+        metadataExtractor.extractMetadata(new ByteArrayInputStream(xmlDocument.getBytes()), metadataStream);
+        String metadata = new String(metadataStream.toByteArray());
+
+        Model model = ModelFactory.createDefaultModel();
+        model.read(new ByteArrayInputStream(metadata.getBytes()), null);
+
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        model.write(out, SparqlUtil.RDF_XML);
+
+        Path file = Paths.get(title + "-metadata.rdf");
+        Files.write(file, out.toByteArray());
+
+        return new UrlResource(file.toUri());
+    }
+
+    public Resource getPublicationsMetadataAsJSON(String title) throws XMLDBException, DocumentLoadingFailedException, IOException {
+        int lastVersion = scientificPublicationRepository.getLastVersionNumber(title.replace(" ", ""));
+        String xmlDocument = scientificPublicationRepository.findByNameAndVersion(title, lastVersion);
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+
+        MultiValueMap<String, String> map = new LinkedMultiValueMap<>();
+        map.add("content", xmlDocument);
+        HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(map, headers);
+
+        RestTemplate restTemplate = new RestTemplate();
+        String url = "http://rdf-translator.appspot.com/convert/rdfa/json-ld/content";
+
+        String content = restTemplate.postForEntity(url, request, String.class).getBody();
+
+        Path file = Paths.get(title + "-metadata.json");
+        Files.write(file, content.getBytes(StandardCharsets.UTF_8));
+
+        return new UrlResource(file.toUri());
     }
 }

@@ -17,6 +17,7 @@ import org.xmldb.api.base.ResourceIterator;
 import org.xmldb.api.base.ResourceSet;
 import org.xmldb.api.base.XMLDBException;
 import org.xmldb.api.modules.XMLResource;
+import org.xmldb.api.modules.XPathQueryService;
 import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
 
@@ -27,7 +28,7 @@ import xml.web.services.team2.sciXiv.utils.database.BasicOperations;
 import xml.web.services.team2.sciXiv.utils.database.DBExtractor;
 import xml.web.services.team2.sciXiv.utils.database.UpdateTemplate;
 import xml.web.services.team2.sciXiv.utils.dom.DOMParser;
-import xml.web.services.team2.sciXiv.utils.factory.RDFConnectionPropertiesFactory;
+import xml.web.services.team2.sciXiv.utils.factory.RDFConnectionFactory;
 import xml.web.services.team2.sciXiv.utils.factory.XMLConnectionPropertiesFactory;
 import xml.web.services.team2.sciXiv.utils.xslt.DOMToXMLTransformer;
 
@@ -38,6 +39,10 @@ public class CoverLetterRepository {
 
 	private static final String coverLetterXsdSchemaPath = "src/main/resources/static/xmlSchemas/coverLetter.xsd";
 
+	public static final String coverLetterXSLPath = "src/main/resources/static/xsl/coverLetter.xsl";
+
+	public static final String coverLetterXSLFOPath = "src/main/resources/static/xslfo/coverLetter.xsl";
+
 	private static final String SPARQL_NAMED_GRAPH_URI = "/coverLetter/metadata";
 
 	@Autowired
@@ -47,7 +52,7 @@ public class CoverLetterRepository {
 	XMLConnectionPropertiesFactory xmlConnectionPool;
 
 	@Autowired
-	RDFConnectionPropertiesFactory rdfConnectionPool;
+	RDFConnectionFactory rdfConnectionPool;
 
 	@Autowired
 	BasicOperations basicOperations;
@@ -55,7 +60,59 @@ public class CoverLetterRepository {
 	@Autowired
 	DOMToXMLTransformer transformer;
 
-	// findByTitleAndVersion
+	@Autowired
+	ScientificPublicationRepository scientificPublicationRepository;
+
+	public String findByTitleAndVersion(String title, String version) throws XMLDBException {
+		String coverLetterStr = null;
+		XMLConnectionProperties conn = xmlConnectionPool.getConnection();
+		Collection col = basicOperations.getOrCreateCollection(collectionName, 0, conn);
+
+		XPathQueryService xPathService = (XPathQueryService) col.getService("XPathQueryService", "1.0");
+
+		xPathService.setProperty("indent", "yes");
+
+		String xQuery = "declare namespace cl = \"http://ftn.uns.ac.rs/coverLetter\";";
+		xQuery += "\n";
+		xQuery += "//cl:coverLetter[cl:publicationTitle=\"" + title + "\" and cl:version=" + version + "]";
+
+		ResourceSet resourceSet = xPathService.query(xQuery);
+
+		if (resourceSet == null) {
+			return coverLetterStr;
+		}
+
+		// ResourceIterator is used to iterate over a set of resources.
+		ResourceIterator rit = resourceSet.getIterator();
+
+		// Provides access to XML resources stored in the database. An XMLResource can
+		// be
+		// accessed either as text XML or via the DOM or SAX APIs.The default behaviour
+		// for getContent and setContent is to work with XML data as text so these
+		// methods work on String content.
+		XMLResource xmlResource = null;
+
+		// Returns true as long as there are still more resources to be iterated.
+		while (rit.hasMoreResources()) {
+			try {
+				// Returns the next Resource instance in the iterator.
+				xmlResource = (XMLResource) rit.nextResource();
+
+				// Retrieves the content from the resource. The type of the content
+				// varies depending what type of resource is being used.
+				coverLetterStr = xmlResource.getContent().toString();
+
+				return coverLetterStr;
+			} finally {
+				try {
+					((EXistResource) xmlResource).freeResources();
+				} catch (XMLDBException xmldbe) {
+					xmldbe.printStackTrace();
+				}
+			}
+		}
+		return null;
+	}
 
 	public String findById(String id) throws DocumentLoadingFailedException, XMLDBException, IOException {
 		String coverLetterStr = null;
@@ -103,7 +160,7 @@ public class CoverLetterRepository {
 	}
 
 	public String save(String coverLetter) throws SAXException, ParserConfigurationException, IOException,
-			TransformerException, DocumentStoringFailedException {
+			TransformerException, DocumentStoringFailedException, XMLDBException {
 		Document document = DOMParser.buildDocument(coverLetter, coverLetterXsdSchemaPath);
 		String lUUID = String.format("%d", new BigInteger(UUID.randomUUID().toString().replace("-", ""), 16));
 		String id = "cl" + lUUID;
@@ -111,6 +168,10 @@ public class CoverLetterRepository {
 
 		// izvucem title rada, pozovem metodu getLastVersionNumber(prosljedis ime rada
 		// tj pubTitle)
+		String publicationTitle = document.getElementsByTagName("publicationTitle").item(0).getTextContent();
+		int latestVersion = scientificPublicationRepository.getLastVersionNumber(publicationTitle);
+
+		document.getElementsByTagName("version").item(0).setTextContent(new Integer(latestVersion).toString());
 
 		String saveCoverLetter = DOMParser.doc2String(document);
 

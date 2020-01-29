@@ -78,6 +78,11 @@
 			<version>3.13.1</version>
 		</dependency>
 		<dependency>
+			<groupId>org.apache.jena</groupId>
+			<artifactId>jena-rdfconnection</artifactId>
+			<version>3.11.0</version>
+		</dependency>
+		<dependency>
 			<groupId>org.apache.xmlgraphics</groupId>
 			<artifactId>fop</artifactId>
 			<version>2.4</version>
@@ -92,6 +97,13 @@
 		    <groupId>net.sf.saxon</groupId>
 		    <artifactId>Saxon-HE</artifactId>
 		    <version>9.4</version>
+		</dependency>
+		
+		<!-- https://mvnrepository.com/artifact/com.itextpdf/html2pdf -->
+		<dependency>
+		    <groupId>com.itextpdf</groupId>
+		    <artifactId>html2pdf</artifactId>
+		    <version>2.1.6</version>
 		</dependency>
 		
 	</dependencies>

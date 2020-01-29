@@ -1,62 +1,64 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <coverLetter xmlns="http://ftn.uns.ac.rs/coverLetter"
- xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
- xsi:schemaLocation="http://ftn.uns.ac.rs/coverLetter file:/C:/Users/Nikola%20Zubic/Desktop/XMLWEB/sciXiv/Backend/src/main/resources/static/xmlSchemas/coverLetter.xsd" submissionDate="2006-05-04" id="id1">
-    <publicationTitle>publicationTitle0</publicationTitle>
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:cl="http://ftn.uns.ac.rs/coverLetter"
+    xsi:schemaLocation="http://ftn.uns.ac.rs/coverLetter file:/C:/Users/Nikola%20Zubic/Desktop/XMLWEB/sciXiv/Backend/src/main/resources/static/xmlSchemas/coverLetter.xsd" submissionDate="2006-05-04" id="id1">
+    <publicationTitle>Moja publikacija</publicationTitle>
+    <version>50</version>
     <author>
-        <name>name0</name>
-        <educationTitle>educationTitle0</educationTitle>
-        <affiliation>affiliation0</affiliation>
-        <city>city0</city>
-        <state>state0</state>
-        <phoneNumber>phoneNumber0</phoneNumber>
-        <email> @ .a</email>
+        <name>Ian Goodfellow</name>
+        <educationTitle>phD</educationTitle>
+        <affiliation>Apple</affiliation>
+        <city>Los Angeles</city>
+        <state>California, USA</state>
+        <phoneNumber>12948824895325779</phoneNumber>
+        <email>iangoodfellow@apple.com</email>
         <signature>ZGVmYXVsdA==</signature>
     </author>
     <targetPublisher>
-        <editor>editor0</editor>
-        <journal>journal0</journal>
+        <editor>Machine Learning</editor>
+        <journal>Apple AI journal</journal>
     </targetPublisher>
     <content>
         <paragraph>
-<!--            <boldText>boldText0</boldText>-->
-            <emphasizedText>emphasizedText0</emphasizedText>
-<!--            <quote>
-                <source>source0</source>
-                <quoteContent>quoteContent0</quoteContent>
-            </quote>-->
-<!--            <list ordered="false">
-                <listItem>listItem0</listItem>
-                <listItem>listItem1</listItem>
-            </list>-->
-<!--            <boldText>boldText1</boldText>-->
-            <emphasizedText>emphasizedText1</emphasizedText>
-<!--            <quote>
-                <source>source1</source>
-                <quoteContent>quoteContent1</quoteContent>
-            </quote>-->
-<!--            <list ordered="false">
-                <listItem>listItem2</listItem>
-                <listItem>listItem3</listItem>
-            </list>-->
+            <boldText>Ovo je boldovan tekst.</boldText>
+            <emphasizedText>Ovo je emphasized tekst.</emphasizedText>
+            <quote>
+                <source>Nikola Zubic</source>
+                <quoteContent>Stize AI, ne plasite se braco, sve cemo mi to kroz mreze da propustimo. Neka bude feed-forward propagacija neprestana, nek se ori aktivacija za aktivacijom.</quoteContent>
+            </quote>
+            <list ordered="true">
+                <listItem>Jabuka</listItem>
+                <listItem>Kruska</listItem>
+            </list>
+            <boldText>Boldovani tekst..</boldText>
+            <emphasizedText>Emphasized tekst...</emphasizedText>
+            <quote>
+                <source>Izvor</source>
+                <quoteContent>Evo citira se nesto iz izvora</quoteContent>
+            </quote>
+            <list ordered="false">
+                <listItem>Nije ordered</listItem>
+                <listItem>Sta da se radi</listItem>
+            </list>
         </paragraph>
         <paragraph>
-<!--            <boldText>boldText2</boldText>-->
-<!--            <emphasizedText>emphasizedText2</emphasizedText>-->
-            <quote>
-                <source>source2</source>
-                <quoteContent>quoteContent2</quoteContent>
+        <boldText>boldText2</boldText>
+        <emphasizedText>emphasizedText2</emphasizedText>
+        <quote>
+            <source>source2</source>
+            <quoteContent>quoteContent2</quoteContent>
             </quote>
-<!--            <list ordered="false">
-                <listItem>listItem4</listItem>
-                <listItem>listItem5</listItem>
-            </list>-->
-<!--            <boldText>boldText3</boldText>-->
-<!--            <emphasizedText>emphasizedText3</emphasizedText>-->
-<!--            <quote>
+            <list ordered="true">
+                <listItem>Ordered je</listItem>
+                <listItem>Svi srecni</listItem>
+            </list>
+            <boldText>boldText3</boldText>
+            <emphasizedText>emphasizedText3</emphasizedText>
+            <quote>
                 <source>source3</source>
                 <quoteContent>quoteContent3</quoteContent>
-            </quote>-->
+            </quote>
             <list ordered="false">
                 <listItem>listItem6</listItem>
                 <listItem>listItem7</listItem>

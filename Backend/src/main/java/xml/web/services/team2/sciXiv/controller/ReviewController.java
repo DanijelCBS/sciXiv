@@ -1,5 +1,6 @@
 package xml.web.services.team2.sciXiv.controller;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
 import javax.xml.parsers.ParserConfigurationException;
@@ -8,6 +9,7 @@ import javax.xml.xpath.XPathExpressionException;
 
 import org.apache.jena.sparql.pfunction.library.version;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.Resource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -87,7 +89,7 @@ public class ReviewController {
 		return new ResponseEntity<String>(xml, HttpStatus.OK);
 	}
 
-	@GetMapping(value = "/merge/{pubTitle}/version/{pubVersion}", produces = MediaType.TEXT_HTML_VALUE)
+	@GetMapping(value = "/mergeToHtml/{pubTitle}/version/{pubVersion}", produces = MediaType.TEXT_HTML_VALUE)
 	@PreAuthorize("hasRole('EDITOR')")
 	public ResponseEntity<Object> getScientificPublicationWithReviewsAsXHTML(
 			@PathVariable("pubTitle") String publicationTitle, @PathVariable("pubVersion") int publicationVersion)
@@ -98,13 +100,34 @@ public class ReviewController {
 		return new ResponseEntity<Object>(ret, HttpStatus.OK);
 	}
 	
-	@GetMapping(value = "/mergeBlind/{pubTitle}/version/{pubVersion}", produces = MediaType.TEXT_HTML_VALUE)
-	@PreAuthorize("hasRole('REVIEWER')")
+	@GetMapping(value = "/mergeToPdf/{pubTitle}/version/{pubVersion}", produces = MediaType.APPLICATION_PDF_VALUE)
+	//@PreAuthorize("hasRole('EDITOR')")
+	public ResponseEntity<Object> getScientificPublicationWithReviewsAsPDF(
+			@PathVariable("pubTitle") String publicationTitle, @PathVariable("pubVersion") int publicationVersion)
+			throws TransformerException, XMLDBException, DocumentLoadingFailedException, ParserConfigurationException, SAXException, IOException, DOMException, UserRetrievingFailedException {
+		
+		Resource ret = this.reviewService.mergePublicationAndNonCensoredReviewsToPDF(publicationTitle,
+				publicationVersion);
+		
+		return new ResponseEntity<Object>(ret, HttpStatus.OK);
+	}
+	
+	@GetMapping(value = "/mergeBlindToHtml/{pubTitle}/version/{pubVersion}", produces = MediaType.TEXT_HTML_VALUE)
 	public ResponseEntity<Object> getScientificPublicationWithBlindReviewsAsXHTML(
 			@PathVariable("pubTitle") String publicationTitle, @PathVariable("pubVersion") int publicationVersion)
 			throws TransformerException, XMLDBException, DocumentLoadingFailedException, ParserConfigurationException, SAXException, IOException, DOMException, UserRetrievingFailedException {
 		
 		String ret = this.reviewService.mergePublicationAndBlindReviewsToXHTML(publicationTitle,
+				publicationVersion);
+		return new ResponseEntity<Object>(ret, HttpStatus.OK);
+	}
+	
+	@GetMapping(value = "/mergeBlindToPdf/{pubTitle}/version/{pubVersion}", produces = MediaType.APPLICATION_PDF_VALUE)
+	public ResponseEntity<Object> getScientificPublicationWithBlindReviewsAsPDF(
+			@PathVariable("pubTitle") String publicationTitle, @PathVariable("pubVersion") int publicationVersion)
+			throws TransformerException, XMLDBException, DocumentLoadingFailedException, ParserConfigurationException, SAXException, IOException, DOMException, UserRetrievingFailedException {
+		
+		Resource ret = this.reviewService.mergePublicationAndBlindReviewsToPDF(publicationTitle,
 				publicationVersion);
 		return new ResponseEntity<Object>(ret, HttpStatus.OK);
 	}

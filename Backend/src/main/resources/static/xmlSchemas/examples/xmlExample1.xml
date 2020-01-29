@@ -45,7 +45,7 @@
             of the neural models, as well as the ability of this approach to locate symbols in the input score.
         </sp:paragraph>
     </sp:abstract>
-    <sp:chapter sp:id="End to End Neural Optical Music Recognition of Monophonic Scores/chapter/1">
+    <sp:chapter level="1" sp:id="End to End Neural Optical Music Recognition of Monophonic Scores/chapter/1">
         <sp:title>1. Introduction</sp:title>
         <sp:paragraph sp:id="End to End Neural Optical Music Recognition of Monophonic Scores/chapter/1/paragraph/1">
             Despite the great advantages of its development, OMR is far from being totally reliable as
@@ -77,7 +77,7 @@
             </sp:table>
         </sp:paragraph>
     </sp:chapter>
-    <sp:chapter sp:id="End to End Neural Optical Music Recognition of Monophonic Scores/chapter/2">
+    <sp:chapter level="1" sp:id="End to End Neural Optical Music Recognition of Monophonic Scores/chapter/2">
         <sp:title>2. Background</sp:title>
         <sp:paragraph sp:id="End to End Neural Optical Music Recognition of Monophonic Scores/chapter/2/paragraph/1">
             We believe that the problem to progress in OMR for CWMN lies in the complexity involved in

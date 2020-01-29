@@ -1,9 +1,13 @@
 package xml.web.services.team2.sciXiv.service;
 
 import java.io.BufferedReader;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.StringReader;
 import java.io.StringWriter;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
 
 import javax.annotation.PostConstruct;
@@ -16,6 +20,8 @@ import javax.xml.transform.stream.StreamResult;
 import javax.xml.xpath.XPathExpressionException;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.UrlResource;
 import org.springframework.data.rest.webmvc.ResourceNotFoundException;
 import org.springframework.stereotype.Service;
 import org.w3c.dom.DOMException;
@@ -35,6 +41,7 @@ import xml.web.services.team2.sciXiv.exception.InvalidXmlException;
 import xml.web.services.team2.sciXiv.exception.UserRetrievingFailedException;
 import xml.web.services.team2.sciXiv.model.TPublications;
 import xml.web.services.team2.sciXiv.model.TUser;
+import xml.web.services.team2.sciXiv.repository.CoverLetterRepository;
 import xml.web.services.team2.sciXiv.repository.ReviewRepository;
 import xml.web.services.team2.sciXiv.repository.UserRepository;
 import xml.web.services.team2.sciXiv.utils.dom.DOMParser;
@@ -48,7 +55,14 @@ public class ReviewService {
 
 	private static String PUBLICATION_REVIEWS_MERGED_TO_HTML_XSL = "src/main/resources/static/xsl/publicationWithReviewsToHTML.xsl";
 	
+	private static String PUBLICATION_REVIEWS_MERGED_FOR_PDF_XSL = "src/main/resources/static/xsl/publicationWithReviewsForPdf.xsl";
+	
 	private static String PUBLICATION_BLIND_REVIEWS_MERGED_TO_HTML_XSL = "src/main/resources/static/xsl/publicationAndBlindReviewsToHTML.xsl";
+	
+	private static String PUBLICATION_BLIND_REVIEWS_MERGED_FOR_PDF_XSL = "src/main/resources/static/xsl/publicationWithBlindReviewsForPdf.xsl";
+
+	
+	public static String PUBBICATION_REVIEWS_XSLFO = "src/main/resources/static/xslfo/templatesForCoverLetterAndReviews.xsl";
 
 	@Autowired
 	private ScientificPublicationService scientificPublicationService;
@@ -140,9 +154,31 @@ public class ReviewService {
 		return xslTranspiler.generateHTML(mergeToXml, PUBLICATION_REVIEWS_MERGED_TO_HTML_XSL);
 	}
 	
+	public Resource mergePublicationAndNonCensoredReviewsToPDF(String publicationTitle, int publicationVersion) throws DOMException, XMLDBException, DocumentLoadingFailedException, ParserConfigurationException, SAXException, IOException, TransformerException, UserRetrievingFailedException {
+		String mergeToXml = this.mergePublicationAndReviews(publicationTitle, publicationVersion);
+		ByteArrayOutputStream outputStream = xslTranspiler.generatePDF(mergeToXml,
+				PUBLICATION_REVIEWS_MERGED_FOR_PDF_XSL, PUBBICATION_REVIEWS_XSLFO);
+		
+		Path file = Paths.get(String.format("%s_withReviews.pdf", publicationTitle));
+		Files.write(file, outputStream.toByteArray());
+
+		return new UrlResource(file.toUri());
+	}
+	
 	public String mergePublicationAndBlindReviewsToXHTML(String publicationTitle, int publicationVersion) throws DOMException, XMLDBException, DocumentLoadingFailedException, ParserConfigurationException, SAXException, IOException, TransformerException, UserRetrievingFailedException {
 		String mergeToXml = this.mergePublicationAndReviews(publicationTitle, publicationVersion);
 		return xslTranspiler.generateHTML(mergeToXml, PUBLICATION_BLIND_REVIEWS_MERGED_TO_HTML_XSL);
+	}
+	
+	public Resource mergePublicationAndBlindReviewsToPDF(String publicationTitle, int publicationVersion) throws DOMException, XMLDBException, DocumentLoadingFailedException, ParserConfigurationException, SAXException, IOException, TransformerException, UserRetrievingFailedException {
+		String mergeToXml = this.mergePublicationAndReviews(publicationTitle, publicationVersion);
+		ByteArrayOutputStream outputStream = xslTranspiler.generatePDF(mergeToXml,
+				PUBLICATION_BLIND_REVIEWS_MERGED_FOR_PDF_XSL, PUBBICATION_REVIEWS_XSLFO);
+		
+		Path file = Paths.get(String.format("%s_withReviews.pdf", publicationTitle));
+		Files.write(file, outputStream.toByteArray());
+
+		return new UrlResource(file.toUri());
 	}
 
 	public void removeReviewAssignment(String reviewerId, String publicationToReviewId)

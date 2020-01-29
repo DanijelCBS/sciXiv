@@ -81,6 +81,40 @@ public class NotificationService {
 		return document;
 	}
 
+	public Document fillDataWithoutReciever(Document document, String content, String publicationId, TUser sender) {
+		document.getElementsByTagName("content").item(0).setTextContent(content);
+		document.getElementsByTagName("publicationName").item(0).setTextContent(publicationId);
+		Date currentDate = new Date();
+		DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+		document.getElementsByTagName("notification").item(0).getAttributes().getNamedItem("date")
+				.setTextContent((df.format(currentDate)));
+
+		document.getElementsByTagName("sender").item(0).getChildNodes().item(0).setTextContent(sender.getFirstName());
+		document.getElementsByTagName("sender").item(0).getChildNodes().item(1)
+				.setTextContent(sender.getRole().toString());
+		document.getElementsByTagName("sender").item(0).getChildNodes().item(2).setTextContent(sender.getEmail());
+
+		return document;
+	}
+
+	public void addedReviewerAssignment(String[] emails, String scientificPublicationTitle, TUser sender)
+			throws IOException, SAXException, ParserConfigurationException, TransformerException, MessagingException {
+		Document document = notificationRepository.retrieveNotification();
+		String content = "Reviewer assignment has been added for the publication with title: \""
+				+ scientificPublicationTitle + "\"";
+		document = fillDataWithoutReciever(document, content, scientificPublicationTitle, sender);
+		sendNotificationByMail(emails, document);
+	}
+
+	public void addedReviewerAssignments(String[] emails, String scientificPublicationTitle, TUser sender)
+			throws IOException, SAXException, ParserConfigurationException, TransformerException, MessagingException {
+		Document document = notificationRepository.retrieveNotification();
+		String content = "You have been chosen as reviewer for the scientific publication with title: \""
+				+ scientificPublicationTitle + "\"";
+		document = fillDataWithoutReciever(document, content, scientificPublicationTitle, sender);
+		sendNotificationByMail(emails, document);
+	}
+
 	public void sendNotificationByMail(String[] emails, Document document)
 			throws TransformerException, ParserConfigurationException, MessagingException {
 		String notificationStr = DOMParser.doc2String(document);

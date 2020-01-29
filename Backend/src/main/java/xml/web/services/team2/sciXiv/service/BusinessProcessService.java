@@ -36,6 +36,9 @@ public class BusinessProcessService {
 	@Autowired
 	ScientificPublicationRepository scientificPublicationRepository;
 
+	@Autowired
+	NotificationService notificationService;
+
 	public String createBusinessProcess(String scientificPublicationTitle) throws Exception {
 		BusinessProcess businessProcess = new BusinessProcess();
 
@@ -114,15 +117,25 @@ public class BusinessProcessService {
 					"List of reviewer assignments is not valid because some of the user's e-mails are not present in our database");
 		}
 
+		TUser sender = new TUser();
+		// TODO: implementirati metodu koja preuzme jednog editora
+
+		String[] emails = new String[userEmails.size()];
+		int i = 0;
+
 		for (String userEmail : userEmails) {
-			// send notification to user
 			TUser user = userRepository.getByEmail(userEmail);
+			emails[i] = userEmail;
+			i += 1;
 
 			TReviewerAssignment reviewerAssignment = new TReviewerAssignment();
 			reviewerAssignment.setReviewerEmail(userEmail);
 			reviewerAssignment.setStatus(TReviewStatus.ASSIGNED);
 			reviewerAssignments.add(reviewerAssignment);
 		}
+
+		// send notifications to users
+		notificationService.addedReviewerAssignments(emails, scientificPublicationTitle, sender);
 
 		businessProcessRepository.saveObject(businessProcess);
 	}

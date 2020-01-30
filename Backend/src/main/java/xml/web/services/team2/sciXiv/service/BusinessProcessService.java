@@ -2,6 +2,7 @@ package xml.web.services.team2.sciXiv.service;
 
 import java.io.IOException;
 import java.math.BigInteger;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.xml.bind.JAXBException;
@@ -36,6 +37,9 @@ public class BusinessProcessService {
 	UserRepository userRepository;
 
 	@Autowired
+	UserService userService;
+
+	@Autowired
 	ScientificPublicationRepository scientificPublicationRepository;
 
 	@Autowired
@@ -44,10 +48,8 @@ public class BusinessProcessService {
 	public String createBusinessProcess(String scientificPublicationTitle) throws Exception {
 		BusinessProcess businessProcess = new BusinessProcess();
 
-		int lastVersion = scientificPublicationRepository.getLastVersionNumber(scientificPublicationTitle);
-
 		businessProcess.setScientificPublicationTitle(scientificPublicationTitle);
-		businessProcess.setVersion(BigInteger.valueOf(lastVersion));
+		businessProcess.setVersion(BigInteger.valueOf(1));
 		businessProcess.setProcessState(TProcessStateEnum.SUBMITTED);
 		businessProcess.setReviewerAssignments(new BusinessProcess.ReviewerAssignments());
 
@@ -135,13 +137,16 @@ public class BusinessProcessService {
 			reviewerAssignments.add(reviewerAssignment);
 		}
 
+		businessProcess.setProcessState(TProcessStateEnum.ON_REVIEW);
+
 		// send notifications to users
 		notificationService.addedReviewerAssignments(emails, scientificPublicationTitle, sender);
 
 		businessProcessRepository.saveObject(businessProcess);
 	}
 
-	public void changeReviewStatus(String scientificPublicationTitle, String userEmail, TReviewStatus reviewStatus) throws Exception {
+	public void changeReviewStatus(String scientificPublicationTitle, String userEmail, TReviewStatus reviewStatus)
+			throws Exception {
 		BusinessProcess businessProcess = businessProcessRepository
 				.findObjectByScientificPublicationTitle(scientificPublicationTitle);
 
@@ -169,8 +174,9 @@ public class BusinessProcessService {
 		reviewerAssignment.setStatus(reviewStatus);
 		businessProcessRepository.saveObject(businessProcess);
 	}
-	
-	public TReviewStatus getReivewStatus(String scientificPublicationTitle, String userEmail) throws IOException, XMLDBException, JAXBException {
+
+	public TReviewStatus getReivewStatus(String scientificPublicationTitle, String userEmail)
+			throws IOException, XMLDBException, JAXBException {
 		BusinessProcess businessProcess = businessProcessRepository
 				.findObjectByScientificPublicationTitle(scientificPublicationTitle);
 
@@ -188,7 +194,7 @@ public class BusinessProcessService {
 			throw new NotOnTheReviewerListException(
 					"User with email: " + userEmail + " is not on this list for reviews.");
 		}
-		
+
 		return reviewerAssignment.getStatus();
 	}
 
@@ -210,7 +216,127 @@ public class BusinessProcessService {
 		}
 
 		businessProcess.setProcessState(processState);
+		if (processState == TProcessStateEnum.REVISED) {
+			int latestVersion = scientificPublicationRepository
+					.getLastVersionNumber(scientificPublicationTitle.replace(" ", ""));
+		}
+
 		businessProcessRepository.saveObject(businessProcess);
+	}
+
+	public void publishPaper(String publicationTitle) throws Exception {
+		TProcessStateEnum currentState = getProcessState(publicationTitle);
+		if (currentState != TProcessStateEnum.ON_REVIEW) {
+			throw new ChangeProcessStateException(String.format(
+					"Can not publish scientific publication unless its state is ON_REVIEW. Current state is %s.",
+					currentState.toString()));
+		}
+		
+		this.changeProcessState(publicationTitle, TProcessStateEnum.PUBLISHED);
+		// TODO: change status in scientific publication instance(s)
+
+		// Notify authors
+		List<TUser> authors = userRepository.findAuthorsOfPublication(publicationTitle);
+		String notificationMessage = String.format("Your paper, %s, has been accepted and published on our system.",
+				publicationTitle);
+		TUser sender = userRepository.getEditor();
+		for (TUser author : authors) {
+			String[] emails = new String[] { author.getEmail() };
+			notificationService.notificationSendRequest(emails, notificationMessage, publicationTitle, sender, author);
+		}
+
+	}
+
+	public void rejectPaper(String publicationTitle) throws Exception {
+		TProcessStateEnum currentState = getProcessState(publicationTitle);
+		if (currentState != TProcessStateEnum.ON_REVIEW) {
+			throw new ChangeProcessStateException(String.format(
+					"Can not reject scientific publication unless its state is ON_REVIEW. Current state is %s.",
+					currentState.toString()));
+		}
+		
+		this.changeProcessState(publicationTitle, TProcessStateEnum.REJECTED);
+		// TODO: change status in scientific publication instance(s)
+
+		// Notify authors
+		List<TUser> authors = userRepository.findAuthorsOfPublication(publicationTitle);
+		String notificationMessage = String.format("Your paper, %s, has been rejected.", publicationTitle);
+		TUser sender = userRepository.getEditor();
+		for (TUser author : authors) {
+			String[] emails = new String[] { author.getEmail() };
+			notificationService.notificationSendRequest(emails, notificationMessage, publicationTitle, sender, author);
+		}
+
+	}
+
+	public void requestRevision(String publicationTitle) throws Exception {
+		TProcessStateEnum currentState = getProcessState(publicationTitle);
+		if (currentState != TProcessStateEnum.ON_REVIEW) {
+			throw new ChangeProcessStateException(String.format(
+					"Can not request revision for a scientific publication unless its state is ON_REVIEW. Current state is %s.",
+					currentState.toString()));
+		}
+		
+		this.changeProcessState(publicationTitle, TProcessStateEnum.ON_REVISION);
+
+		// Notify authors
+		List<TUser> authors = userRepository.findAuthorsOfPublication(publicationTitle);
+		String notificationMessage = String.format(
+				"You have been requested to revise your papaer: %s. You can see the reviews on our website.",
+				publicationTitle);
+		TUser sender = userRepository.getEditor();
+		for (TUser author : authors) {
+			String[] emails = new String[] { author.getEmail() };
+			notificationService.notificationSendRequest(emails, notificationMessage, publicationTitle, sender, author);
+		}
+
+	}
+
+	public void withdrawPaper(String publicationTitle, String currentUserEmail) throws Exception {
+		TUser initiator = userService.findByEmail(currentUserEmail);
+		boolean owner = false;
+		String targetId = publicationTitle.replace(" ", "");
+		for (String sciPubId : initiator.getOwnPublications().getPublicationID()) {
+			if (sciPubId.equals(targetId)) {
+				owner = true;
+				break;
+			}
+		}
+
+		if (!owner) {
+			throw new ChangeReviewStatusException(String.format(
+					"Withdrawal of publication %s can not be completed because you do not own it.", publicationTitle));
+		}
+
+		this.changeProcessState(publicationTitle, TProcessStateEnum.WITHDRAWN);
+		// TODO: update status in publication instance(s)
+
+		// Notify editor and reviewers
+		BusinessProcess businessProcess = businessProcessRepository
+				.findObjectByScientificPublicationTitle(publicationTitle);
+		List<TUser> observers = new ArrayList<TUser>();
+		observers.add(userRepository.getEditor());
+		for (TReviewerAssignment reivewAssignment : businessProcess.getReviewerAssignments().getReviewerAssignment()) {
+			String reviewerEmail = reivewAssignment.getReviewerEmail();
+			TUser reviewer = userRepository.getByEmail(reviewerEmail);
+			if (reviewer != null) {
+				observers.add(reviewer);
+			}
+		}
+
+		String notificationMessage = String.format("The publication %s has been withdrawn.", publicationTitle);
+		for (TUser reviewer : observers) {
+			this.userService.removePublicationToReview(publicationTitle, reviewer.getEmail());
+			String[] emails = new String[] { reviewer.getEmail() };
+			notificationService.notificationSendRequest(emails, notificationMessage, publicationTitle, initiator,
+					reviewer);
+		}
+	}
+
+	public TProcessStateEnum getProcessState(String publicationTitle)
+			throws IOException, XMLDBException, JAXBException {
+		BusinessProcess process = getBusinessProcessObject(publicationTitle);
+		return process.getProcessState();
 	}
 
 }

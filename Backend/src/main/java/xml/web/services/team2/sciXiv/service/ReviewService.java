@@ -34,6 +34,7 @@ import org.w3c.dom.Text;
 import org.xml.sax.SAXException;
 import org.xmldb.api.base.XMLDBException;
 
+import xml.web.services.team2.sciXiv.exception.ChangeProcessStateException;
 import xml.web.services.team2.sciXiv.exception.DocumentLoadingFailedException;
 import xml.web.services.team2.sciXiv.exception.DocumentParsingFailedException;
 import xml.web.services.team2.sciXiv.exception.DocumentStoringFailedException;
@@ -44,6 +45,7 @@ import xml.web.services.team2.sciXiv.exception.UserSavingFailedException;
 import xml.web.services.team2.sciXiv.model.TPublications;
 import xml.web.services.team2.sciXiv.model.TUser;
 import xml.web.services.team2.sciXiv.model.businessProcess.BusinessProcess;
+import xml.web.services.team2.sciXiv.model.businessProcess.TProcessStateEnum;
 import xml.web.services.team2.sciXiv.model.businessProcess.TReviewStatus;
 import xml.web.services.team2.sciXiv.model.businessProcess.TReviewerAssignment;
 import xml.web.services.team2.sciXiv.repository.CoverLetterRepository;
@@ -103,8 +105,9 @@ public class ReviewService {
 
 		// save review
 		String reviewId = reviewRepository.save(reviewDOM);
-		
-		Node publicationTitleNode = (Node) reviewDOM.getElementsByTagNameNS("http://ftn.uns.ac.rs/review", "publicationTitle").item(0);
+
+		Node publicationTitleNode = (Node) reviewDOM
+				.getElementsByTagNameNS("http://ftn.uns.ac.rs/review", "publicationTitle").item(0);
 		String publicationTitle = publicationTitleNode.getTextContent();
 
 		// update assignment statuses
@@ -115,8 +118,9 @@ public class ReviewService {
 		TUser sender = this.userService.findByEmail(reviewerEmail);
 		TUser reciever = this.userService.getEditor();
 		String[] emails = new String[] { reciever.getEmail() };
-		String notificationMessage = String.format("Reviewer %s %s has submitted a review for scientific publication %s.",
-				sender.getFirstName(), sender.getLastName(), publicationTitle);
+		String notificationMessage = String.format(
+				"Reviewer %s %s has submitted a review for scientific publication %s.", sender.getFirstName(),
+				sender.getLastName(), publicationTitle);
 		this.notificationService.notificationSendRequest(emails, notificationMessage, publicationTitle, sender,
 				reciever);
 
@@ -140,6 +144,13 @@ public class ReviewService {
 	}
 
 	public void assingReviews(String publicationTitle, List<String> reviewerEmails) throws Exception {
+		TProcessStateEnum currentState = businessProcessService.getProcessState(publicationTitle);
+		if (currentState != TProcessStateEnum.SUBMITTED && currentState != TProcessStateEnum.REVISED) {
+			throw new ChangeProcessStateException(String.format(
+					"Can not assign reviewers to a scientific publication unless it is in state SUBMITTED or state REVISED. Current state is: %s",
+					currentState.toString()));
+		}
+
 		for (String reviewerEmail : reviewerEmails) {
 			this.userService.addPublicationToReview(publicationTitle, reviewerEmail);
 		}
@@ -159,7 +170,7 @@ public class ReviewService {
 		this.notificationService.notificationSendRequest(emails, notificationMessage, publicationTitle, sender,
 				reciever);
 	}
-	
+
 	public void rejectReviewAssignment(String publicationTitle, String reviewerEmail) throws Exception {
 		this.businessProcessService.changeReviewStatus(publicationTitle, reviewerEmail, TReviewStatus.REJECTED);
 		this.userService.removePublicationToReview(publicationTitle, reviewerEmail);

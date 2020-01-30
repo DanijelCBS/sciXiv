@@ -263,4 +263,51 @@ public class UserRepository {
 
         return user;
     }
+
+	public List<TUser> findAuthorsOfPublication(String publicationTitle) throws UserRetrievingFailedException {
+		List<TUser> authors = new ArrayList<TUser>();
+    	String publicationId = publicationTitle.replace(" ", "");
+    	String xQuery = String.format(
+    			"for $user in doc(\"%s\")//user\n" + 
+    			"where \"%s\" = $user/ownPublications/publicationID\n" + 
+    			"return $user", 
+    			usersCollection + "/" + usersDocument, publicationId);
+    	
+    	Collection col;
+        TUser user = null;
+        XMLConnectionProperties conn = null;
+        try {
+            conn = connectionPool.getConnection();
+            col = basicOperations.getOrCreateCollection(usersCollection, 0, conn);
+            XPathQueryService xPathService = (XPathQueryService) col.getService("XPathQueryService", "1.0");
+            xPathService.setProperty("indent", "yes");
+            ResourceSet result = xPathService.query(xQuery);
+            ResourceIterator it = result.getIterator();
+            Resource res = null;
+
+            while(it.hasMoreResources()) {
+                try {
+                    res = it.nextResource();
+                    user = unmarshal((XMLResource) res);
+                    authors.add(user);
+                } finally {
+                    try {
+                        ((EXistResource)res).freeResources();
+                    } catch (XMLDBException xe) {
+                        xe.printStackTrace();
+                    }
+                }
+            }
+        }
+        catch (Exception e) {
+        	e.printStackTrace();
+            throw new UserRetrievingFailedException("Failed to get user from database");
+        }
+        finally {
+            connectionPool.releaseConnection(conn);
+        }
+    	
+    	
+    	return authors;
+	}
 }

@@ -10,8 +10,11 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import xml.web.services.team2.sciXiv.dto.SciPubDTO;
 import xml.web.services.team2.sciXiv.dto.SearchPublicationsDTO;
+import xml.web.services.team2.sciXiv.exception.ChangeProcessStateException;
 import xml.web.services.team2.sciXiv.exception.DocumentLoadingFailedException;
 import xml.web.services.team2.sciXiv.exception.DocumentParsingFailedException;
+import xml.web.services.team2.sciXiv.exception.InvalidDataException;
+import xml.web.services.team2.sciXiv.exception.InvalidXmlException;
 import xml.web.services.team2.sciXiv.service.ScientificPublicationService;
 
 import javax.servlet.http.HttpServletResponse;
@@ -120,7 +123,7 @@ public class ScientificPublicationController {
     public ResponseEntity<Object> addScientificPublication(@RequestBody String sciPub) {
         try {
             return new ResponseEntity<>(scientificPublicationService.save(sciPub), HttpStatus.CREATED);
-        } catch (DocumentParsingFailedException e) {
+        } catch (DocumentParsingFailedException | ChangeProcessStateException | InvalidDataException | InvalidXmlException e) {
         	e.printStackTrace();
             return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
         } catch (Exception e) {
@@ -133,7 +136,7 @@ public class ScientificPublicationController {
     public ResponseEntity<Object> reviseScientificPublication(@RequestBody String sciPub) {
         try {
             return new ResponseEntity<>(scientificPublicationService.revise(sciPub), HttpStatus.OK);
-        } catch (DocumentParsingFailedException e) {
+        } catch (DocumentParsingFailedException | ChangeProcessStateException | InvalidDataException | InvalidXmlException e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
         } catch (Exception e) {
             return new ResponseEntity<>("An error occurred while revising document", HttpStatus.BAD_REQUEST);

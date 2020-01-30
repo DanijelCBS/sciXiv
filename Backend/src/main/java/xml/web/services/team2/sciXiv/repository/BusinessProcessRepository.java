@@ -98,7 +98,10 @@ public class BusinessProcessRepository {
 	}
 
 	public List<BusinessProcess> findAll() throws IOException, XMLDBException, JAXBException {
-		String xPathSelector = "//businessProcess";
+		String xPathSelector = String.format(
+				"declare namespace bp = \"http://ftn.uns.ac.rs/businessProcess\";\n" + 
+				"collection(\"%s\")//bp:businessProcess", collectionName);
+		
 		ResourceSet resultSet = DBExtractor.executeXPathQuery(collectionName, xPathSelector,
 				TARGET_NAMESPACE_BUSINESS_PROCESS);
 

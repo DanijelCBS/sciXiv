@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.xml.bind.JAXBException;
+
 import org.exist.xmldb.EXistResource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
@@ -41,20 +43,23 @@ public class BusinessProcessRepository {
 	XMLConnectionPropertiesFactory xmlConnectionPool;
 
 	public String save(String xmlProcess, String scientificPublicationTitle) throws Exception {
-		DBExtractor.save(collectionName, scientificPublicationTitle, xmlProcess);
+		DBExtractor.save(collectionName, scientificPublicationTitle.replace(" ", ""), xmlProcess);
 		return scientificPublicationTitle;
 	}
 
 	public String saveObject(BusinessProcess businessProcess) throws Exception {
-		String xmlProcess = marshallerService.marshal(businessProcess);
-		DBExtractor.save(collectionName, businessProcess.getScientificPublicationTitle(), xmlProcess);
+		String xmlProcess = marshallerService.marshal(businessProcess, "xml.web.services.team2.sciXiv.model.businessProcess");
+		DBExtractor.save(collectionName, businessProcess.getScientificPublicationTitle().replace(" ", ""), xmlProcess);
 		return businessProcess.getScientificPublicationTitle();
 	}
 
 	public String findByScientificPublicationTitle(String scientificPublicationTitle)
 			throws IOException, XMLDBException {
-		String xPathSelector = String.format("//businessProcess[scientificPublicationTitle[text()='%s']]",
+		String xPathSelector = String.format(
+				"declare namespace bp = \"http://ftn.uns.ac.rs/businessProcess\";\n" + 
+				"//bp:businessProcess[bp:scientificPublicationTitle[text()=\"%s\"]]",
 				scientificPublicationTitle);
+		
 		ResourceSet resultSet = DBExtractor.executeXPathQuery(collectionName, xPathSelector,
 				TARGET_NAMESPACE_BUSINESS_PROCESS);
 
@@ -83,17 +88,20 @@ public class BusinessProcessRepository {
 	}
 
 	public BusinessProcess findObjectByScientificPublicationTitle(String scientificPublicationTitle)
-			throws IOException, XMLDBException {
+			throws IOException, XMLDBException, JAXBException {
 		String xmlProcess = findByScientificPublicationTitle(scientificPublicationTitle);
 
 		if (xmlProcess == null) {
 			return null;
 		}
-		return (BusinessProcess) unMarshallerService.unmarshal(xmlProcess);
+		return (BusinessProcess) unMarshallerService.unmarshal(xmlProcess, "xml.web.services.team2.sciXiv.model.businessProcess");
 	}
 
-	public List<BusinessProcess> findAll() throws IOException, XMLDBException {
-		String xPathSelector = "//businessProcess";
+	public List<BusinessProcess> findAll() throws IOException, XMLDBException, JAXBException {
+		String xPathSelector = String.format(
+				"declare namespace bp = \"http://ftn.uns.ac.rs/businessProcess\";\n" + 
+				"collection(\"%s\")//bp:businessProcess", collectionName);
+		
 		ResourceSet resultSet = DBExtractor.executeXPathQuery(collectionName, xPathSelector,
 				TARGET_NAMESPACE_BUSINESS_PROCESS);
 
@@ -108,7 +116,7 @@ public class BusinessProcessRepository {
 
 		while (i.hasMoreResources()) {
 			res = (XMLResource) i.nextResource();
-			processes.add((BusinessProcess) unMarshallerService.unmarshal(res.getContent().toString()));
+			processes.add((BusinessProcess) unMarshallerService.unmarshal(res.getContent().toString(), "xml.web.services.team2.sciXiv.model.businessProcess"));
 		}
 
 		if (res != null)
@@ -121,7 +129,7 @@ public class BusinessProcessRepository {
 		return processes;
 	}
 
-	public List<BusinessProcess> findByReviewerEmail(String reviewerEmail) throws IOException, XMLDBException {
+	public List<BusinessProcess> findByReviewerEmail(String reviewerEmail) throws IOException, XMLDBException, JAXBException {
 		String xPathSelector = String.format(
 				"//businessProcess[reviewerAssignments/reviewerAssignment/reviewerEmail[text()='%s']]", reviewerEmail);
 		ResourceSet resultSet = DBExtractor.executeXPathQuery(collectionName, xPathSelector,
@@ -138,7 +146,7 @@ public class BusinessProcessRepository {
 
 		while (i.hasMoreResources()) {
 			res = (XMLResource) i.nextResource();
-			processes.add((BusinessProcess) unMarshallerService.unmarshal(res.getContent().toString()));
+			processes.add((BusinessProcess) unMarshallerService.unmarshal(res.getContent().toString(), "xml.web.services.team2.sciXiv.model.businessProcess"));
 		}
 
 		if (res != null)

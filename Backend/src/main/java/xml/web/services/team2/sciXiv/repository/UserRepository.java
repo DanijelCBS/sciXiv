@@ -25,6 +25,8 @@ import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 import java.io.ByteArrayOutputStream;
 import java.io.OutputStream;
+import java.util.ArrayList;
+import java.util.List;
 
 @Repository
 public class UserRepository {
@@ -44,12 +46,21 @@ public class UserRepository {
     @Autowired
     PasswordEncoder passwordEncoder;
     
+    private String editorEmail = "mihajlokusljic97@gmail.com";
+    
+    public UserRepository() {
+    	super();
+    }
+    
     public TUser save(TUser user) throws UserSavingFailedException {
         XMLConnectionProperties conn = null;
         try {
             conn = connectionPool.getConnection();
             String userXML = createUserXmlFragment(user);
             Collection col = basicOperations.getOrCreateCollection(usersCollection, 0, conn);
+            // delete old data
+            this.deleteUser(user.getEmail(), col);
+            // insert new data
             updateService.append(col, usersDocument, "", "/users", userXML);
         }
         catch (Exception e) {
@@ -80,6 +91,7 @@ public class UserRepository {
                 try {
                     res = it.nextResource();
                     user = unmarshal((XMLResource) res);
+                    break;
                 } finally {
                     try {
                         ((EXistResource)res).freeResources();
@@ -100,6 +112,82 @@ public class UserRepository {
         return user;
     }
     
+    public TUser getEditor() {
+    	try {
+    		
+			TUser editor = this.getByEmail(this.editorEmail);
+			if(editor == null) {
+				editor = this.initEditor();
+			}
+			return editor;
+			
+		} catch (UserRetrievingFailedException e) {
+			e.printStackTrace();
+			return null;
+		}
+    }
+    
+    public List<TUser> getPossibleReviewersForPublicaton(String publicationTitle) throws UserRetrievingFailedException {
+    	List<TUser> reviewers = new ArrayList<TUser>();
+    	String publicationId = publicationTitle.replace(" ", "");
+    	String xQuery = String.format(
+    			"for $user in doc(\"%s\")//user\n" + 
+    			"where ($user/role = \"reviewer\" or $user/role = \"editor\")\n" + 
+    			"and not (\"%s\" = $user/ownPublications/publicationID)\n" + 
+    			"and not (\"%s\" = $user/publicationsToReview/publicationID)\n" + 
+    			"return $user", 
+    			usersCollection + "/" + usersDocument, publicationId, publicationTitle);
+    	
+    	Collection col;
+        TUser user = null;
+        XMLConnectionProperties conn = null;
+        try {
+            conn = connectionPool.getConnection();
+            col = basicOperations.getOrCreateCollection(usersCollection, 0, conn);
+            XPathQueryService xPathService = (XPathQueryService) col.getService("XPathQueryService", "1.0");
+            xPathService.setProperty("indent", "yes");
+            ResourceSet result = xPathService.query(xQuery);
+            ResourceIterator it = result.getIterator();
+            Resource res = null;
+
+            while(it.hasMoreResources()) {
+                try {
+                    res = it.nextResource();
+                    user = unmarshal((XMLResource) res);
+                    reviewers.add(user);
+                } finally {
+                    try {
+                        ((EXistResource)res).freeResources();
+                    } catch (XMLDBException xe) {
+                        xe.printStackTrace();
+                    }
+                }
+            }
+        }
+        catch (Exception e) {
+        	e.printStackTrace();
+            throw new UserRetrievingFailedException("Failed to get user from database");
+        }
+        finally {
+            connectionPool.releaseConnection(conn);
+        }
+    	
+    	
+    	return reviewers;
+    }
+    
+    private TUser initEditor() {
+    	TUser editor = new TUser();
+		editor.setEmail(this.editorEmail);
+		editor.setPassword(passwordEncoder.encode("admin"));
+		editor.setRole(TRole.EDITOR);
+		editor.setFirstName("System");
+		editor.setLastName("Administrator");
+		editor.setOwnPublications(new TPublications());
+		editor.setPublicationsToReview(new TPublications());
+		return editor;
+    }
+    
     @PostConstruct
     private void initializeUsersIfNone() throws UserSavingFailedException {
     	XMLConnectionProperties conn = null;
@@ -109,14 +197,7 @@ public class UserRepository {
 			XMLResource usersFile = (XMLResource) col.getResource(usersDocument);
 			if (usersFile == null) {
 				Users users = new Users();
-				TUser systemAdmin = new TUser();
-				systemAdmin.setEmail("system@admin.com");
-				systemAdmin.setPassword(passwordEncoder.encode("admin"));
-				systemAdmin.setRole(TRole.EDITOR);
-				systemAdmin.setFirstName("System");
-				systemAdmin.setLastName("Administrator");
-				systemAdmin.setOwnPublications(new TPublications());
-				systemAdmin.setPublicationsToReview(new TPublications());
+				TUser systemAdmin = this.initEditor();
 				users.getUsers().add(systemAdmin);
 				String initialUsersContent = marshal(users);
 				usersFile = (XMLResource) col.createResource(usersDocument, XMLResource.RESOURCE_TYPE);
@@ -131,6 +212,19 @@ public class UserRepository {
     	finally {
             connectionPool.releaseConnection(conn);
         }
+    }
+    
+    private void deleteUser(String userEmail, Collection usersCollection) throws UserRetrievingFailedException, XMLDBException {
+    	String xQuery = String.format(
+    			"for $user in doc(\"%s\")//user\n" + 
+    			"where $user/email = \"%s\"\n" + 
+    			"return (update delete $user)", 
+    			this.usersCollection + "/" + this.usersDocument,
+    			userEmail);
+    	
+    	XPathQueryService xPathService = (XPathQueryService) usersCollection.getService("XPathQueryService", "1.0");
+		xPathService.setProperty("indent", "yes");
+		xPathService.query(xQuery);
     }
 
     private String createUserXmlFragment(TUser user) throws JAXBException {
@@ -169,4 +263,51 @@ public class UserRepository {
 
         return user;
     }
+
+	public List<TUser> findAuthorsOfPublication(String publicationTitle) throws UserRetrievingFailedException {
+		List<TUser> authors = new ArrayList<TUser>();
+    	String publicationId = publicationTitle.replace(" ", "");
+    	String xQuery = String.format(
+    			"for $user in doc(\"%s\")//user\n" + 
+    			"where \"%s\" = $user/ownPublications/publicationID\n" + 
+    			"return $user", 
+    			usersCollection + "/" + usersDocument, publicationId);
+    	
+    	Collection col;
+        TUser user = null;
+        XMLConnectionProperties conn = null;
+        try {
+            conn = connectionPool.getConnection();
+            col = basicOperations.getOrCreateCollection(usersCollection, 0, conn);
+            XPathQueryService xPathService = (XPathQueryService) col.getService("XPathQueryService", "1.0");
+            xPathService.setProperty("indent", "yes");
+            ResourceSet result = xPathService.query(xQuery);
+            ResourceIterator it = result.getIterator();
+            Resource res = null;
+
+            while(it.hasMoreResources()) {
+                try {
+                    res = it.nextResource();
+                    user = unmarshal((XMLResource) res);
+                    authors.add(user);
+                } finally {
+                    try {
+                        ((EXistResource)res).freeResources();
+                    } catch (XMLDBException xe) {
+                        xe.printStackTrace();
+                    }
+                }
+            }
+        }
+        catch (Exception e) {
+        	e.printStackTrace();
+            throw new UserRetrievingFailedException("Failed to get user from database");
+        }
+        finally {
+            connectionPool.releaseConnection(conn);
+        }
+    	
+    	
+    	return authors;
+	}
 }

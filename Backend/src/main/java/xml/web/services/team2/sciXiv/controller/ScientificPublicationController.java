@@ -159,7 +159,7 @@ public class ScientificPublicationController {
     }
 
     @GetMapping(value = "advancedSearch")
-    public ResponseEntity<Object> advancedSearch(SearchPublicationsDTO searchParameters) {
+    public ResponseEntity<Object> advancedSearch(@RequestBody SearchPublicationsDTO searchParameters) {
         try {
             return new ResponseEntity<>(scientificPublicationService.advancedSearch(searchParameters), HttpStatus.OK);
         } catch (Exception e) {

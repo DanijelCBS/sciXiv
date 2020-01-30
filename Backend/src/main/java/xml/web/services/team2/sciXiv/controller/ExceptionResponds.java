@@ -7,10 +7,14 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
+import xml.web.services.team2.sciXiv.exception.ChangeProcessStateException;
+import xml.web.services.team2.sciXiv.exception.ChangeReviewStatusException;
 import xml.web.services.team2.sciXiv.exception.DocumentLoadingFailedException;
 import xml.web.services.team2.sciXiv.exception.DocumentParsingFailedException;
 import xml.web.services.team2.sciXiv.exception.InvalidDataException;
 import xml.web.services.team2.sciXiv.exception.InvalidXmlException;
+import xml.web.services.team2.sciXiv.exception.NotOnTheReviewerListException;
+import xml.web.services.team2.sciXiv.exception.OperationFailureException;
 
 @ControllerAdvice
 public class ExceptionResponds {
@@ -19,7 +23,11 @@ public class ExceptionResponds {
 			DocumentLoadingFailedException.class, 
 			DocumentParsingFailedException.class,
 			InvalidDataException.class,
-			InvalidXmlException.class
+			InvalidXmlException.class,
+			OperationFailureException.class,
+			ChangeProcessStateException.class,
+			ChangeReviewStatusException.class,
+			NotOnTheReviewerListException.class
 			})
 	@ResponseStatus(value = HttpStatus.BAD_REQUEST)
 	@ResponseBody

@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.math.BigInteger;
 import java.util.List;
 
+import javax.xml.bind.JAXBException;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.rest.webmvc.ResourceNotFoundException;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -55,7 +57,7 @@ public class BusinessProcessService {
 	}
 
 	public BusinessProcess getBusinessProcessObject(String scientificPublicationTitle)
-			throws IOException, XMLDBException {
+			throws IOException, XMLDBException, JAXBException {
 		BusinessProcess businessProcess = businessProcessRepository
 				.findObjectByScientificPublicationTitle(scientificPublicationTitle);
 
@@ -80,7 +82,7 @@ public class BusinessProcessService {
 		return businessProcess;
 	}
 
-	public List<BusinessProcess> getAllBusinessProcesses() throws IOException, XMLDBException {
+	public List<BusinessProcess> getAllBusinessProcesses() throws IOException, XMLDBException, JAXBException {
 		return businessProcessRepository.findAll();
 	}
 
@@ -117,8 +119,7 @@ public class BusinessProcessService {
 					"List of reviewer assignments is not valid because some of the user's e-mails are not present in our database");
 		}
 
-		TUser sender = new TUser();
-		// TODO: implementirati metodu koja preuzme jednog editora
+		TUser sender = userRepository.getEditor();
 
 		String[] emails = new String[userEmails.size()];
 		int i = 0;
@@ -140,13 +141,9 @@ public class BusinessProcessService {
 		businessProcessRepository.saveObject(businessProcess);
 	}
 
-	public void changeReviewStatus(String scientificPublicationTitle, TReviewStatus reviewStatus) throws Exception {
+	public void changeReviewStatus(String scientificPublicationTitle, String userEmail, TReviewStatus reviewStatus) throws Exception {
 		BusinessProcess businessProcess = businessProcessRepository
 				.findObjectByScientificPublicationTitle(scientificPublicationTitle);
-
-		TUser currentUser = (TUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-
-		String userEmail = currentUser.getEmail();
 
 		if (businessProcess.getReviewerAssignments() == null) {
 			businessProcess.setReviewerAssignments(new BusinessProcess.ReviewerAssignments());
@@ -171,6 +168,28 @@ public class BusinessProcessService {
 
 		reviewerAssignment.setStatus(reviewStatus);
 		businessProcessRepository.saveObject(businessProcess);
+	}
+	
+	public TReviewStatus getReivewStatus(String scientificPublicationTitle, String userEmail) throws IOException, XMLDBException, JAXBException {
+		BusinessProcess businessProcess = businessProcessRepository
+				.findObjectByScientificPublicationTitle(scientificPublicationTitle);
+
+		if (businessProcess.getReviewerAssignments() == null) {
+			businessProcess.setReviewerAssignments(new BusinessProcess.ReviewerAssignments());
+		}
+
+		List<TReviewerAssignment> reviewerAssignments = businessProcess.getReviewerAssignments()
+				.getReviewerAssignment();
+
+		TReviewerAssignment reviewerAssignment = reviewerAssignments.stream()
+				.filter(ra -> ra.getReviewerEmail().equals(userEmail)).findFirst().orElse(null);
+
+		if (reviewerAssignment == null) {
+			throw new NotOnTheReviewerListException(
+					"User with email: " + userEmail + " is not on this list for reviews.");
+		}
+		
+		return reviewerAssignment.getStatus();
 	}
 
 	public void changeProcessState(String scientificPublicationTitle, TProcessStateEnum processState) throws Exception {

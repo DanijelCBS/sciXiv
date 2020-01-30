@@ -46,6 +46,12 @@ public class UserRepository {
     @Autowired
     PasswordEncoder passwordEncoder;
     
+    private String editorEmail = "mihajlokusljic97@gmail.com";
+    
+    public UserRepository() {
+    	super();
+    }
+    
     public TUser save(TUser user) throws UserSavingFailedException {
         XMLConnectionProperties conn = null;
         try {
@@ -54,6 +60,7 @@ public class UserRepository {
             Collection col = basicOperations.getOrCreateCollection(usersCollection, 0, conn);
             // delete old data
             this.deleteUser(user.getEmail(), col);
+            // insert new data
             updateService.append(col, usersDocument, "", "/users", userXML);
         }
         catch (Exception e) {
@@ -105,15 +112,31 @@ public class UserRepository {
         return user;
     }
     
+    public TUser getEditor() {
+    	try {
+    		
+			TUser editor = this.getByEmail(this.editorEmail);
+			if(editor == null) {
+				editor = this.initEditor();
+			}
+			return editor;
+			
+		} catch (UserRetrievingFailedException e) {
+			e.printStackTrace();
+			return null;
+		}
+    }
+    
     public List<TUser> getPossibleReviewersForPublicaton(String publicationTitle) throws UserRetrievingFailedException {
     	List<TUser> reviewers = new ArrayList<TUser>();
-    	publicationTitle = publicationTitle.replace(" ", "");
+    	String publicationId = publicationTitle.replace(" ", "");
     	String xQuery = String.format(
     			"for $user in doc(\"%s\")//user\n" + 
-    			"where $user/role = \"reviewer\"\n" + 
+    			"where ($user/role = \"reviewer\" or $user/role = \"editor\")\n" + 
     			"and not (\"%s\" = $user/ownPublications/publicationID)\n" + 
+    			"and not (\"%s\" = $user/publicationsToReview/publicationID)\n" + 
     			"return $user", 
-    			usersCollection + "/" + usersDocument, publicationTitle);
+    			usersCollection + "/" + usersDocument, publicationId, publicationTitle);
     	
     	Collection col;
         TUser user = null;
@@ -153,6 +176,18 @@ public class UserRepository {
     	return reviewers;
     }
     
+    private TUser initEditor() {
+    	TUser editor = new TUser();
+		editor.setEmail(this.editorEmail);
+		editor.setPassword(passwordEncoder.encode("admin"));
+		editor.setRole(TRole.EDITOR);
+		editor.setFirstName("System");
+		editor.setLastName("Administrator");
+		editor.setOwnPublications(new TPublications());
+		editor.setPublicationsToReview(new TPublications());
+		return editor;
+    }
+    
     @PostConstruct
     private void initializeUsersIfNone() throws UserSavingFailedException {
     	XMLConnectionProperties conn = null;
@@ -162,14 +197,7 @@ public class UserRepository {
 			XMLResource usersFile = (XMLResource) col.getResource(usersDocument);
 			if (usersFile == null) {
 				Users users = new Users();
-				TUser systemAdmin = new TUser();
-				systemAdmin.setEmail("system@admin.com");
-				systemAdmin.setPassword(passwordEncoder.encode("admin"));
-				systemAdmin.setRole(TRole.EDITOR);
-				systemAdmin.setFirstName("System");
-				systemAdmin.setLastName("Administrator");
-				systemAdmin.setOwnPublications(new TPublications());
-				systemAdmin.setPublicationsToReview(new TPublications());
+				TUser systemAdmin = this.initEditor();
 				users.getUsers().add(systemAdmin);
 				String initialUsersContent = marshal(users);
 				usersFile = (XMLResource) col.createResource(usersDocument, XMLResource.RESOURCE_TYPE);

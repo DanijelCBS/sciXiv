@@ -111,11 +111,11 @@ public class ScientificPublicationService {
         metadataExtractor.extractMetadata(new ByteArrayInputStream(sciPub.getBytes()), metadataStream);
         String metadata = new String(metadataStream.toByteArray());
 
-        /*String email = ((UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal())
+        String email = ((UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal())
                 .getUsername();
         TUser user = userRepository.getByEmail(email);
         user.getOwnPublications().getPublicationID().add(title);
-        userRepository.save(user);*/
+        userRepository.save(user);
 
         scientificPublicationRepository.saveMetadata(metadata);
 

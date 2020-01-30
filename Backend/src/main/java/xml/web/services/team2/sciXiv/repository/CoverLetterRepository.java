@@ -169,7 +169,7 @@ public class CoverLetterRepository {
 		// izvucem title rada, pozovem metodu getLastVersionNumber(prosljedis ime rada
 		// tj pubTitle)
 		String publicationTitle = document.getElementsByTagName("publicationTitle").item(0).getTextContent();
-		int latestVersion = scientificPublicationRepository.getLastVersionNumber(publicationTitle);
+		int latestVersion = scientificPublicationRepository.getLastVersionNumber(publicationTitle.replace(" ", ""));
 
 		document.getElementsByTagName("version").item(0).setTextContent(new Integer(latestVersion).toString());
 

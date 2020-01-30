@@ -49,9 +49,9 @@
         <sp:title>1. Introduction</sp:title>
         <sp:paragraph sp:id="End to End Neural Optical Music Recognition of Monophonic Scores/chapter/1/paragraph/1">
             Despite the great advantages of its development, OMR is far from being totally reliable as
-            a black box, as current optical character <sp:referencePointer sp:refId="End to End Neural Optical Music Recognition of Monophonic Scores/reference/1">recognition</sp:referencePointer> or speech recognition technologies do.
+            a black box, as current optical character <sp:referencePointer refId="End to End Neural Optical Music Recognition of Monophonic Scores/reference/1">recognition</sp:referencePointer> or speech recognition technologies do.
             Commercial software is constantly being improved by fixing specific problems from version to
-            version. In the scientific community, there are hardly any complete approach for its <sp:referencePointer sp:refId="End to End Neural Optical Music Recognition of Monophonic Scores/reference/1">solution</sp:referencePointer><sp:referencePointer sp:refId="End to End Neural Optical Music Recognition of Monophonic Scores/reference/2"></sp:referencePointer>.
+            version. In the scientific community, there are hardly any complete approach for its <sp:referencePointer refId="End to End Neural Optical Music Recognition of Monophonic Scores/reference/1">solution</sp:referencePointer><sp:referencePointer refId="End to End Neural Optical Music Recognition of Monophonic Scores/reference/2"></sp:referencePointer>.
             Traditionally, this has been motivated because of the small sub-tasks in which the workflow can be
             divided. Simpler tasks such as <sp:referencePointer refId="2">staff-line removal,</sp:referencePointer> symbol localization and classification, or music
             notation assembly, have so far represented major obstacles.

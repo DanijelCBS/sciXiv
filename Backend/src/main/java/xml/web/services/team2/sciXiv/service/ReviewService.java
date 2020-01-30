@@ -11,6 +11,7 @@ import java.nio.file.Paths;
 import java.util.List;
 
 import javax.annotation.PostConstruct;
+import javax.mail.MessagingException;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerException;
@@ -39,8 +40,12 @@ import xml.web.services.team2.sciXiv.exception.DocumentStoringFailedException;
 import xml.web.services.team2.sciXiv.exception.InvalidDataException;
 import xml.web.services.team2.sciXiv.exception.InvalidXmlException;
 import xml.web.services.team2.sciXiv.exception.UserRetrievingFailedException;
+import xml.web.services.team2.sciXiv.exception.UserSavingFailedException;
 import xml.web.services.team2.sciXiv.model.TPublications;
 import xml.web.services.team2.sciXiv.model.TUser;
+import xml.web.services.team2.sciXiv.model.businessProcess.BusinessProcess;
+import xml.web.services.team2.sciXiv.model.businessProcess.TReviewStatus;
+import xml.web.services.team2.sciXiv.model.businessProcess.TReviewerAssignment;
 import xml.web.services.team2.sciXiv.repository.CoverLetterRepository;
 import xml.web.services.team2.sciXiv.repository.ReviewRepository;
 import xml.web.services.team2.sciXiv.repository.UserRepository;
@@ -54,14 +59,13 @@ public class ReviewService {
 	private static String schemaPath = "src/main/resources/static/xmlSchemas/review.xsd";
 
 	private static String PUBLICATION_REVIEWS_MERGED_TO_HTML_XSL = "src/main/resources/static/xsl/publicationWithReviewsToHTML.xsl";
-	
+
 	private static String PUBLICATION_REVIEWS_MERGED_FOR_PDF_XSL = "src/main/resources/static/xsl/publicationWithReviewsForPdf.xsl";
-	
+
 	private static String PUBLICATION_BLIND_REVIEWS_MERGED_TO_HTML_XSL = "src/main/resources/static/xsl/publicationAndBlindReviewsToHTML.xsl";
-	
+
 	private static String PUBLICATION_BLIND_REVIEWS_MERGED_FOR_PDF_XSL = "src/main/resources/static/xsl/publicationWithBlindReviewsForPdf.xsl";
 
-	
 	public static String PUBBICATION_REVIEWS_XSLFO = "src/main/resources/static/xslfo/templatesForCoverLetterAndReviews.xsl";
 
 	@Autowired
@@ -72,6 +76,12 @@ public class ReviewService {
 
 	@Autowired
 	private UserService userService;
+
+	@Autowired
+	private BusinessProcessService businessProcessService;
+
+	@Autowired
+	private NotificationService notificationService;
 
 	@Autowired
 	private DOMParser domParser;
@@ -87,16 +97,28 @@ public class ReviewService {
 		return this.reviewRepository.findById(reviewId);
 	}
 
-	public String submitReview(String reviewXml) throws ParserConfigurationException, IOException,
-			XPathExpressionException, XMLDBException, DocumentStoringFailedException, TransformerException {
+	public String submitReview(String reviewXml, String reviewerEmail) throws Exception {
 		// Check if review xml is valid
-		Document document = this.buildAndValidateReview(reviewXml);
+		Document reviewDOM = this.buildAndValidateReview(reviewXml);
 
-		String reviewId = reviewRepository.save(document);
+		// save review
+		String reviewId = reviewRepository.save(reviewDOM);
+		
+		Node publicationTitleNode = (Node) reviewDOM.getElementsByTagNameNS("http://ftn.uns.ac.rs/review", "publicationTitle").item(0);
+		String publicationTitle = publicationTitleNode.getTextContent();
 
-		// TODO: remove review assignment for reviewer
+		// update assignment statuses
+		this.userService.removePublicationToReview(publicationTitle, reviewerEmail);
+		this.businessProcessService.changeReviewStatus(publicationTitle, reviewerEmail, TReviewStatus.SUBMITTED);
 
-		// TODO: send email notification to editor
+		// Notify editor
+		TUser sender = this.userService.findByEmail(reviewerEmail);
+		TUser reciever = this.userService.getEditor();
+		String[] emails = new String[] { reciever.getEmail() };
+		String notificationMessage = String.format("Reviewer %s %s has submitted a review for scientific publication %s.",
+				sender.getFirstName(), sender.getLastName(), publicationTitle);
+		this.notificationService.notificationSendRequest(emails, notificationMessage, publicationTitle, sender,
+				reciever);
 
 		return reviewId;
 
@@ -117,6 +139,41 @@ public class ReviewService {
 		}
 	}
 
+	public void assingReviews(String publicationTitle, List<String> reviewerEmails) throws Exception {
+		for (String reviewerEmail : reviewerEmails) {
+			this.userService.addPublicationToReview(publicationTitle, reviewerEmail);
+		}
+
+		this.businessProcessService.addReviewerAssignmentsToBusinessProcess(publicationTitle, reviewerEmails);
+	}
+
+	public void acceptReviewAssignment(String publicationTitle, String reviewerEmail) throws Exception {
+		this.businessProcessService.changeReviewStatus(publicationTitle, reviewerEmail, TReviewStatus.ACCEPTED);
+
+		// Notify editor
+		TUser sender = this.userService.findByEmail(reviewerEmail);
+		TUser reciever = this.userService.getEditor();
+		String[] emails = new String[] { reciever.getEmail() };
+		String notificationMessage = String.format("Reviewer %s %s has accepted to review scientific publication %s.",
+				sender.getFirstName(), sender.getLastName(), publicationTitle);
+		this.notificationService.notificationSendRequest(emails, notificationMessage, publicationTitle, sender,
+				reciever);
+	}
+	
+	public void rejectReviewAssignment(String publicationTitle, String reviewerEmail) throws Exception {
+		this.businessProcessService.changeReviewStatus(publicationTitle, reviewerEmail, TReviewStatus.REJECTED);
+		this.userService.removePublicationToReview(publicationTitle, reviewerEmail);
+
+		// Notify editor
+		TUser sender = this.userService.findByEmail(reviewerEmail);
+		TUser reciever = this.userService.getEditor();
+		String[] emails = new String[] { reciever.getEmail() };
+		String notificationMessage = String.format("Reviewer %s %s has rejected to review scientific publication %s.",
+				sender.getFirstName(), sender.getLastName(), publicationTitle);
+		this.notificationService.notificationSendRequest(emails, notificationMessage, publicationTitle, sender,
+				reciever);
+	}
+
 	public List<Node> getReviewsOfPublicationAsDomNodes(String publicationTitle, int publicationVersion)
 			throws XMLDBException {
 		return this.reviewRepository.findReviewsOfPublicationAsDomNodes(publicationTitle, publicationVersion);
@@ -129,15 +186,17 @@ public class ReviewService {
 				publicationVersion);
 		Document publicationDOM = domParser.buildDocumentNoSchema(publication);
 		List<Node> publicationReviews = this.getReviewsOfPublicationAsDomNodes(publicationTitle, publicationVersion);
-		Element publicationRoot = (Element) publicationDOM.getElementsByTagNameNS("http://ftn.uns.ac.rs/scientificPublication", "scientificPublication").item(0);
+		Element publicationRoot = (Element) publicationDOM
+				.getElementsByTagNameNS("http://ftn.uns.ac.rs/scientificPublication", "scientificPublication").item(0);
 
 		int i = 0;
 		for (Node reviewNode : publicationReviews) {
 			Node importedReviewNode = publicationDOM.importNode(reviewNode, true);
 			Element importedReviewElement = (Element) importedReviewNode;
-			Node reviewerNode = (Node) importedReviewElement.getElementsByTagNameNS("http://ftn.uns.ac.rs/review", "reviewer").item(0);
+			Node reviewerNode = (Node) importedReviewElement
+					.getElementsByTagNameNS("http://ftn.uns.ac.rs/review", "reviewer").item(0);
 			TUser reviewer = this.userService.findByEmail(reviewerNode.getTextContent());
-			if(reviewer != null) {
+			if (reviewer != null) {
 				String fullName = String.format("%s %s", reviewer.getFirstName(), reviewer.getLastName());
 				reviewerNode.setTextContent(fullName);
 			}
@@ -153,28 +212,34 @@ public class ReviewService {
 		String mergeToXml = this.mergePublicationAndReviews(publicationTitle, publicationVersion);
 		return xslTranspiler.generateHTML(mergeToXml, PUBLICATION_REVIEWS_MERGED_TO_HTML_XSL);
 	}
-	
-	public Resource mergePublicationAndNonCensoredReviewsToPDF(String publicationTitle, int publicationVersion) throws DOMException, XMLDBException, DocumentLoadingFailedException, ParserConfigurationException, SAXException, IOException, TransformerException, UserRetrievingFailedException {
+
+	public Resource mergePublicationAndNonCensoredReviewsToPDF(String publicationTitle, int publicationVersion)
+			throws DOMException, XMLDBException, DocumentLoadingFailedException, ParserConfigurationException,
+			SAXException, IOException, TransformerException, UserRetrievingFailedException {
 		String mergeToXml = this.mergePublicationAndReviews(publicationTitle, publicationVersion);
 		ByteArrayOutputStream outputStream = xslTranspiler.generatePDF(mergeToXml,
 				PUBLICATION_REVIEWS_MERGED_FOR_PDF_XSL, PUBBICATION_REVIEWS_XSLFO);
-		
+
 		Path file = Paths.get(String.format("%s_withReviews.pdf", publicationTitle));
 		Files.write(file, outputStream.toByteArray());
 
 		return new UrlResource(file.toUri());
 	}
-	
-	public String mergePublicationAndBlindReviewsToXHTML(String publicationTitle, int publicationVersion) throws DOMException, XMLDBException, DocumentLoadingFailedException, ParserConfigurationException, SAXException, IOException, TransformerException, UserRetrievingFailedException {
+
+	public String mergePublicationAndBlindReviewsToXHTML(String publicationTitle, int publicationVersion)
+			throws DOMException, XMLDBException, DocumentLoadingFailedException, ParserConfigurationException,
+			SAXException, IOException, TransformerException, UserRetrievingFailedException {
 		String mergeToXml = this.mergePublicationAndReviews(publicationTitle, publicationVersion);
 		return xslTranspiler.generateHTML(mergeToXml, PUBLICATION_BLIND_REVIEWS_MERGED_TO_HTML_XSL);
 	}
-	
-	public Resource mergePublicationAndBlindReviewsToPDF(String publicationTitle, int publicationVersion) throws DOMException, XMLDBException, DocumentLoadingFailedException, ParserConfigurationException, SAXException, IOException, TransformerException, UserRetrievingFailedException {
+
+	public Resource mergePublicationAndBlindReviewsToPDF(String publicationTitle, int publicationVersion)
+			throws DOMException, XMLDBException, DocumentLoadingFailedException, ParserConfigurationException,
+			SAXException, IOException, TransformerException, UserRetrievingFailedException {
 		String mergeToXml = this.mergePublicationAndReviews(publicationTitle, publicationVersion);
 		ByteArrayOutputStream outputStream = xslTranspiler.generatePDF(mergeToXml,
 				PUBLICATION_BLIND_REVIEWS_MERGED_FOR_PDF_XSL, PUBBICATION_REVIEWS_XSLFO);
-		
+
 		Path file = Paths.get(String.format("%s_withReviews.pdf", publicationTitle));
 		Files.write(file, outputStream.toByteArray());
 

@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<review xmlns="http://ftn.uns.ac.rs/review"
+ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+ xsi:schemaLocation="http://ftn.uns.ac.rs/review file:/C:/Users/kusljic/Documents/XML_WS/projekat/sciXiv/Backend/src/main/resources/static/xmlSchemas/review.xsd" id="id1">
+    <metadata>
+        <reviewer>nikolazubic97@yahoo.com</reviewer>
+        <publicationTitle>End to End Neural Optical Music Recognition of Monophonic Scores</publicationTitle>
+        <publicationVersion>2</publicationVersion>
+        <submissionDate>2006-01-30</submissionDate>
+    </metadata>
+    <body>
+        <criteriaEvaluation>
+            <relevanceOfResearchProblem>good</relevanceOfResearchProblem>
+            <introduction>very good</introduction>
+            <conceptualQuality>very good</conceptualQuality>
+            <methodologicalQuality>good</methodologicalQuality>
+            <results>very good</results>
+            <discussion>very good</discussion>
+            <readability>good</readability>
+        </criteriaEvaluation>
+        <overallEvaluation>acceptable without changes</overallEvaluation>
+        <commentsToAuthor>
+            <proposedChange partID="End to End Neural Optical Music Recognition of Monophonic Scores/abstract">Needs better motivation</proposedChange>
+            <proposedChange partID="End to End Neural Optical Music Recognition of Monophonic Scores/chapter/1">Explain basics of computer vision</proposedChange>
+            <proposedChange partID="End to End Neural Optical Music Recognition of Monophonic Scores/chapter/1/paragraph/1/table/1">Where's the fiftth one?</proposedChange>
+            <proposedChange partID="End to End Neural Optical Music Recognition of Monophonic Scores/chapter/2/paragraph/1/figure/1">Crop to remove watermark</proposedChange>
+            <proposedChange partID="End to End Neural Optical Music Recognition of Monophonic Scores/chapter/2/paragraph/2">Formulas in this paragraph need to be explained</proposedChange>
+        </commentsToAuthor>
+        <commentsToEditor>This paper needs further attention.</commentsToEditor>
+    </body>
+</review>

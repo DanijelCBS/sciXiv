@@ -1,19 +1,27 @@
 <mat-card class="example-card">
   <mat-card-header>
-    <div mat-card-avatar class="example-header-image"></div>
-    <mat-card-title>Shiba Inu</mat-card-title>
-    <mat-card-subtitle>Dog Breed</mat-card-subtitle>
+    <mat-card-title>{{publication.title}}</mat-card-title>
+    <mat-card-subtitle>{{publication.authors | joinArrayElements}}</mat-card-subtitle>
   </mat-card-header>
-  <img mat-card-image src="https://material.angular.io/assets/img/examples/shiba2.jpg" alt="Photo of a Shiba Inu">
   <mat-card-content>
-    <p>
-      The Shiba Inu is the smallest of the six original and distinct spitz breeds of dog from Japan.
-      A small, agile dog that copes very well with mountainous terrain, the Shiba Inu was originally
-      bred for hunting.
-    </p>
+    <span><b>Publication metadata</b></span>
+    <ul>
+      <li><b>Date received: </b>{{metadata.dateReceived}}</li>
+      <li><b>Date revised: </b>{{metadata.dateRevised}}</li>
+      <li><b>Date accepted: </b>{{metadata.dateAccepted}}</li>
+      <li><b>Authors affiliations: </b>{{metadata.authorsAffiliations | joinArrayElements}}</li>
+      <li><b>Keywords: </b>{{metadata.keywords | joinArrayElements}}</li>
+    </ul>
+    <br/>
+    <span><b>Publications which references this</b></span>
+    <span>{{references | joinArrayElements}}</span>
+    <br/>
+    <a target="_blank" href="http://localhost:8080/scientificPublication/xhtml?title={{publication.title}}">View publication as HTML</a>
   </mat-card-content>
   <mat-card-actions>
-    <button mat-button>LIKE</button>
-    <button mat-button>SHARE</button>
+    <a mat-raised-button href="http://localhost:8080/scientificPublication/export/xhtml?title={{publication.title}}">Export as HTML</a>
+    <a mat-raised-button href="http://localhost:8080/scientificPublication/export/pdf?title={{publication.title}}">Export as PDF</a>
+    <a mat-raised-button href="http://localhost:8080/scientificPublication/metadata/rdf?title={{publication.title}}">Export metadata as RDF</a>
+    <a mat-raised-button href="http://localhost:8080/scientificPublication/metadata/json?title={{publication.title}}">Export metadata as JSON</a>
   </mat-card-actions>
 </mat-card>

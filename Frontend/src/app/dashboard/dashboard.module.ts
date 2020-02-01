@@ -22,7 +22,7 @@ import {RouterModule} from '@angular/router';
 import {ToolbarModule} from '../toolbar/toolbar.module';
 import { ScientificPublicationPreviewListComponent } from './scientific-publication-preview-list/scientific-publication-preview-list.component';
 import { ScientificPublicationPreviewComponent } from './scientific-publication-preview-list/scientific-publication-preview/scientific-publication-preview.component';
-
+import {SharedModule} from "../shared/shared.module";
 
 @NgModule({
   declarations: [DashboardComponent, ScientificPublicationPreviewListComponent, ScientificPublicationPreviewComponent],
@@ -47,7 +47,8 @@ import { ScientificPublicationPreviewComponent } from './scientific-publication-
     MatFormFieldModule,
     RouterModule,
     ToolbarModule,
-    MatDividerModule
+    MatDividerModule,
+    SharedModule
   ],
   providers: [
     {provide: DateAdapter, useClass: MomentDateAdapter, deps: [MAT_DATE_LOCALE]},
@@ -55,10 +56,10 @@ import { ScientificPublicationPreviewComponent } from './scientific-publication-
       provide: MAT_DATE_FORMATS,
       useValue: {
         parse: {
-          dateInput: 'DD.MM.YYYY.',
+          dateInput: 'YYYY/MM/DD',
         },
         display: {
-          dateInput: 'DD.MM.YYYY.',
+          dateInput: 'YYYY/MM/DD',
           monthYearLabel: 'YYYY',
           dateA11yLabel: 'LL',
           monthYearA11yLabel: 'YYYY',

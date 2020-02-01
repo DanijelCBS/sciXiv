@@ -1,19 +1,14 @@
 <div>
-  <div fxLayout="row wrap">
-    <form #basicSearchForm="ngForm" (ngSubmit)="onSubmit()" fxLayout="column" fxLayoutGap="2%" fxLayout.xs="column"
-          fxLayoutAlign="center">
+  <div fxLayout="column">
+    <form #basicSearchForm="ngForm" (ngSubmit)="basicSearch()" fxLayout="row" fxLayoutAlign="center">
       <mat-form-field appearance="outline">
         <mat-label>Search</mat-label>
         <mat-icon color="primary" matPrefix>search</mat-icon>
-        <input id="searchInput" matInput type="text" [(ngModel)]="_searchParameters.name" name="name">
+        <input id="searchInput" matInput type="text" [(ngModel)]="basicSearchText" name="name" matTooltip="Basic search">
       </mat-form-field>
-      <button type="button" mat-raised-button class="searchButton" (click)="resetForm(basicSearchForm)">Reset</button>
     </form>
 
-    <mat-divider [vertical]="true"></mat-divider>
-
-    <form #advancedSearchForm="ngForm" (ngSubmit)="onSubmit()" fxLayout="column" fxLayoutGap="2%" fxLayout.xs="column"
-          fxLayoutAlign="center">
+    <form #advancedSearchForm="ngForm" (ngSubmit)="advancedSearch()" fxLayout="row wrap" fxLayoutGap="1%" fxLayoutAlign="center">
       <mat-form-field>
         <input matInput [matDatepicker]="dp1" placeholder="Date received" disabled
                [(ngModel)]="searchParameters.dateReceived" name="dateReceived">
@@ -50,8 +45,8 @@
         <input id="keyword" matInput type="text" [(ngModel)]="searchParameters.keyword" name="keyword">
       </mat-form-field>
 
-      <button type="submit" mat-raised-button class="searchButton">Search</button>
-      <button type="button" mat-raised-button class="searchButton" (click)="resetForm(advancedSearchForm)">Reset</button>
+      <button type="submit" mat-raised-button class="searchButton" matTooltip="Advanced search">Search</button>
+      <button type="button" mat-raised-button class="searchButton" (click)="resetForm(advancedSearchForm, basicSearchForm)">Reset</button>
 
     </form>
   </div>

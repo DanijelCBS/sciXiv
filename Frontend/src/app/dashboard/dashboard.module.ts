@@ -16,13 +16,16 @@ import {
   MatFormFieldModule, MAT_DATE_FORMATS, MAT_DATE_LOCALE,
   DateAdapter
 } from '@angular/material';
+import {MatDividerModule} from '@angular/material/divider';
 import {FlexModule} from '@angular/flex-layout';
 import {RouterModule} from '@angular/router';
 import {ToolbarModule} from '../toolbar/toolbar.module';
+import { ScientificPublicationPreviewListComponent } from './scientific-publication-preview-list/scientific-publication-preview-list.component';
+import { ScientificPublicationPreviewComponent } from './scientific-publication-preview-list/scientific-publication-preview/scientific-publication-preview.component';
 
 
 @NgModule({
-  declarations: [DashboardComponent],
+  declarations: [DashboardComponent, ScientificPublicationPreviewListComponent, ScientificPublicationPreviewComponent],
   imports: [
     CommonModule,
     FormsModule,
@@ -43,7 +46,8 @@ import {ToolbarModule} from '../toolbar/toolbar.module';
     MatNativeDateModule,
     MatFormFieldModule,
     RouterModule,
-    ToolbarModule
+    ToolbarModule,
+    MatDividerModule
   ],
   providers: [
     {provide: DateAdapter, useClass: MomentDateAdapter, deps: [MAT_DATE_LOCALE]},

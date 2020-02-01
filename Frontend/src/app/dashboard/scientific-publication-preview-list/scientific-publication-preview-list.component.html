@@ -1,0 +1,69 @@
+<div>
+  <div fxLayout="row wrap">
+    <form #basicSearchForm="ngForm" (ngSubmit)="onSubmit()" fxLayout="column" fxLayoutGap="2%" fxLayout.xs="column"
+          fxLayoutAlign="center">
+      <mat-form-field appearance="outline">
+        <mat-label>Search</mat-label>
+        <mat-icon color="primary" matPrefix>search</mat-icon>
+        <input id="searchInput" matInput type="text" [(ngModel)]="_searchParameters.name" name="name">
+      </mat-form-field>
+      <button type="button" mat-raised-button class="searchButton" (click)="resetForm(basicSearchForm)">Reset</button>
+    </form>
+
+    <mat-divider [vertical]="true"></mat-divider>
+
+    <form #advancedSearchForm="ngForm" (ngSubmit)="onSubmit()" fxLayout="column" fxLayoutGap="2%" fxLayout.xs="column"
+          fxLayoutAlign="center">
+      <mat-form-field>
+        <input matInput [matDatepicker]="dp1" placeholder="Date received" disabled
+               [(ngModel)]="searchParameters.dateReceived" name="dateReceived">
+        <mat-datepicker-toggle matSuffix [for]="dp1"></mat-datepicker-toggle>
+        <mat-datepicker #dp1 disabled="false"></mat-datepicker>
+      </mat-form-field>
+
+      <mat-form-field>
+        <input matInput [matDatepicker]="dp2" placeholder="Date revised" disabled
+               [(ngModel)]="searchParameters.dateRevised" name="dateRevised">
+        <mat-datepicker-toggle matSuffix [for]="dp2"></mat-datepicker-toggle>
+        <mat-datepicker #dp2 disabled="false"></mat-datepicker>
+      </mat-form-field>
+
+      <mat-form-field>
+        <input matInput [matDatepicker]="dp3" placeholder="Date accepted" disabled
+               [(ngModel)]="searchParameters.dateAccepted" name="dateAccepted">
+        <mat-datepicker-toggle matSuffix [for]="dp3"></mat-datepicker-toggle>
+        <mat-datepicker #dp3 disabled="false"></mat-datepicker>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Author name</mat-label>
+        <input id="authorName" matInput type="text" [(ngModel)]="searchParameters.authorName" name="authorName">
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Author affiliation</mat-label>
+        <input id="authorAffiliation" matInput type="text" [(ngModel)]="searchParameters.authorAffiliation" name="authorAffiliation">
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Keyword</mat-label>
+        <input id="keyword" matInput type="text" [(ngModel)]="searchParameters.keyword" name="keyword">
+      </mat-form-field>
+
+      <button type="submit" mat-raised-button class="searchButton">Search</button>
+      <button type="button" mat-raised-button class="searchButton" (click)="resetForm(advancedSearchForm)">Reset</button>
+
+    </form>
+  </div>
+
+  <div fxLayout="row wrap" fxLayout.xs="column" fxLayoutGap="0.5%" fxLayoutAlign="center">
+    <app-scientific-publication-preview *ngFor="let pub of publications" [publication]="pub"></app-scientific-publication-preview>
+  </div>
+
+  <div fxLayout="row">
+    <button mat-icon-button color="primary">
+      <mat-icon>add</mat-icon>
+    </button>
+  </div>
+
+</div>

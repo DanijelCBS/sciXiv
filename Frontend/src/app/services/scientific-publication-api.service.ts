@@ -27,4 +27,8 @@ export class ScientificPublicationApiService {
   getMetadata(title: string) {
     return this._http.get(`${this._baseUrl}/metadata?title=${title}`);
   }
+
+  submitPublication(scientificPublication: string) {
+    return this._http.post(`${this._baseUrl}`, scientificPublication);
+  }
 }

@@ -8,6 +8,7 @@ import { ToolbarModule } from './toolbar/toolbar.module';
 import { DashboardModule } from './dashboard/dashboard.module';
 import {HttpClientModule} from '@angular/common/http';
 import {SharedModule} from "./shared/shared.module";
+import {AuthorModule} from "./author/author.module";
 
 @NgModule({
   declarations: [
@@ -20,7 +21,8 @@ import {SharedModule} from "./shared/shared.module";
     ToolbarModule,
     DashboardModule,
     HttpClientModule,
-    SharedModule
+    SharedModule,
+    AuthorModule
   ],
   providers: [],
   bootstrap: [AppComponent]

@@ -1,6 +1,10 @@
 <div class="page">
   <app-toolbar class="header"></app-toolbar>
   <div class="content">
+    <div style="margin-left:30px">
+      <input id="xmlFile" type="file" (change)="readXMLFile($event)" name="xmlFile">
+    </div>
+
     <div id="xonomy" style="margin-top:50px; margin-left:25%;">
     </div>
 
@@ -8,8 +12,5 @@
       <button type="submit" mat-raised-button matTooltip="Submit publication" (click)="submitPublication()" style="margin-top:50px; margin-left:25%;">Submit publication</button>
     </div>
 
-    <!--<div class="form-group" style="margin-top:30px;">
-      <input type="file" class="form-control-file" accept="text/xml" id="exampleInputFile" aria-describedby="fileHelp" (change)="ucitajPodatke($event)">
-    </div>-->
   </div>
 </div>

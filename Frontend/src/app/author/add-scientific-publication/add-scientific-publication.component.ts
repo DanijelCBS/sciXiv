@@ -37,7 +37,18 @@ export class AddScientificPublicationComponent implements OnInit {
         }
       }
     );
-
   }
 
+  readXMLFile(event) {
+    let input = event.target;
+    let fileReader = new FileReader();
+    fileReader.onload = () => {
+        let fileContent = fileReader.result;
+        let xonomyElement = document.getElementById("xonomy");
+        this.scientificPublication = fileContent;
+        Xonomy.render(this.scientificPublication, xonomyElement, this.xonomyApiService.scientificPublicationSpecification);
+    };
+    fileReader.readAsText(input.files[0]);
+  }
 }
+

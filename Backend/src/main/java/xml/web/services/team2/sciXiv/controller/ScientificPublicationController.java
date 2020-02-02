@@ -120,7 +120,7 @@ public class ScientificPublicationController {
         }
     }
 
-    @PostMapping(consumes = MediaType.APPLICATION_XML_VALUE, produces = MediaType.APPLICATION_XML_VALUE)
+    @PostMapping
     public ResponseEntity<Object> addScientificPublication(@RequestBody String sciPub) {
         try {
             return new ResponseEntity<>(scientificPublicationService.save(sciPub), HttpStatus.CREATED);
@@ -133,7 +133,7 @@ public class ScientificPublicationController {
         }
     }
 
-    @PutMapping(value = "revise", consumes = MediaType.APPLICATION_XML_VALUE, produces = MediaType.APPLICATION_XML_VALUE)
+    @PutMapping(value = "revise")
     public ResponseEntity<Object> reviseScientificPublication(@RequestBody String sciPub) {
         try {
             return new ResponseEntity<>(scientificPublicationService.revise(sciPub), HttpStatus.OK);

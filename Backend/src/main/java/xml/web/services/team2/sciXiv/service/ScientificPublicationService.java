@@ -18,6 +18,7 @@ import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 import org.xmldb.api.base.XMLDBException;
@@ -42,6 +43,7 @@ import javax.xml.transform.TransformerException;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -108,6 +110,11 @@ public class ScientificPublicationService {
 			e.printStackTrace();
 		}
 
+		String aboutAttr = document.getDocumentElement().getAttribute("about");
+		int lastIndex = aboutAttr.lastIndexOf('/');
+		String about = aboutAttr.substring(0, lastIndex + 1) + URLEncoder.encode(aboutAttr.substring(lastIndex + 1), "UTF-8");
+		document.getDocumentElement().setAttribute("about", about);
+
 		title = title.replace(" ", "");
 		String name = title + "-v1";
 
@@ -128,28 +135,36 @@ public class ScientificPublicationService {
 		status.setAttribute("property", "pred:creativeWorkStatus");
 		metadataElem.item(0).insertBefore(status, keywords.item(0));
 
+        NodeList references = document.getElementsByTagName("sp:reference");
+        for (int i = 0; i < references.getLength(); i++) {
+        	aboutAttr = references.item(i).getAttributes().getNamedItem("href").getTextContent();
+			lastIndex = aboutAttr.lastIndexOf('/');
+			about = aboutAttr.substring(0, lastIndex + 1) + URLEncoder.encode(aboutAttr.substring(lastIndex + 1), "UTF-8");
+            references.item(i).getAttributes().getNamedItem("href").setTextContent(about);
+        }
+
 		sciPub = transformer.toXML(document);
 		ByteArrayOutputStream metadataStream = new ByteArrayOutputStream();
 
 		metadataExtractor.extractMetadata(new ByteArrayInputStream(sciPub.getBytes()), metadataStream);
 		String metadata = new String(metadataStream.toByteArray());
 
-		String email = ((UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal())
+		/*String email = ((UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal())
 				.getUsername();
 		TUser user = userRepository.getByEmail(email);
 		user.getOwnPublications().getPublicationID().add(title);
-		userRepository.save(user);
+		userRepository.save(user);*/
 
 		scientificPublicationRepository.saveMetadata(metadata);
 
 		String ret = scientificPublicationRepository.save(sciPub, title, name);
 
-		try {
+		/*try {
 			notifySubmissionToEditor(titleOrig, user);
 		} catch (MessagingException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		}
+		}*/
 
 		return ret;
 	}
@@ -271,7 +286,7 @@ public class ScientificPublicationService {
 	}
 
 	public SearchPublicationsDTO getPublicationsMetadata(String title) {
-		return scientificPublicationRepository.getPublicationsMetadata(title.replace(" ", ""));
+		return scientificPublicationRepository.getPublicationsMetadata(title);
 	}
 
 	private String makeSparqlQuery(String query, SearchPublicationsDTO parameters) {

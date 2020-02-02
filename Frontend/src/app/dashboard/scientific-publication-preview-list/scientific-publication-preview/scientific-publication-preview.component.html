@@ -1,20 +1,24 @@
-<mat-card class="example-card">
+<mat-card style="margin-top:10px;">
   <mat-card-header>
     <mat-card-title>{{publication.title}}</mat-card-title>
     <mat-card-subtitle>{{publication.authors | joinArrayElements}}</mat-card-subtitle>
   </mat-card-header>
-  <mat-card-content>
-    <span><b>Publication metadata</b></span>
-    <ul>
-      <li><b>Date received: </b>{{metadata.dateReceived}}</li>
-      <li><b>Date revised: </b>{{metadata.dateRevised}}</li>
-      <li><b>Date accepted: </b>{{metadata.dateAccepted}}</li>
-      <li><b>Authors affiliations: </b>{{metadata.authorsAffiliations | joinArrayElements}}</li>
-      <li><b>Keywords: </b>{{metadata.keywords | joinArrayElements}}</li>
-    </ul>
-    <br/>
-    <span><b>Publications which references this</b></span>
-    <span>{{references | joinArrayElements}}</span>
+  <mat-card-content >
+  	<button mat-raised-button (click)="getDetails()" *ngIf="!detailsShown">View more details</button>
+  	<br/>
+  	<div *ngIf="metadata != undefined">
+  		<span><b>Publication metadata</b></span>
+	    <ul>
+	      <li><b>Date received: </b>{{metadata.dateReceived}}</li>
+	      <li><b>Date revised: </b>{{metadata.dateRevised}}</li>
+	      <li><b>Date accepted: </b>{{metadata.dateAccepted}}</li>
+	      <li><b>Authors affiliations: </b>{{metadata.authorsAffiliations | joinArrayElements}}</li>
+	      <li><b>Keywords: </b>{{metadata.keywords | joinArrayElements}}</li>
+	    </ul>
+	    <br/>
+	    <span *ngIf="references != undefined"><b>Publications which references this: </b></span>
+	    <span *ngIf="references != undefined">{{references | joinArrayElements}}</span>
+  	</div>
     <br/>
     <a target="_blank" href="http://localhost:8080/scientificPublication/xhtml?title={{publication.title}}">View publication as HTML</a>
   </mat-card-content>

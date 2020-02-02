@@ -10,6 +10,11 @@
 
     <form #advancedSearchForm="ngForm" (ngSubmit)="advancedSearch()" fxLayout="row wrap" fxLayoutGap="1%" fxLayoutAlign="center">
       <mat-form-field>
+        <mat-label>Title</mat-label>
+        <input id="title" matInput type="text" [(ngModel)]="searchParameters.title" name="title">
+      </mat-form-field>
+
+      <mat-form-field>
         <input matInput [matDatepicker]="dp1" placeholder="Date received" disabled
                [(ngModel)]="searchParameters.dateReceived" name="dateReceived">
         <mat-datepicker-toggle matSuffix [for]="dp1"></mat-datepicker-toggle>
@@ -30,17 +35,17 @@
         <mat-datepicker #dp3 disabled="false"></mat-datepicker>
       </mat-form-field>
 
-      <mat-form-field appearance="outline">
+      <mat-form-field>
         <mat-label>Author name</mat-label>
         <input id="authorName" matInput type="text" [(ngModel)]="searchParameters.authorName" name="authorName">
       </mat-form-field>
 
-      <mat-form-field appearance="outline">
+      <mat-form-field>
         <mat-label>Author affiliation</mat-label>
         <input id="authorAffiliation" matInput type="text" [(ngModel)]="searchParameters.authorAffiliation" name="authorAffiliation">
       </mat-form-field>
 
-      <mat-form-field appearance="outline">
+      <mat-form-field>
         <mat-label>Keyword</mat-label>
         <input id="keyword" matInput type="text" [(ngModel)]="searchParameters.keyword" name="keyword">
       </mat-form-field>
@@ -51,7 +56,7 @@
     </form>
   </div>
 
-  <div fxLayout="row wrap" fxLayout.xs="column" fxLayoutGap="0.5%" fxLayoutAlign="center">
+  <div fxLayout="row wrap" fxLayout.xs="column" fxLayoutAlign="center" style="margin-top:20px;">
     <app-scientific-publication-preview *ngFor="let pub of publications" [publication]="pub"></app-scientific-publication-preview>
   </div>
 

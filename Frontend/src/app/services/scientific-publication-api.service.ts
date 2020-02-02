@@ -17,10 +17,7 @@ export class ScientificPublicationApiService {
   }
 
   advancedSearch(searchParameters: SearchPublicationsDTO) {
-    return this._http.get(`${this._baseUrl}/advancedSearch?title=${searchParameters.title}\
-      &dateReceived=${searchParameters.dateReceived}&dateRevised=${searchParameters.dateRevised}&dateAccepted\
-      =${searchParameters.dateAccepted}&authorName=${searchParameters.authorName}&authorAffiliation=\
-      ${searchParameters.authorAffiliation}&keyword=${searchParameters.keyword}`);
+    return this._http.get(`${this._baseUrl}/advancedSearch?title=${searchParameters.title}&dateReceived=${searchParameters.dateReceived}&dateRevised=${searchParameters.dateRevised}&dateAccepted=${searchParameters.dateAccepted}&authorName=${searchParameters.authorName}&authorAffiliation=${searchParameters.authorAffiliation}&keyword=${searchParameters.keyword}&authors&authorsAffiliations&keywords`);
   }
 
   getReferences(title: string) {

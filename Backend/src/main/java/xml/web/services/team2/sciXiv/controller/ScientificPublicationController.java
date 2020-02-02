@@ -22,6 +22,7 @@ import java.util.ArrayList;
 
 @RestController
 @RequestMapping(value = "/scientificPublication")
+@CrossOrigin
 public class ScientificPublicationController {
 
     @Autowired
@@ -162,7 +163,7 @@ public class ScientificPublicationController {
     }
 
     @GetMapping(value = "advancedSearch")
-    public ResponseEntity<Object> advancedSearch(@RequestBody SearchPublicationsDTO searchParameters) {
+    public ResponseEntity<Object> advancedSearch(SearchPublicationsDTO searchParameters) {
         try {
             return new ResponseEntity<>(scientificPublicationService.advancedSearch(searchParameters), HttpStatus.OK);
         } catch (Exception e) {

@@ -13,12 +13,11 @@ export class ScientificPublicationPreviewComponent implements OnInit {
   @Input() publication: ScientificPublicationDTO;
   private metadata: SearchPublicationsDTO;
   private references: string[];
+  private detailsShown = false;
 
   constructor(private scientificPublicationApiService: ScientificPublicationApiService, private snackBar: MatSnackBar) { }
 
   ngOnInit() {
-    this.getMetadata();
-    this.getReferences();
   }
 
   getMetadata() {
@@ -49,6 +48,12 @@ export class ScientificPublicationPreviewComponent implements OnInit {
         }
       }
     );
+  }
+
+  getDetails() {
+    this.detailsShown = true;
+    this.getMetadata();
+    this.getReferences();
   }
 
 }

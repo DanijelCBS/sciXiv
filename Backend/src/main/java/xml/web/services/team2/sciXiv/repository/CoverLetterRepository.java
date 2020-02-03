@@ -2,6 +2,8 @@ package xml.web.services.team2.sciXiv.repository;
 
 import java.io.IOException;
 import java.math.BigInteger;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.UUID;
 
 import javax.xml.parsers.ParserConfigurationException;
@@ -166,12 +168,14 @@ public class CoverLetterRepository {
 		String id = "cl" + lUUID;
 		document.getElementsByTagName("coverLetter").item(0).getAttributes().getNamedItem("id").setTextContent(id);
 
-		// izvucem title rada, pozovem metodu getLastVersionNumber(prosljedis ime rada
-		// tj pubTitle)
 		String publicationTitle = document.getElementsByTagName("publicationTitle").item(0).getTextContent();
 		int latestVersion = scientificPublicationRepository.getLastVersionNumber(publicationTitle.replace(" ", ""));
 
-		document.getElementsByTagName("version").item(0).setTextContent(new Integer(latestVersion).toString());
+		document.getElementsByTagName("version").item(0).setTextContent(Integer.toString(latestVersion));
+
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+		String submissionDate = sdf.format(new Date());
+		document.getDocumentElement().setAttribute("submissionDate", submissionDate);
 
 		String saveCoverLetter = DOMParser.doc2String(document);
 

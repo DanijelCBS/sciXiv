@@ -61,6 +61,9 @@ public class ScientificPublicationRepository {
     public String findByNameAndVersion(String name, int version) throws DocumentLoadingFailedException, XMLDBException {
         XMLConnectionProperties conn = xmlConnectionPool.getConnection();
 		name = name.replace(" ", "");
+		if (version == -1) {
+		    version = getLastVersionNumber(name);
+        }
         Document document = (Document) basicOperations
                 .loadDocument(collectionName + "/" + name, name + "-v" + version, conn)
                 .getContentAsDOM();
@@ -95,6 +98,48 @@ public class ScientificPublicationRepository {
 
         String resourceName = document.getDocumentElement().getAttribute("about");
         insertMetadata(resourceName, "creativeWorkStatus", "withdrawn");
+
+        xmlConnectionPool.releaseConnection(conn);
+    }
+
+    public void accept(String title)
+            throws XMLDBException, DocumentLoadingFailedException, DocumentStoringFailedException {
+        XMLConnectionProperties conn = xmlConnectionPool.getConnection();
+        int lastVersion = getLastVersionNumber(title);
+        String name = title + "-v" + lastVersion;
+        Document document = (Document) basicOperations.loadDocument(collectionName + "/" + title, name, conn)
+                .getContentAsDOM();
+        NodeList nodeList = document.getDocumentElement().getElementsByTagName("sp:status");
+        Node status = nodeList.item(0);
+        status.setTextContent("accepted");
+
+        delete(title, name, conn);
+        String xmlEntity = transformer.toXML(document);
+        save(xmlEntity, title, name);
+
+        String resourceName = document.getDocumentElement().getAttribute("about");
+        insertMetadata(resourceName, "creativeWorkStatus", "accepted");
+
+        xmlConnectionPool.releaseConnection(conn);
+    }
+
+    public void reject(String title)
+            throws XMLDBException, DocumentLoadingFailedException, DocumentStoringFailedException {
+        XMLConnectionProperties conn = xmlConnectionPool.getConnection();
+        int lastVersion = getLastVersionNumber(title);
+        String name = title + "-v" + lastVersion;
+        Document document = (Document) basicOperations.loadDocument(collectionName + "/" + title, name, conn)
+                .getContentAsDOM();
+        NodeList nodeList = document.getDocumentElement().getElementsByTagName("sp:status");
+        Node status = nodeList.item(0);
+        status.setTextContent("rejected");
+
+        delete(title, name, conn);
+        String xmlEntity = transformer.toXML(document);
+        save(xmlEntity, title, name);
+
+        String resourceName = document.getDocumentElement().getAttribute("about");
+        insertMetadata(resourceName, "creativeWorkStatus", "rejected");
 
         xmlConnectionPool.releaseConnection(conn);
     }
@@ -135,7 +180,7 @@ public class ScientificPublicationRepository {
 
         String[] docCollections = col.listChildCollections();
         for (String docCollection : docCollections) {
-            if (user.getOwnPublications().getPublicationID().contains(docCollection)) {
+            if (user != null && user.getOwnPublications().getPublicationID().contains(docCollection)) {
                 getTitlesAndAuthorsBasicSearch(docCollection, connXML, sciPubs, parameter, true);
             } else {
                 getTitlesAndAuthorsBasicSearch(docCollection, connXML, sciPubs, parameter, false);
@@ -247,13 +292,17 @@ public class ScientificPublicationRepository {
 
         ResourceIterator i = result.getIterator();
         String title = (String) i.nextResource().getContent();
-        String resourceName;
+        String resourceName = "";
         RDFConnection connection = rdfConnectionPool.getConnection();
         RDFConnectionProperties connRDF = rdfConnectionPool.getConnectionProperties();
         QueryExecution queryExecution = null;
 
         if (!title.equalsIgnoreCase("")) {
-            resourceName = "<http://ftn.uns.ac.rs/scientificPublication/" + title.replace(" ", "") + ">";
+            try {
+                resourceName = "<http://ftn.uns.ac.rs/scientificPublication/" + URLEncoder.encode(title, "UTF-8") + ">";
+            } catch (UnsupportedEncodingException e) {
+                e.printStackTrace();
+            }
             String sparqlQuery = SparqlUtil.selectDataWithAlias(connRDF.getDataEndpoint() + SPARQL_NAMED_GRAPH_URI, resourceName
                     + " <http://schema.org/author> ?author .\n" + "\t?author <http://schema.org/name> ?authorName .\n",
                     "?author", "?pred", "?authorName", "?name");

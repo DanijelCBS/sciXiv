@@ -2,6 +2,7 @@ package xml.web.services.team2.sciXiv.service;
 
 import java.io.IOException;
 import java.math.BigInteger;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -233,7 +234,7 @@ public class BusinessProcessService {
 		}
 		
 		this.changeProcessState(publicationTitle, TProcessStateEnum.PUBLISHED);
-		// TODO: change status in scientific publication instance(s)
+		scientificPublicationRepository.accept(publicationTitle.replace(" ", ""));
 
 		// Notify authors
 		List<TUser> authors = userRepository.findAuthorsOfPublication(publicationTitle);
@@ -256,7 +257,7 @@ public class BusinessProcessService {
 		}
 		
 		this.changeProcessState(publicationTitle, TProcessStateEnum.REJECTED);
-		// TODO: change status in scientific publication instance(s)
+		scientificPublicationRepository.reject(publicationTitle.replace(" ", ""));
 
 		// Notify authors
 		List<TUser> authors = userRepository.findAuthorsOfPublication(publicationTitle);
@@ -295,7 +296,7 @@ public class BusinessProcessService {
 	public void withdrawPaper(String publicationTitle, String currentUserEmail) throws Exception {
 		TUser initiator = userService.findByEmail(currentUserEmail);
 		boolean owner = false;
-		String targetId = publicationTitle.replace(" ", "");
+		String targetId = URLEncoder.encode(publicationTitle, "UTF-8");
 		for (String sciPubId : initiator.getOwnPublications().getPublicationID()) {
 			if (sciPubId.equals(targetId)) {
 				owner = true;
@@ -309,7 +310,8 @@ public class BusinessProcessService {
 		}
 
 		this.changeProcessState(publicationTitle, TProcessStateEnum.WITHDRAWN);
-		// TODO: update status in publication instance(s)
+
+		scientificPublicationRepository.withdraw(publicationTitle.replace(" ", ""));
 
 		// Notify editor and reviewers
 		BusinessProcess businessProcess = businessProcessRepository

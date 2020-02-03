@@ -59,7 +59,7 @@ public class CoverLetterService {
 		Element root = coverLetter.getDocumentElement();
 		String publicationTitle = root.getElementsByTagName("publicationTitle").item(0).toString();
 
-		if (publicationTitle.length() == 0 || publicationTitle == null) {
+		if (publicationTitle == null || publicationTitle.length() == 0) {
 			return null;
 		}
 
@@ -112,16 +112,8 @@ public class CoverLetterService {
 	}
 
 	public String save(String coverLetter) throws SAXException, ParserConfigurationException, IOException,
-			TransformerException, DocumentStoringFailedException, DocumentLoadingFailedException, XMLDBException {
-		String coverLetterId = coverLetterRepository.save(coverLetter);
-
-		// scientific publication name
-		// String spName = getScientificPublicationsID(coverLetter);
-
-		// set cover letter for publication id=name
-		// setCoverLetter(spName, coverLetterId);
-
-		return coverLetterId;
+			TransformerException, DocumentStoringFailedException, XMLDBException {
+		return coverLetterRepository.save(coverLetter);
 	}
 
 	public String update(String coverLetter) throws SAXException, ParserConfigurationException, IOException,

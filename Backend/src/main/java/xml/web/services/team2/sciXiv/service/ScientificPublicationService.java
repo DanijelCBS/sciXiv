@@ -1,6 +1,5 @@
 package xml.web.services.team2.sciXiv.service;
 
-import org.apache.commons.io.filefilter.NotFileFilter;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,7 +17,6 @@ import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
-import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 import org.xmldb.api.base.XMLDBException;
@@ -91,22 +89,19 @@ public class ScientificPublicationService {
 	XSLTranspiler xslTranspiler;
 
 	public String findByNameAndVersion(String name, int version) throws XMLDBException, DocumentLoadingFailedException {
-		return scientificPublicationRepository.findByNameAndVersion(name.replace(" ", ""), version);
+		return scientificPublicationRepository.findByNameAndVersion(name, version);
 	}
 
 	public String save(String sciPub) throws ParserConfigurationException, DocumentParsingFailedException, SAXException,
-			IOException, DocumentStoringFailedException, TransformerException, UserSavingFailedException,
-			UserRetrievingFailedException {
+			IOException, DocumentStoringFailedException, TransformerException, UserRetrievingFailedException, UserSavingFailedException {
 		Document document = domParser.buildAndValidateDocument(sciPub, schemaPath);
 		NodeList nodeList = document.getElementsByTagName("sp:title");
 		String title = nodeList.item(0).getTextContent();
 		String titleOrig = title;
 
 		try {
-			// initialize process for publication
 			businessProcessService.createBusinessProcess(titleOrig);
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
@@ -149,22 +144,22 @@ public class ScientificPublicationService {
 		metadataExtractor.extractMetadata(new ByteArrayInputStream(sciPub.getBytes()), metadataStream);
 		String metadata = new String(metadataStream.toByteArray());
 
-		/*String email = ((UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal())
+		String email = ((UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal())
 				.getUsername();
 		TUser user = userRepository.getByEmail(email);
-		user.getOwnPublications().getPublicationID().add(title);
-		userRepository.save(user);*/
+		String publicationTitle = URLEncoder.encode(titleOrig, "UTF-8");
+		user.getOwnPublications().getPublicationID().add(publicationTitle);
+		userRepository.save(user);
 
 		scientificPublicationRepository.saveMetadata(metadata);
 
 		String ret = scientificPublicationRepository.save(sciPub, title, name);
 
-		/*try {
+		try {
 			notifySubmissionToEditor(titleOrig, user);
 		} catch (MessagingException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
-		}*/
+		}
 
 		return ret;
 	}
@@ -188,7 +183,6 @@ public class ScientificPublicationService {
 						currentState.toString()));
 			}
 		} catch (JAXBException e1) {
-			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
 
@@ -224,7 +218,6 @@ public class ScientificPublicationService {
 			TUser revisor = userRepository.getByEmail(revisorEmail);
 			notifySubmissionToEditor(titleOrig, revisor);
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
@@ -237,31 +230,38 @@ public class ScientificPublicationService {
 		return "Publication successfully withdrawn";
 	}
 
-	public ArrayList<SciPubDTO> basicSearch(String parameter) throws XMLDBException, UserRetrievingFailedException {
-		String email = ((UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal())
-				.getUsername();
-		TUser user = userRepository.getByEmail(email);
+	public ArrayList<SciPubDTO> basicSearch(String parameter) throws XMLDBException {
+		TUser user;
+		try {
+			String email = ((UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal())
+					.getUsername();
+			user = userRepository.getByEmail(email);
+		}
+		catch(Exception e) {
+			user = null;
+		}
 		return scientificPublicationRepository.basicSearch(parameter, user);
 	}
 
-	public ArrayList<SciPubDTO> advancedSearch(SearchPublicationsDTO searchParameters)
-			throws UserRetrievingFailedException {
+	public ArrayList<SciPubDTO> advancedSearch(SearchPublicationsDTO searchParameters) {
 		String query = "SELECT * FROM <%s>\n" + "WHERE { \n" + "\t?sciPub";
 		query = makeSparqlQuery(query, searchParameters);
-		/*
-		 * String email = ((UserDetails)
-		 * SecurityContextHolder.getContext().getAuthentication().getPrincipal())
-		 * .getUsername(); TUser user = userRepository.getByEmail(email);
-		 * ArrayList<String> userDocuments = (ArrayList<String>)
-		 * user.getOwnPublications().getPublicationID(); String resourceURL =
-		 * "http://ftn.uns.ac.rs/scientificPublication/"; StringBuilder titles = new
-		 * StringBuilder("("); for (String title : userDocuments) {
-		 * titles.append("<").append(resourceURL).append(title).append(">").append(", "
-		 * ); } titles.delete(titles.length() - 2, titles.length()).append(")");
-		 * 
-		 * query += "\tFILTER (?sciPub IN " + titles + " || ?status = \"accepted\")\n}";
-		 */
-		query += "\n}";
+		try {
+			String email = ((UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUsername();
+			TUser user = userRepository.getByEmail(email);
+			ArrayList<String> userDocuments = (ArrayList<String>) user.getOwnPublications().getPublicationID();
+			String resourceURL = "http://ftn.uns.ac.rs/scientificPublication/";
+			StringBuilder titles = new StringBuilder("(");
+			for (String title : userDocuments) {
+				titles.append("<").append(resourceURL).append(title).append(">").append(", ");
+			}
+			titles.delete(titles.length() - 2, titles.length()).append(")");
+
+			query += "\tFILTER (?sciPub IN " + titles + " || ?status = \"accepted\")\n}";
+		}
+		catch(Exception e) {
+			query += "\tFILTER (?status = \"accepted\")\n}";
+		}
 
 		return scientificPublicationRepository.advancedSearch(query);
 	}
@@ -396,7 +396,7 @@ public class ScientificPublicationService {
 	private void notifySubmissionToEditor(String publicationTitle, TUser author)
 			throws IOException, SAXException, ParserConfigurationException, TransformerException, MessagingException {
 		String notificationContent = String.format(
-				"User %s %s has submitted a new vrsion of scientific publication: %s.", author.getFirstName(),
+				"User %s %s has submitted a new version of scientific publication: %s.", author.getFirstName(),
 				author.getLastName(), publicationTitle);
 
 		TUser reciever = userRepository.getEditor();

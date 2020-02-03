@@ -428,7 +428,6 @@ export class XonomyApiService {
         }]
       },
       "sp:quote": {
-        oneliner: true,
         menu:[{
           caption: "Add <sp:source>",
           action: Xonomy.newElementChild,
@@ -516,6 +515,13 @@ export class XonomyApiService {
             return jsElement.hasAttribute("sp:id");
           }
         },{
+          caption: "Add attribute 'ordered'",
+          action: Xonomy.newAttribute,
+          actionParameter: {name: "ordered", value: "false"},
+          hideIf: function (jsElement) {
+            return jsElement.hasAttribute("ordered");
+          }
+        },{
           caption: "Add <sp:listItem>",
           action: Xonomy.newElementChild,
           actionParameter: "<sp:listItem xmlns:sp=\"http://ftn.uns.ac.rs/scientificPublication\"></sp:listItem>"
@@ -528,6 +534,13 @@ export class XonomyApiService {
             asker: Xonomy.askString,
             menu: [{
               caption: "Delete this @sp:id",
+              action: Xonomy.deleteAttribute
+            }]
+          },
+          "ordered": {
+            asker: Xonomy.askString,
+            menu: [{
+              caption: "Delete this @ordered",
               action: Xonomy.deleteAttribute
             }]
           }
@@ -978,5 +991,310 @@ export class XonomyApiService {
         }]
       }
     }
-  }
+  };
+
+  public coverLetterSpecification = {
+    elements: {
+      "cl:coverLetter": {
+        menu: [
+          {
+            caption: "Add <cl:publicationTitle>",
+            action: Xonomy.newElementChild,
+            actionParameter: "<cl:publicationTitle xmlns:cl=\"http://ftn.uns.ac.rs/coverLetter\"></cl:publicationTitle>"
+          },{
+            caption: "Add <cl:author>",
+            action: Xonomy.newElementChild,
+            actionParameter: "<cl:author xmlns:cl=\"http://ftn.uns.ac.rs/coverLetter\"></cl:author>"
+          },{
+            caption: "Add <cl:targetPublisher>",
+            action: Xonomy.newElementChild,
+            actionParameter: "<cl:targetPublisher xmlns:cl=\"http://ftn.uns.ac.rs/coverLetter\"></cl:targetPublisher>"
+          },{
+            caption: "Add <cl:content>",
+            action: Xonomy.newElementChild,
+            actionParameter: "<cl:content xmlns:cl=\"http://ftn.uns.ac.rs/coverLetter\"></cl:content>"
+          }
+        ]
+      },
+      "cl:publicationTitle": {
+        hasText: true,
+        mustBeBefore: ["cl:author", "cl:targetPublisher", "cl:content"],
+        oneliner: true,
+        asker: Xonomy.askString,
+        menu:[{
+          caption: "Delete element",
+          action: Xonomy.deleteElement
+        }]
+      },
+      "cl:author": {
+        menu: [{
+          caption: "Add <cl:name>",
+          action: Xonomy.newElementChild,
+          actionParameter: "<cl:name xmlns:cl=\"http://ftn.uns.ac.rs/coverLetter\"></cl:name>"
+        },{
+          caption: "Add <cl:educationTitle>",
+          action: Xonomy.newElementChild,
+          actionParameter: "<cl:educationTitle xmlns:cl=\"http://ftn.uns.ac.rs/coverLetter\"></cl:educationTitle>"
+        },{
+          caption: "Add <cl:affiliation>",
+          action: Xonomy.newElementChild,
+          actionParameter: "<cl:affiliation xmlns:cl=\"http://ftn.uns.ac.rs/coverLetter\"></cl:affiliation>"
+        },{
+          caption: "Add <cl:state>",
+          action: Xonomy.newElementChild,
+          actionParameter: "<cl:state xmlns:cl=\"http://ftn.uns.ac.rs/coverLetter\"></cl:state>"
+        },{
+          caption: "Add <cl:city>",
+          action: Xonomy.newElementChild,
+          actionParameter: "<cl:city xmlns:cl=\"http://ftn.uns.ac.rs/coverLetter\"></cl:city>"
+        },{
+          caption: "Add <cl:phoneNumber>",
+          action: Xonomy.newElementChild,
+          actionParameter: "<cl:phoneNumber xmlns:cl=\"http://ftn.uns.ac.rs/coverLetter\"></cl:phoneNumber>"
+        },{
+          caption: "Add <cl:email>",
+          action: Xonomy.newElementChild,
+          actionParameter: "<cl:email xmlns:cl=\"http://ftn.uns.ac.rs/coverLetter\"></cl:email>"
+        },{
+          caption: "Add <cl:signature>",
+          action: Xonomy.newElementChild,
+          actionParameter: "<cl:signature xmlns:cl=\"http://ftn.uns.ac.rs/coverLetter\"></cl:signature>"
+        },{
+          caption: "Delete element",
+          action: Xonomy.deleteElement
+        }]
+      },
+      "cl:name": {
+        hasText: true,
+        mustBeBefore: ["cl:educationTitle", "cl:affiliation", "cl:city", "cl:state", "cl:phoneNumber", "cl:email", "cl:signature"],
+        oneliner: true,
+        asker: Xonomy.askString,
+        menu:[{
+          caption: "Delete element",
+          action: Xonomy.deleteElement
+        }]
+      },
+      "cl:educationTitle": {
+        hasText: true,
+        mustBeBefore: ["cl:affiliation", "cl:city", "cl:state", "cl:phoneNumber", "cl:email", "cl:signature"],
+        oneliner: true,
+        asker: Xonomy.askString,
+        menu:[{
+          caption: "Delete element",
+          action: Xonomy.deleteElement
+        }]
+      },
+      "cl:affiliation": {
+        hasText: true,
+        mustBeBefore: ["cl:city", "cl:state", "cl:phoneNumber", "cl:email", "cl:signature"],
+        oneliner: true,
+        asker: Xonomy.askString,
+        menu:[{
+          caption: "Delete element",
+          action: Xonomy.deleteElement
+        }]
+      },
+      "cl:city": {
+        hasText: true,
+        mustBeBefore: ["cl:state", "cl:phoneNumber", "cl:email", "cl:signature"],
+        oneliner: true,
+        asker: Xonomy.askString,
+        menu:[{
+          caption: "Delete element",
+          action: Xonomy.deleteElement
+        }]
+      },
+      "cl:state": {
+        hasText: true,
+        mustBeBefore: ["cl:phoneNumber", "cl:email", "cl:signature"],
+        oneliner: true,
+        asker: Xonomy.askString,
+        menu:[{
+          caption: "Delete element",
+          action: Xonomy.deleteElement
+        }]
+      },
+      "cl:phoneNumber": {
+        hasText: true,
+        mustBeBefore: ["cl:email", "cl:signature"],
+        oneliner: true,
+        asker: Xonomy.askString,
+        menu:[{
+          caption: "Delete element",
+          action: Xonomy.deleteElement
+        }]
+      },
+      "cl:email": {
+        hasText: true,
+        mustBeBefore: ["cl:signature"],
+        oneliner: true,
+        asker: Xonomy.askString,
+        menu:[{
+          caption: "Delete element",
+          action: Xonomy.deleteElement
+        }]
+      },
+      "cl:signature": {
+        hasText: true,
+        oneliner: true,
+        asker: Xonomy.askString,
+        menu:[{
+          caption: "Delete element",
+          action: Xonomy.deleteElement
+        }]
+      },
+      "cl:targetPublisher": {
+        menu: [{
+          caption: "Add <cl:editor>",
+          action: Xonomy.newElementChild,
+          actionParameter: "<cl:editor xmlns:cl=\"http://ftn.uns.ac.rs/coverLetter\"></cl:editor>"
+        },{
+          caption: "Add <cl:journal>",
+          action: Xonomy.newElementChild,
+          actionParameter: "<cl:journal xmlns:cl=\"http://ftn.uns.ac.rs/coverLetter\"></cl:journal>"
+        },{
+          caption: "Delete element",
+          action: Xonomy.deleteElement
+        }]
+      },
+      "cl:editor": {
+        hasText: true,
+        oneliner: true,
+        asker: Xonomy.askString,
+        mustBeBefore: ["cl:journal"],
+        menu:[{
+          caption: "Delete element",
+          action: Xonomy.deleteElement
+        }]
+      },
+      "cl:journal": {
+        hasText: true,
+        oneline: true,
+        asker: Xonomy.askString,
+        menu:[{
+          caption: "Delete element",
+          action: Xonomy.deleteElement
+        }]
+      },
+      "cl:content": {
+        menu:[{
+          caption: "Add <cl:paragraph>",
+          action: Xonomy.newElementChild,
+          actionParameter: "<cl:paragraph xmlns:cl=\"http://ftn.uns.ac.rs/coverLetter\"></cl:paragraph>"
+        },{
+          caption: "Delete element",
+          action: Xonomy.deleteElement
+        }]
+      },
+      "cl:paragraph": {
+        hasText: true,
+        menu:[{
+          caption: "Add <cl:boldText>",
+          action: Xonomy.newElementChild,
+          actionParameter: "<cl:boldText xmlns:cl=\"http://ftn.uns.ac.rs/coverLetter\"></cl:boldText>"
+        },{
+          caption: "Add <cl:emphasizedText>",
+          action: Xonomy.newElementChild,
+          actionParameter: "<cl:emphasizedText xmlns:cl=\"http://ftn.uns.ac.rs/coverLetter\"></cl:emphasizedText>"
+        },{
+          caption: "Add <cl:quote>",
+          action: Xonomy.newElementChild,
+          actionParameter: "<cl:quote xmlns:cl=\"http://ftn.uns.ac.rs/coverLetter\"></cl:quote>"
+        },{
+          caption: "Add <cl:list>",
+          action: Xonomy.newElementChild,
+          actionParameter: "<cl:list xmlns:cl=\"http://ftn.uns.ac.rs/coverLetter\"></cl:list>"
+        },{
+          caption: "Delete element",
+          action: Xonomy.deleteElement
+        }]
+      },
+      "cl:boldText": {
+        hasText: true,
+        oneliner: true,
+        asker: Xonomy.askString,
+        menu:[{
+          caption: "Delete element",
+          action: Xonomy.deleteElement
+        }]
+      },
+      "cl:emphasizedText": {
+        hasText: true,
+        oneliner: true,
+        asker: Xonomy.askString,
+        menu:[{
+          caption: "Delete element",
+          action: Xonomy.deleteElement
+        }]
+      },
+      "cl:quote": {
+        menu:[{
+          caption: "Add <cl:source>",
+          action: Xonomy.newElementChild,
+          actionParameter: "<cl:source xmlns:cl=\"http://ftn.uns.ac.rs/coverLetter\"></cl:source>"
+        },{
+          caption: "Add <cl:quoteContent>",
+          action: Xonomy.newElementChild,
+          actionParameter: "<cl:quoteContent xmlns:cl=\"http://ftn.uns.ac.rs/coverLetter\"></cl:quoteContent>"
+        }, {
+          caption: "Delete element",
+          action: Xonomy.deleteElement
+        }]
+      },
+      "cl:source": {
+        hasText: true,
+        oneliner: true,
+        mustBeBefore: ["cl:quoteContent"],
+        asker: Xonomy.askString,
+        menu:[{
+          caption: "Delete element",
+          action: Xonomy.deleteElement
+        }]
+      },
+      "cl:quoteContent": {
+        hasText: true,
+        oneliner: true,
+        asker: Xonomy.askString,
+        menu:[{
+          caption: "Delete element",
+          action: Xonomy.deleteElement
+        }]
+      },
+      "cl:list": {
+        menu: [{
+          caption: "Add attribute 'ordered'",
+          action: Xonomy.newAttribute,
+          actionParameter: {name: "ordered", value: "false"},
+          hideIf: function (jsElement) {
+            return jsElement.hasAttribute("ordered");
+          }
+        },{
+          caption: "Add <cl:listItem>",
+          action: Xonomy.newElementChild,
+          actionParameter: "<cl:listItem xmlns:cl=\"http://ftn.uns.ac.rs/coverLetter\"></cl:listItem>"
+        }, {
+          caption: "Delete element",
+          action: Xonomy.deleteElement
+        }],
+        attributes: {
+          "ordered": {
+            asker: Xonomy.askString,
+            menu: [{
+              caption: "Delete this @ordered",
+              action: Xonomy.deleteAttribute
+            }]
+          }
+        }
+      },
+      "cl:listItem": {
+        asker: Xonomy.askString,
+        hasText: true,
+        oneliner: true,
+        menu:[{
+          caption: "Delete element",
+          action: Xonomy.deleteElement
+        }]
+      }
+    }
+  };
 }

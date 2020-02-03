@@ -1,16 +1,37 @@
 <div class="page">
   <app-toolbar class="header"></app-toolbar>
   <div class="content">
-    <div style="margin-left:30px">
-      <input id="xmlFile" type="file" (change)="readXMLFile($event)" name="xmlFile">
-    </div>
 
-    <div id="xonomy" style="margin-top:50px; margin-left:25%;">
-    </div>
+    <mat-tab-group dynamicHeight [(selectedIndex)]="tabIndex" (selectedTabChange)="tabChanged()">
+      <mat-tab label="Scientific publication" disabled="{{spDisabled}}">
+        <div style="margin-left:30px; margin-top:50px;">
+          <input id="xmlFile" type="file" (change)="readXMLFile($event, true)" name="xmlFile">
+        </div>
 
-    <div fxLayout="row wrap">
-      <button type="submit" mat-raised-button matTooltip="Submit publication" (click)="submitPublication()" style="margin-top:50px; margin-left:25%;">Submit publication</button>
-    </div>
+        <div id="xonomy" style="margin-top:50px; margin-left:25%;">
+        </div>
+
+        <div fxLayout="row wrap">
+          <button type="submit" mat-raised-button (click)="changeToCoverLetter()"
+                  style="margin-top:50px; margin-left:25%; margin-bottom:50px;">Go to cover letter submission</button>
+        </div>
+
+      </mat-tab>
+
+      <mat-tab disabled="{{cvDisabled}}" label="Cover letter">
+        <div style="margin-left:30px; margin-top:50px;">
+          <input id="cvFile" type="file" (change)="readXMLFile($event, false)" name="xmlFile">
+        </div>
+
+        <div id="xonomyCV" style="margin-top:50px; margin-left:25%;">
+        </div>
+
+        <div fxLayout="row wrap">
+          <button type="submit" mat-raised-button (click)="submitPublication()"
+                  style="margin-top:50px; margin-left:25%; margin-bottom:50px;">Submit publication and cover letter</button>
+        </div>
+      </mat-tab>
+    </mat-tab-group>
 
   </div>
 </div>

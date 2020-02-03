@@ -123,7 +123,8 @@ public class ScientificPublicationController {
     @PostMapping
     public ResponseEntity<Object> addScientificPublication(@RequestBody String sciPub) {
         try {
-            return new ResponseEntity<>(scientificPublicationService.save(sciPub), HttpStatus.CREATED);
+            scientificPublicationService.save(sciPub);
+            return new ResponseEntity<>(201, HttpStatus.CREATED);
         } catch (DocumentParsingFailedException | ChangeProcessStateException | InvalidDataException | InvalidXmlException e) {
         	e.printStackTrace();
             return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);

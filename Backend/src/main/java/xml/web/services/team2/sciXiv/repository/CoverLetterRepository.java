@@ -13,6 +13,8 @@ import org.exist.xmldb.EXistResource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.rest.webmvc.ResourceNotFoundException;
 import org.springframework.stereotype.Repository;
+import org.w3c.dom.Element;
+import org.w3c.dom.NodeList;
 import org.xmldb.api.base.Collection;
 import org.xmldb.api.base.Resource;
 import org.xmldb.api.base.ResourceIterator;
@@ -166,12 +168,15 @@ public class CoverLetterRepository {
 		Document document = DOMParser.buildDocument(coverLetter, coverLetterXsdSchemaPath);
 		String lUUID = String.format("%d", new BigInteger(UUID.randomUUID().toString().replace("-", ""), 16));
 		String id = "cl" + lUUID;
-		document.getElementsByTagName("coverLetter").item(0).getAttributes().getNamedItem("id").setTextContent(id);
+		document.getDocumentElement().setAttribute("id", id);
 
-		String publicationTitle = document.getElementsByTagName("publicationTitle").item(0).getTextContent();
+		String publicationTitle = document.getElementsByTagName("cl:publicationTitle").item(0).getTextContent();
 		int latestVersion = scientificPublicationRepository.getLastVersionNumber(publicationTitle.replace(" ", ""));
 
-		document.getElementsByTagName("version").item(0).setTextContent(Integer.toString(latestVersion));
+		Element version = document.createElement("cl:version");
+		version.setTextContent(Integer.toString(latestVersion));
+		NodeList author = document.getElementsByTagName("cl:author");
+		document.getDocumentElement().insertBefore(version, author.item(0));
 
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 		String submissionDate = sdf.format(new Date());

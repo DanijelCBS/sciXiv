@@ -5,6 +5,7 @@ import { AuthorRoutingModule } from './author-routing.module';
 import { AddScientificPublicationComponent } from './add-scientific-publication/add-scientific-publication.component';
 import {ToolbarModule} from "../toolbar/toolbar.module";
 import {FlexModule} from "@angular/flex-layout";
+import {MatTabsModule} from '@angular/material/tabs';
 import {
   MatButtonModule, MatInputModule,
   MatSnackBarModule,
@@ -24,7 +25,8 @@ import {
     FlexModule,
     MatInputModule,
     MatSnackBarModule,
-    MatFormFieldModule
+    MatFormFieldModule,
+    MatTabsModule
   ]
 })
 export class AuthorModule { }

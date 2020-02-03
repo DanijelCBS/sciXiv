@@ -1,6 +1,5 @@
 package xml.web.services.team2.sciXiv.service;
 
-import org.apache.commons.io.filefilter.NotFileFilter;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,6 +41,7 @@ import javax.xml.transform.TransformerException;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -89,24 +89,26 @@ public class ScientificPublicationService {
 	XSLTranspiler xslTranspiler;
 
 	public String findByNameAndVersion(String name, int version) throws XMLDBException, DocumentLoadingFailedException {
-		return scientificPublicationRepository.findByNameAndVersion(name.replace(" ", ""), version);
+		return scientificPublicationRepository.findByNameAndVersion(name, version);
 	}
 
 	public String save(String sciPub) throws ParserConfigurationException, DocumentParsingFailedException, SAXException,
-			IOException, DocumentStoringFailedException, TransformerException, UserSavingFailedException,
-			UserRetrievingFailedException {
+			IOException, DocumentStoringFailedException, TransformerException, UserRetrievingFailedException, UserSavingFailedException {
 		Document document = domParser.buildAndValidateDocument(sciPub, schemaPath);
 		NodeList nodeList = document.getElementsByTagName("sp:title");
 		String title = nodeList.item(0).getTextContent();
 		String titleOrig = title;
 
 		try {
-			// initialize process for publication
 			businessProcessService.createBusinessProcess(titleOrig);
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+
+		String aboutAttr = document.getDocumentElement().getAttribute("about");
+		int lastIndex = aboutAttr.lastIndexOf('/');
+		String about = aboutAttr.substring(0, lastIndex + 1) + URLEncoder.encode(aboutAttr.substring(lastIndex + 1), "UTF-8");
+		document.getDocumentElement().setAttribute("about", about);
 
 		title = title.replace(" ", "");
 		String name = title + "-v1";
@@ -128,6 +130,14 @@ public class ScientificPublicationService {
 		status.setAttribute("property", "pred:creativeWorkStatus");
 		metadataElem.item(0).insertBefore(status, keywords.item(0));
 
+        NodeList references = document.getElementsByTagName("sp:reference");
+        for (int i = 0; i < references.getLength(); i++) {
+        	aboutAttr = references.item(i).getAttributes().getNamedItem("href").getTextContent();
+			lastIndex = aboutAttr.lastIndexOf('/');
+			about = aboutAttr.substring(0, lastIndex + 1) + URLEncoder.encode(aboutAttr.substring(lastIndex + 1), "UTF-8");
+            references.item(i).getAttributes().getNamedItem("href").setTextContent(about);
+        }
+
 		sciPub = transformer.toXML(document);
 		ByteArrayOutputStream metadataStream = new ByteArrayOutputStream();
 
@@ -137,7 +147,8 @@ public class ScientificPublicationService {
 		String email = ((UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal())
 				.getUsername();
 		TUser user = userRepository.getByEmail(email);
-		user.getOwnPublications().getPublicationID().add(title);
+		String publicationTitle = URLEncoder.encode(titleOrig, "UTF-8");
+		user.getOwnPublications().getPublicationID().add(publicationTitle);
 		userRepository.save(user);
 
 		scientificPublicationRepository.saveMetadata(metadata);
@@ -147,7 +158,6 @@ public class ScientificPublicationService {
 		try {
 			notifySubmissionToEditor(titleOrig, user);
 		} catch (MessagingException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
@@ -173,7 +183,6 @@ public class ScientificPublicationService {
 						currentState.toString()));
 			}
 		} catch (JAXBException e1) {
-			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
 
@@ -209,7 +218,6 @@ public class ScientificPublicationService {
 			TUser revisor = userRepository.getByEmail(revisorEmail);
 			notifySubmissionToEditor(titleOrig, revisor);
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
@@ -222,31 +230,38 @@ public class ScientificPublicationService {
 		return "Publication successfully withdrawn";
 	}
 
-	public ArrayList<SciPubDTO> basicSearch(String parameter) throws XMLDBException, UserRetrievingFailedException {
-		String email = ((UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal())
-				.getUsername();
-		TUser user = userRepository.getByEmail(email);
+	public ArrayList<SciPubDTO> basicSearch(String parameter) throws XMLDBException {
+		TUser user;
+		try {
+			String email = ((UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal())
+					.getUsername();
+			user = userRepository.getByEmail(email);
+		}
+		catch(Exception e) {
+			user = null;
+		}
 		return scientificPublicationRepository.basicSearch(parameter, user);
 	}
 
-	public ArrayList<SciPubDTO> advancedSearch(SearchPublicationsDTO searchParameters)
-			throws UserRetrievingFailedException {
+	public ArrayList<SciPubDTO> advancedSearch(SearchPublicationsDTO searchParameters) {
 		String query = "SELECT * FROM <%s>\n" + "WHERE { \n" + "\t?sciPub";
 		query = makeSparqlQuery(query, searchParameters);
-		/*
-		 * String email = ((UserDetails)
-		 * SecurityContextHolder.getContext().getAuthentication().getPrincipal())
-		 * .getUsername(); TUser user = userRepository.getByEmail(email);
-		 * ArrayList<String> userDocuments = (ArrayList<String>)
-		 * user.getOwnPublications().getPublicationID(); String resourceURL =
-		 * "http://ftn.uns.ac.rs/scientificPublication/"; StringBuilder titles = new
-		 * StringBuilder("("); for (String title : userDocuments) {
-		 * titles.append("<").append(resourceURL).append(title).append(">").append(", "
-		 * ); } titles.delete(titles.length() - 2, titles.length()).append(")");
-		 * 
-		 * query += "\tFILTER (?sciPub IN " + titles + " || ?status = \"accepted\")\n}";
-		 */
-		query += "\n}";
+		try {
+			String email = ((UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUsername();
+			TUser user = userRepository.getByEmail(email);
+			ArrayList<String> userDocuments = (ArrayList<String>) user.getOwnPublications().getPublicationID();
+			String resourceURL = "http://ftn.uns.ac.rs/scientificPublication/";
+			StringBuilder titles = new StringBuilder("(");
+			for (String title : userDocuments) {
+				titles.append("<").append(resourceURL).append(title).append(">").append(", ");
+			}
+			titles.delete(titles.length() - 2, titles.length()).append(")");
+
+			query += "\tFILTER (?sciPub IN " + titles + " || ?status = \"accepted\")\n}";
+		}
+		catch(Exception e) {
+			query += "\tFILTER (?status = \"accepted\")\n}";
+		}
 
 		return scientificPublicationRepository.advancedSearch(query);
 	}
@@ -271,7 +286,7 @@ public class ScientificPublicationService {
 	}
 
 	public SearchPublicationsDTO getPublicationsMetadata(String title) {
-		return scientificPublicationRepository.getPublicationsMetadata(title.replace(" ", ""));
+		return scientificPublicationRepository.getPublicationsMetadata(title);
 	}
 
 	private String makeSparqlQuery(String query, SearchPublicationsDTO parameters) {
@@ -381,7 +396,7 @@ public class ScientificPublicationService {
 	private void notifySubmissionToEditor(String publicationTitle, TUser author)
 			throws IOException, SAXException, ParserConfigurationException, TransformerException, MessagingException {
 		String notificationContent = String.format(
-				"User %s %s has submitted a new vrsion of scientific publication: %s.", author.getFirstName(),
+				"User %s %s has submitted a new version of scientific publication: %s.", author.getFirstName(),
 				author.getLastName(), publicationTitle);
 
 		TUser reciever = userRepository.getEditor();

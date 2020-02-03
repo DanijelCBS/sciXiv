@@ -1,0 +1,16 @@
+<div class="page">
+  <app-toolbar class="header"></app-toolbar>
+  <div class="content">
+    <div style="margin-left:30px">
+      <input id="xmlFile" type="file" (change)="readXMLFile($event)" name="xmlFile">
+    </div>
+
+    <div id="xonomy" style="margin-top:50px; margin-left:25%;">
+    </div>
+
+    <div fxLayout="row wrap">
+      <button type="submit" mat-raised-button matTooltip="Submit publication" (click)="submitPublication()" style="margin-top:50px; margin-left:25%;">Submit publication</button>
+    </div>
+
+  </div>
+</div>

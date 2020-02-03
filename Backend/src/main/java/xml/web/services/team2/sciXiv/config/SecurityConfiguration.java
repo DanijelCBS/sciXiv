@@ -58,10 +58,10 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 			.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
 			.and()
 		.authorizeRequests()
-		.antMatchers(HttpMethod.POST, "/users/authors").permitAll()
+		/*.antMatchers(HttpMethod.POST, "/users/authors").permitAll()
 		.antMatchers(HttpMethod.POST, "/auth").permitAll()
-		.antMatchers(HttpMethod.GET, "/scientificPublication/**").permitAll()
-		.anyRequest().authenticated();
+		.antMatchers(HttpMethod.GET, "/scientificPublication/**").permitAll()*/
+		.anyRequest().permitAll();
 		
 		// Custom JWT based authentication
 		http.addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);

@@ -149,7 +149,7 @@
                 <xsl:value-of select="@refPartId"/>
             </xsl:attribute>
             <xsl:value-of select="@refPartId"/>. <a>
-                <xsl:attribute name="href">/<xsl:value-of select="./sp:referenceTitle"/></xsl:attribute>
+                <xsl:attribute name="href">http://localhost:8080/scientificPublication/xhtml?title=<xsl:value-of select="./sp:referenceTitle"/></xsl:attribute>
                 <xsl:for-each select="./sp:referenceAuthors/sp:referenceAuthor">
                     <xsl:value-of select="."/><xsl:if test="not(position()=last())">, </xsl:if>
                 </xsl:for-each>; <xsl:value-of select="./sp:referenceTitle"/>, <xsl:if test="./sp:publisherName"><xsl:value-of select="./sp:publisherName"/>, </xsl:if><xsl:value-of select="./sp:yearIssued"/>

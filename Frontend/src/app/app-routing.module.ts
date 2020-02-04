@@ -12,6 +12,10 @@ const routes: Routes = [
     component: DashboardComponent
   },
   {
+    path: 'publications',
+    component: DashboardComponent
+  },
+  {
     path: 'addPublication',
     component: AddScientificPublicationComponent
   },

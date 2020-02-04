@@ -1,4 +1,6 @@
+import { UserRole } from './../model/UserRole';
 import { Component, OnInit } from '@angular/core';
+import { AuthService } from '../services/auth.service';
 
 @Component({
   selector: 'shr-header',
@@ -7,9 +9,37 @@ import { Component, OnInit } from '@angular/core';
 })
 export class HeaderComponent implements OnInit {
 
-  constructor() { }
+  private currentUserRole = UserRole.UNREGISTERED;
+
+  constructor(
+    private authService: AuthService
+  ) { }
 
   ngOnInit() {
+    this.authService.currentUserRole.subscribe(
+      (role: UserRole) => {
+        this.currentUserRole = role;
+      }
+    );
+  }
+
+  private onLogout() {
+    this.authService.purgeAuth();
+  }
+
+  private hasAuthorPermissions(): boolean {
+    return this.currentUserRole === UserRole.AUTHOR
+    || this.currentUserRole === UserRole.REVIEWER
+    || this.currentUserRole === UserRole.EDITOR;
+  }
+
+  private hasReviewerPermissions(): boolean {
+    return this.currentUserRole === UserRole.REVIEWER
+    || this.currentUserRole === UserRole.EDITOR;
+  }
+
+  private hasEditorPermissions(): boolean {
+    return this.currentUserRole === UserRole.EDITOR;
   }
 
 }

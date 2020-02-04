@@ -1,3 +1,4 @@
+import { UserRole } from './../model/UserRole';
 import { UserRegostrationDTO } from './../model/UserRegistrationDTO';
 import { Injectable } from '@angular/core';
 import {HttpClient} from '@angular/common/http';

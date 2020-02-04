@@ -20,6 +20,7 @@ import org.springframework.http.ResponseEntity.BodyBuilder;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.User;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -51,6 +52,7 @@ import xml.web.services.team2.sciXiv.service.UserService;
 
 @RestController
 @RequestMapping(value = "/reviews")
+@CrossOrigin
 public class ReviewController {
 
 	@Autowired

@@ -1,0 +1,47 @@
+<div class="main-div">
+    <mat-toolbar color="primary" class="login-toolbar">
+      <h2 class="md-toolbar-tools"><span>Create an account</span></h2>
+    </mat-toolbar>
+    <mat-card class="login-card">
+      <mat-card-content>
+        <form (ngSubmit)="signUp()" [formGroup]="userForm">
+          <mat-grid-list cols="1" rowHeight="9vh">
+            <mat-grid-tile>
+              <mat-form-field class="login-input-width" [style.fontSize.px]=17>
+                <input matInput id="name" placeholder="Name" required formControlName="name">
+                <mat-error *ngIf="hasError('name', 'required')">Name is required</mat-error>
+              </mat-form-field>
+            </mat-grid-tile>
+            <mat-grid-tile>
+              <mat-form-field class="login-input-width" [style.fontSize.px]=17>
+                <input matInput id="surname" placeholder="Surname" required formControlName="surname">
+                <mat-error *ngIf="hasError('surname', 'required')">Surname is required</mat-error>
+              </mat-form-field>
+            </mat-grid-tile>
+            <mat-grid-tile>
+              <mat-form-field class="login-input-width" [style.fontSize.px]=17>
+                <input matInput id="email" placeholder="Email" required formControlName="email">
+                <mat-error *ngIf="hasError('email', 'required')">Email is required</mat-error>
+                <mat-error *ngIf="hasError('email', 'email')">Email must be in valid form</mat-error>
+              </mat-form-field>
+            </mat-grid-tile>
+            <mat-grid-tile>
+              <mat-form-field class="login-input-width"  [style.fontSize.px]=17>
+                <input matInput id="password" placeholder="Password" required type="password"  formControlName="password">
+                <mat-error *ngIf="hasError('password', 'required')">Password is required</mat-error>
+              </mat-form-field>
+            </mat-grid-tile>
+            <mat-grid-tile>
+              <mat-form-field class="login-input-width" [style.fontSize.px]=17>
+                <input matInput id="retype-password" placeholder="Retype password" type="password" required formControlName="retypePassword">
+                <mat-error *ngIf="hasError('retypePassword', 'required')">Retype password is required</mat-error>
+                <mat-error *ngIf="hasError('retypePassword', 'passwordNotMatch')">Passwords do not match</mat-error>
+              </mat-form-field>
+            </mat-grid-tile>
+            <mat-grid-tile>
+              <button mat-raised-button color="primary" class="login-button" [disabled]="!userForm.valid">Sign Up</button>
+            </mat-grid-tile>
+          </mat-grid-list>
+        </form>
+      </mat-card-content>
+</mat-card>

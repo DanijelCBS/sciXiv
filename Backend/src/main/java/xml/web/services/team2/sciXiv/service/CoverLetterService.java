@@ -91,7 +91,7 @@ public class CoverLetterService {
 		return coverLetter;
 	}
 
-	public String findByTitleAndVersion(String title, int version)
+	public String findByTitleAndVersion(String title, String version)
 			throws DocumentLoadingFailedException, XMLDBException, IOException {
 		String coverLetter = coverLetterRepository.findByTitleAndVersion(title, version);
 
@@ -160,7 +160,7 @@ public class CoverLetterService {
 		return new UrlResource(file.toUri());
 	}
 
-	public Resource exportCoverLetterByTitleAndVersionAsXHTML(String title, int version)
+	public Resource exportCoverLetterByTitleAndVersionAsXHTML(String title, String version)
 			throws DocumentLoadingFailedException, XMLDBException, IOException, TransformerException {
 		String coverLetterXHTML = getCoverLetterByTitleAndVersionAndReturnAsXHTML(title, version);
 
@@ -183,7 +183,7 @@ public class CoverLetterService {
 		return new UrlResource(file.toUri());
 	}
 
-	public Resource exportCoverLetterByTitleAndVersionAsPDF(String title, int version)
+	public Resource exportCoverLetterByTitleAndVersionAsPDF(String title, String version)
 			throws TransformerException, IOException, DocumentLoadingFailedException, XMLDBException {
 		String coverLetterStr = coverLetterRepository.findByTitleAndVersion(title, version);
 
@@ -194,5 +194,9 @@ public class CoverLetterService {
 		Files.write(file, outputStream.toByteArray());
 
 		return new UrlResource(file.toUri());
+	}
+
+	public String submitCoverLetterOfRevision(String coverLetter) throws XMLDBException, ParserConfigurationException, TransformerException, IOException, SAXException, DocumentStoringFailedException {
+		return coverLetterRepository.submitCoverLetterOfRevision(coverLetter);
 	}
 }

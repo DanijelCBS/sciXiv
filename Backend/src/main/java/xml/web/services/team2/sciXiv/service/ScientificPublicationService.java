@@ -190,18 +190,12 @@ public class ScientificPublicationService {
 		String dateRevised = sdf.format(new Date());
 
 		NodeList authors = document.getElementsByTagName("sp:authors");
-		NodeList keywords = document.getElementsByTagName("sp:keywords");
 
 		Element dateRevisedElem = document.createElement("sp:dateRevised");
 		dateRevisedElem.setTextContent(dateRevised);
 		dateRevisedElem.setAttribute("property", "pred:dateModified");
 		NodeList metadataElem = document.getElementsByTagName("sp:metadata");
 		metadataElem.item(0).insertBefore(dateRevisedElem, authors.item(0));
-
-		Element status = document.createElement("sp:status");
-		status.setTextContent("in process");
-		status.setAttribute("property", "pred:creativeWorkStatus");
-		metadataElem.item(0).insertBefore(status, keywords.item(0));
 
 		sciPub = transformer.toXML(document);
 
@@ -230,7 +224,7 @@ public class ScientificPublicationService {
 		return "Publication successfully withdrawn";
 	}
 
-	public int getLastVersionNumber(String title) {
+	public int getLastVersionNumber(String title) throws XMLDBException {
 		return scientificPublicationRepository.getLastVersionNumber(title);
 	}
 

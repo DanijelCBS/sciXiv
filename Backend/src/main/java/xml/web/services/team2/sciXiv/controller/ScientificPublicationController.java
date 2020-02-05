@@ -10,6 +10,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import xml.web.services.team2.sciXiv.dto.SciPubDTO;
 import xml.web.services.team2.sciXiv.dto.SearchPublicationsDTO;
+import xml.web.services.team2.sciXiv.dto.StringDTO;
 import xml.web.services.team2.sciXiv.exception.ChangeProcessStateException;
 import xml.web.services.team2.sciXiv.exception.DocumentLoadingFailedException;
 import xml.web.services.team2.sciXiv.exception.DocumentParsingFailedException;
@@ -31,8 +32,9 @@ public class ScientificPublicationController {
     @GetMapping
     public ResponseEntity<Object> findByNameAndVersion(@RequestParam String name, @RequestParam int version) {
         try {
-            return new ResponseEntity<>(scientificPublicationService
-                    .findByNameAndVersion(name, version), HttpStatus.OK);
+            String sciPub = scientificPublicationService.findByNameAndVersion(name, version);
+            StringDTO result = new StringDTO(sciPub);
+            return new ResponseEntity<>(result, HttpStatus.OK);
         } catch (DocumentLoadingFailedException e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
         } catch (Exception e) {

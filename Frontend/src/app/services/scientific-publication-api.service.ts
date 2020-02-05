@@ -33,7 +33,7 @@ export class ScientificPublicationApiService {
   }
 
   getScientificPublication(title: string, version: number) {
-    return this._http.get(`${this._baseUrl}?name=${title}&?version=${version}`)
+    return this._http.get(`${this._baseUrl}?name=${title}&version=${version}`)
   }
 
   getNumberOfVersions(title: string) {
@@ -42,5 +42,9 @@ export class ScientificPublicationApiService {
 
   submitRevision(scientificPublication: string) {
     return this._http.put(`${this._baseUrl}/revise`, scientificPublication);
+  }
+
+  withdrawPublication(title: string) {
+    return this._http.delete(`http://localhost:8080/publicationProcesses?title=${title}`);
   }
 }

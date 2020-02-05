@@ -17,14 +17,17 @@
           <input id="xmlFile" type="file" (change)="readXMLFile($event, true)" name="xmlFile">
         </div>
 
-        <div *ngIf="!addMode">
-          <a mat-raised-button href="http://localhost:8080/scientificPublication/export/xhtml?title={{title}}">Export as HTML</a>
-          <a mat-raised-button href="http://localhost:8080/scientificPublication/export/pdf?title={{title}}">Export as PDF</a>
-          <a mat-raised-button href="http://localhost:8080/scientificPublication/metadata/rdf?title={{title}}">Export metadata as RDF</a>
-          <a mat-raised-button href="http://localhost:8080/scientificPublication/metadata/json?title={{title}}">Export metadata as JSON</a>
-        </div>
+        <div fxLayout="row" style="margin-top:20px">
+          <div *ngIf="!addMode" fxLayout="column" fxLayoutGap="10px" style="margin-bottom:20px; margin-left:10px">
+            <a mat-raised-button href="http://localhost:8080/scientificPublication/export/xhtml?title={{title}}">Export as HTML</a>
+            <a mat-raised-button href="http://localhost:8080/scientificPublication/export/pdf?title={{title}}">Export as PDF</a>
+            <a mat-raised-button href="http://localhost:8080/scientificPublication/metadata/rdf?title={{title}}">Export metadata as RDF</a>
+            <a mat-raised-button href="http://localhost:8080/scientificPublication/metadata/json?title={{title}}">Export metadata as JSON</a>
+            <button *ngIf="!addMode" type="submit" mat-raised-button (click)="withdrawPublication()">Withdraw publication</button>
+          </div>
 
-        <div id="xonomy" style="margin-top:50px; margin-left:25%;">
+          <div id="xonomy" style="margin-top:50px; margin-left:25%;" fxLayout="column">
+          </div>
         </div>
 
         <div fxLayout="row wrap">
@@ -39,14 +42,13 @@
           <input id="cvFile" type="file" (change)="readXMLFile($event, false)" name="xmlFile">
         </div>
 
-        <div *ngIf="!addMode">
-          <a mat-raised-button href="http://localhost:8080/scientificPublication/export/xhtml?title={{title}}">Export as HTML</a>
-          <a mat-raised-button href="http://localhost:8080/scientificPublication/export/pdf?title={{title}}">Export as PDF</a>
-          <a mat-raised-button href="http://localhost:8080/scientificPublication/metadata/rdf?title={{title}}">Export metadata as RDF</a>
-          <a mat-raised-button href="http://localhost:8080/scientificPublication/metadata/json?title={{title}}">Export metadata as JSON</a>
-        </div>
-
-        <div id="xonomyCV" style="margin-top:50px; margin-left:25%;">
+        <div fxLayout="row" style="margin-top:20px">
+          <div *ngIf="!addMode" fxLayout="column" fxLayoutGap="10px" style="margin-bottom:20px; margin-left:20px">
+            <a mat-raised-button href="http://localhost:8080/coverLetter/export/xhtml?title={{title}}&version={{version}}">Export as HTML</a>
+            <a mat-raised-button href="http://localhost:8080/coverLetter/export/pdf?title={{title}}&version={{version}}">Export as PDF</a>
+          </div>
+          <div id="xonomyCV" style="margin-top:50px; margin-left:25%;">
+          </div>
         </div>
 
         <div fxLayout="row wrap">

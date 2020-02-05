@@ -41,6 +41,7 @@ import javax.xml.transform.TransformerException;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -228,7 +229,7 @@ public class ScientificPublicationService {
 		return scientificPublicationRepository.getLastVersionNumber(title);
 	}
 
-	public ArrayList<SciPubDTO> basicSearch(String parameter) throws XMLDBException {
+	public ArrayList<SciPubDTO> basicSearch(String parameter) throws XMLDBException, UnsupportedEncodingException {
 		TUser user;
 		try {
 			String email = ((UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal())
@@ -244,9 +245,10 @@ public class ScientificPublicationService {
 	public ArrayList<SciPubDTO> advancedSearch(SearchPublicationsDTO searchParameters) {
 		String query = "SELECT * FROM <%s>\n" + "WHERE { \n" + "\t?sciPub";
 		query = makeSparqlQuery(query, searchParameters);
+		TUser user = null;
 		try {
 			String email = ((UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUsername();
-			TUser user = userRepository.getByEmail(email);
+			user = userRepository.getByEmail(email);
 			ArrayList<String> userDocuments = (ArrayList<String>) user.getOwnPublications().getPublicationID();
 			String resourceURL = "http://ftn.uns.ac.rs/scientificPublication/";
 			StringBuilder titles = new StringBuilder("(");
@@ -261,7 +263,7 @@ public class ScientificPublicationService {
 			query += "\tFILTER (?status = \"accepted\")\n}";
 		}
 
-		return scientificPublicationRepository.advancedSearch(query);
+		return scientificPublicationRepository.advancedSearch(query, user);
 	}
 
 	public ArrayList<SciPubDTO> getReferences(String title) {

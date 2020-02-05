@@ -17,10 +17,17 @@
 	    </ul>
 	    <br/>
 	    <span *ngIf="references != undefined"><b>Publications which references this: </b></span>
-	    <span *ngIf="references != undefined">{{references | joinArrayElements}}</span>
+      <ul *ngIf="references != undefined">
+        <li *ngFor="let reference of references">
+          {{reference}}
+        </li>
+      </ul>
+	    <!--<span *ngIf="references != undefined">{{references | joinArrayElements}}</span>-->
   	</div>
     <br/>
     <a target="_blank" href="http://localhost:8080/scientificPublication/xhtml?title={{publication.title}}">View publication as HTML</a>
+    <br/>
+    <a routerLink="/publication/{{publication.title}}" mat-raised-button *ngIf="publication.ownPublication">See more about your publication</a>
   </mat-card-content>
   <mat-card-actions>
     <a mat-raised-button href="http://localhost:8080/scientificPublication/export/xhtml?title={{publication.title}}">Export as HTML</a>

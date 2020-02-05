@@ -5,8 +5,10 @@ import java.util.ArrayList;
 public class SciPubDTO {
     private String title;
     private ArrayList<String> authors;
+    private boolean ownPublication;
 
     public SciPubDTO() {
+        ownPublication = false;
     }
 
     public SciPubDTO(String title, ArrayList<String> authors) {
@@ -28,5 +30,13 @@ public class SciPubDTO {
 
     public void setAuthors(ArrayList<String> authors) {
         this.authors = authors;
+    }
+
+    public boolean isOwnPublication() {
+        return ownPublication;
+    }
+
+    public void setOwnPublication(boolean ownPublication) {
+        this.ownPublication = ownPublication;
     }
 }

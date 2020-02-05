@@ -9,7 +9,6 @@ import { DashboardModule } from './dashboard/dashboard.module';
 import {HttpClientModule, HTTP_INTERCEPTORS} from '@angular/common/http';
 import {SharedModule} from "./shared/shared.module";
 import {AuthorModule} from "./author/author.module";
-import { HttpErrorInterceptor } from './interceptors/HttpErrorInterceptor';
 import { ReviewerModule } from './reviewer/reviewer.module';
 import { EditorModule } from './editor/editor.module';
 import { TokenInterceptor } from './interceptors/TokenInterceptor';

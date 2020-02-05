@@ -220,6 +220,7 @@ public class BusinessProcessService {
 		if (processState == TProcessStateEnum.REVISED) {
 			int latestVersion = scientificPublicationRepository
 					.getLastVersionNumber(scientificPublicationTitle.replace(" ", ""));
+			businessProcess.setVersion(BigInteger.valueOf(latestVersion));
 			businessProcess.setReviewerAssignments(new ReviewerAssignments());
 		}
 
@@ -341,5 +342,4 @@ public class BusinessProcessService {
 		BusinessProcess process = getBusinessProcessObject(publicationTitle);
 		return process.getProcessState();
 	}
-
 }

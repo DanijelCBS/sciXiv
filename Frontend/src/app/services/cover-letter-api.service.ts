@@ -14,4 +14,12 @@ export class CoverLetterApiService {
   submitCoverLetter(coverLetter: string) {
     return this._http.post(`${this._baseUrl}`, coverLetter);
   }
+
+  getCoverLetter(title: string, version: number) {
+    return this._http.get(`${this._baseUrl}?title=${title}&version=${version}`)
+  }
+
+  submitCoverLetterRevision(coverLetter: string) {
+    return this._http.post(`${this._baseUrl}/revision`, coverLetter);
+  }
 }

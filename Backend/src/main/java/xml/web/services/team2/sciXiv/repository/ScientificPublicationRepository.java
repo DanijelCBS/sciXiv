@@ -173,15 +173,27 @@ public class ScientificPublicationRepository {
         return lastVersion;
     }
 
-    public ArrayList<SciPubDTO> basicSearch(String parameter, TUser user) throws XMLDBException {
+    public ArrayList<SciPubDTO> basicSearch(String parameter, TUser user) throws XMLDBException, UnsupportedEncodingException {
         XMLConnectionProperties connXML = xmlConnectionPool.getConnection();
         Collection col = basicOperations.getOrCreateCollection(collectionName, 0, connXML);
         ArrayList<SciPubDTO> sciPubs = new ArrayList<>();
+        boolean ownPub = false;
 
         String[] docCollections = col.listChildCollections();
         for (String docCollection : docCollections) {
-            if (user != null && user.getOwnPublications().getPublicationID().contains(docCollection)) {
-                getTitlesAndAuthorsBasicSearch(docCollection, connXML, sciPubs, parameter, true);
+            if (user != null) {
+                for(String title : user.getOwnPublications().getPublicationID()) {
+                    String temp = URLDecoder.decode(title, "UTF-8").replace(" ", "");
+                    if (temp.equals(docCollection)) {
+                        ownPub = true;
+                        getTitlesAndAuthorsBasicSearch(docCollection, connXML, sciPubs, parameter, true);
+                        break;
+                    }
+                }
+                if (!ownPub) {
+                    getTitlesAndAuthorsBasicSearch(docCollection, connXML, sciPubs, parameter, false);
+                }
+                ownPub = false;
             } else {
                 getTitlesAndAuthorsBasicSearch(docCollection, connXML, sciPubs, parameter, false);
             }
@@ -191,11 +203,16 @@ public class ScientificPublicationRepository {
         return sciPubs;
     }
 
-    public ArrayList<SciPubDTO> advancedSearch(String query) {
+    public ArrayList<SciPubDTO> advancedSearch(String query, TUser user) {
         RDFConnection connection = rdfConnectionPool.getConnection();
 
         RDFConnectionProperties conn = rdfConnectionPool.getConnectionProperties();
-        ArrayList<SciPubDTO> sciPubs = getTitlesAndAuthors(query, connection, conn, true);
+        ArrayList<SciPubDTO> sciPubs = null;
+        try {
+            sciPubs = getTitlesAndAuthors(query, connection, conn, user,true);
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
 
         rdfConnectionPool.releaseConnection(connection);
         return sciPubs;
@@ -213,14 +230,19 @@ public class ScientificPublicationRepository {
         }
         String sparqlQuery = SparqlUtil.selectData(conn.getDataEndpoint() + SPARQL_NAMED_GRAPH_URI,
                 "?sciPub <http://schema.org/citation> " + resourceName + " .");
-        ArrayList<SciPubDTO> sciPubs = getTitlesAndAuthors(sparqlQuery, connection, conn, false);
+        ArrayList<SciPubDTO> sciPubs = null;
+        try {
+            sciPubs = getTitlesAndAuthors(sparqlQuery, connection, conn, null, false);
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
 
         rdfConnectionPool.releaseConnection(connection);
 
         return sciPubs;
     }
 
-    private ArrayList<SciPubDTO> getTitlesAndAuthors(String sparqlQuery, RDFConnection connection, RDFConnectionProperties conn, boolean formatting) {
+    private ArrayList<SciPubDTO> getTitlesAndAuthors(String sparqlQuery, RDFConnection connection, RDFConnectionProperties conn, TUser user, boolean formatting) throws UnsupportedEncodingException {
         QueryExecution queryExecution;
         if (formatting) {
             queryExecution = executeSparqlQuery(sparqlQuery, connection, conn);
@@ -237,8 +259,10 @@ public class ScientificPublicationRepository {
         String name = "name";
         String query, title;
         QuerySolution querySolution;
+        SciPubDTO sciPubDTO;
 
         while (results.hasNext()) {
+            sciPubDTO = new SciPubDTO();
             querySolution = results.next();
             title = querySolution.get(sciPub).toString();
             query = SparqlUtil.selectDataWithAlias(conn.getDataEndpoint() + SPARQL_NAMED_GRAPH_URI, "<" + title + ">"
@@ -257,8 +281,18 @@ public class ScientificPublicationRepository {
             }
             title = title.replace("http://ftn.uns.ac.rs/scientificPublication/","");
 
+            if (user != null) {
+                String encodedTitle = URLEncoder.encode(title, "UTF-8");
+                for (String pubTitle : user.getOwnPublications().getPublicationID()) {
+                    if (pubTitle.equals(encodedTitle)) {
+                        sciPubDTO.setOwnPublication(true);
+                    }
+                }
+            }
 
-            sciPubs.add(new SciPubDTO(title, new ArrayList<>(authors)));
+            sciPubDTO.setTitle(title);
+            sciPubDTO.setAuthors(new ArrayList<>(authors));
+            sciPubs.add(sciPubDTO);
             authors.clear();
             tempQueryExecution.close();
         }
@@ -274,6 +308,7 @@ public class ScientificPublicationRepository {
         int lastVersion = getLastVersionNumber(docCollection);
         Collection docCol = basicOperations.getOrCreateCollection(collectionName + "/" + docCollection, 0, connXML);
         String docName = docCollection + "-v" + lastVersion;
+        SciPubDTO sciPub = new SciPubDTO();
         ArrayList<String> authors = new ArrayList<>();
         String name = "name";
         XPathQueryService xPathService = (XPathQueryService) docCol.getService("XPathQueryService", "1.0");
@@ -288,6 +323,7 @@ public class ScientificPublicationRepository {
                     + "//sp:status[text()=\"accepted\"]) " + "then " + doc + "/node()"
                     + "/sp:metadata/sp:title/text() else \"\"";
         }
+        sciPub.setOwnPublication(ownPublication);
         ResourceSet result = xPathService.query(xQuery);
 
         ResourceIterator i = result.getIterator();
@@ -312,7 +348,9 @@ public class ScientificPublicationRepository {
                 authors.add(tempResults.next().get(name).toString());
             }
 
-            sciPubs.add(new SciPubDTO(title, authors));
+            sciPub.setTitle(title);
+            sciPub.setAuthors(authors);
+            sciPubs.add(sciPub);
         }
 
         if (queryExecution != null)

@@ -195,4 +195,8 @@ public class CoverLetterService {
 
 		return new UrlResource(file.toUri());
 	}
+
+	public String submitCoverLetterOfRevision(String coverLetter) throws XMLDBException, ParserConfigurationException, TransformerException, IOException, SAXException, DocumentStoringFailedException {
+		return coverLetterRepository.submitCoverLetterOfRevision(coverLetter);
+	}
 }

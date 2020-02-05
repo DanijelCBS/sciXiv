@@ -1,8 +1,11 @@
+import { ReviewersService } from './../services/reviewers.service';
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, ParamMap } from '@angular/router';
 import { PublicationProcessDTO } from '../model/PublicationProcessDTO';
 import { PublicationProcessService } from '../services/publication-process.service';
 import { ReviewService } from '../services/review.service';
+import { UserBaicInfoDTO } from '../model/UserBaicInfoDTO';
+import { AssingReviewersRequestDTO } from '../model/AssingReviewersRequestDTO';
 
 @Component({
   selector: 'app-manage-process',
@@ -13,10 +16,14 @@ export class ManageProcessComponent implements OnInit {
   private process: PublicationProcessDTO;
   private publicationTitle = '';
   private loading = true;
+  private processingAssignment = false;
+  private reviewers: Array<UserBaicInfoDTO> = [];
+  private selectedReviewers: Array<string> = [];
 
   constructor(
     private processService: PublicationProcessService,
     private reviewService: ReviewService,
+    private reviewerService: ReviewersService,
     private activatedRoute: ActivatedRoute
     ) { }
 
@@ -40,7 +47,40 @@ export class ManageProcessComponent implements OnInit {
     this.processService.getProcess(this.publicationTitle).subscribe(
       (result: PublicationProcessDTO) => {
         this.process = result;
+        // this.loading = false;
+        this.loadReviewers();
+      }
+    );
+  }
+
+  private loadReviewers() {
+    if (!['SUBMITTED', 'REVISED', 'ON_REVIEW'].includes(this.process.processState)) {
+      this.loading = false;
+      return;
+    }
+    this.reviewerService.getPossibleReviewers(this.process.publicationTitle).subscribe(
+      (possibleReviewers: Array<UserBaicInfoDTO>) => {
+        this.reviewers = possibleReviewers;
         this.loading = false;
+      }
+    );
+  }
+
+  private onReviewerSelection(list) {
+    this.selectedReviewers = list.selectedOptions.selected.map(item => item.value);
+    console.log(this.selectedReviewers);
+  }
+
+  private onReviewersAssigned() {
+    const assignmentRequest: AssingReviewersRequestDTO = {
+      publicationTitle: this.process.publicationTitle,
+      assignedReviewerEmails: this.selectedReviewers
+    };
+    this.processingAssignment = true;
+    this.reviewService.assignReviewers(assignmentRequest).subscribe(
+      (success) => {
+        this.processingAssignment = false;
+        window.location.reload();
       }
     );
   }

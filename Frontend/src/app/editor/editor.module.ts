@@ -10,7 +10,8 @@ import {
   MatTooltipModule,
   MatPaginatorModule, MatSelectModule,
   MatDatepickerModule, MatNativeDateModule,
-  MatFormFieldModule
+  MatFormFieldModule,
+  MatListModule
 } from '@angular/material';
 
 import { EditorRoutingModule } from './editor-routing.module';
@@ -33,7 +34,8 @@ import { ManageProcessComponent } from './manage-process/manage-process.componen
     MatTooltipModule,
     MatPaginatorModule, MatSelectModule,
     MatDatepickerModule, MatNativeDateModule,
-    MatFormFieldModule
+    MatFormFieldModule,
+    MatListModule
   ],
   exports: [
     ProcessesListPreviewComponent,

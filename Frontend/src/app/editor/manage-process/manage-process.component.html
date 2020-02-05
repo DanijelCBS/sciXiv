@@ -4,7 +4,12 @@
         <h2>{{ process.publicationTitle }}</h2>
         <h2>{{ process.processState }}</h2>
         <p>
-            <a mat-raised-button href="http://localhost:8080/reviews/mergeToHtml/{{process.publicationTitle}}/version/{{process.publicationVersion}}">View publication with reviews as HTML</a>
+            <span>
+                <a mat-raised-button href="http://localhost:8080/reviews/mergeToHtml/{{process.publicationTitle}}/version/{{process.publicationVersion}}">View publication with reviews as HTML</a>
+            </span>
+            <span>
+                <a class="downloadButton" mat-raised-button href="http://localhost:8080/reviews/mergeToPdf/{{process.publicationTitle}}/version/{{process.publicationVersion}}">View publication with reviews as PDF</a>
+            </span>
         </p>
     </div>
 
@@ -21,5 +26,18 @@
                 </mat-card-title>
             </mat-card-header>
         </mat-card>
+    </div>
+
+    <div fxLayout="row" *ngIf="process.processState === 'SUBMITTED' || process.processState === 'REVISED'">
+        <h2>Assign reviewers:</h2>
+
+        <mat-selection-list #reviewerSelection>
+            <mat-list-option *ngFor="let reviewer of reviewers" (click)="onReviewerSelection(reviewerSelection)" [value]="reviewer.email">
+                {{ reviewer.firstName }} {{ reviewer.lastName }}
+            </mat-list-option>
+        </mat-selection-list>
+        <br/><br/>
+        <a class="downloadButton" mat-raised-button (click)="onReviewersAssigned()" *ngIf="!processingAssignment">Assign reviewers</a>
+        <h2 *ngIf="processingAssignment">Processing...</h2>
     </div>
 </div>

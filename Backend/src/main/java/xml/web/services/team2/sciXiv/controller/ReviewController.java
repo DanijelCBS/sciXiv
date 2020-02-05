@@ -163,7 +163,6 @@ public class ReviewController {
 	}
 
 	@GetMapping(value = "/mergeToHtml/{pubTitle}/version/{pubVersion}", produces = MediaType.TEXT_HTML_VALUE)
-	@PreAuthorize("hasRole('EDITOR')")
 	public ResponseEntity<Object> getScientificPublicationWithReviewsAsXHTML(
 			@PathVariable("pubTitle") String publicationTitle, @PathVariable("pubVersion") int publicationVersion)
 			throws TransformerException, XMLDBException, DocumentLoadingFailedException, ParserConfigurationException,
@@ -175,7 +174,6 @@ public class ReviewController {
 	}
 
 	@GetMapping(value = "/mergeToPdf/{pubTitle}/version/{pubVersion}", produces = MediaType.APPLICATION_PDF_VALUE)
-	@PreAuthorize("hasRole('EDITOR')")
 	public ResponseEntity<Object> getScientificPublicationWithReviewsAsPDF(
 			@PathVariable("pubTitle") String publicationTitle, @PathVariable("pubVersion") int publicationVersion)
 			throws TransformerException, XMLDBException, DocumentLoadingFailedException, ParserConfigurationException,

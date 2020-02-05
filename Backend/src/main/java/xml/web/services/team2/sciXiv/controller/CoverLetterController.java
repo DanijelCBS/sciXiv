@@ -31,9 +31,9 @@ public class CoverLetterController {
 
 	XMLConnectionProperties conn;
 
-	@GetMapping(value = "/{title}/version/{version}", produces = MediaType.APPLICATION_XML_VALUE)
-	public ResponseEntity<String> getCoverLetterByTitleAndVersion(@PathVariable("title") String title,
-			@PathVariable("version") String version)
+	@GetMapping
+	public ResponseEntity<String> getCoverLetterByTitleAndVersion(@RequestParam("title") String title,
+			@RequestParam("version") int version)
 			throws DocumentLoadingFailedException, XMLDBException, IOException {
 		String coverLetter = coverLetterService.findByTitleAndVersion(title, version);
 		return new ResponseEntity<>(coverLetter, HttpStatus.OK);
@@ -105,9 +105,9 @@ public class CoverLetterController {
 		}
 	}
 
-	@GetMapping(value = "export/xhtml/{title}/version/{version}")
-	public ResponseEntity<Object> exportCoverLetterByTitleAndVersionAsXHTML(@PathVariable("title") String title,
-			@PathVariable("version") String version) {
+	@GetMapping(value = "export/xhtml")
+	public ResponseEntity<Object> exportCoverLetterByTitleAndVersionAsXHTML(@RequestParam("title") String title,
+			@RequestParam("version") int version) {
 		try {
 			Resource resource = coverLetterService.exportCoverLetterByTitleAndVersionAsXHTML(title, version);
 			return ResponseEntity.ok().contentType(MediaType.APPLICATION_OCTET_STREAM)
@@ -132,9 +132,9 @@ public class CoverLetterController {
 		}
 	}
 
-	@GetMapping(value = "export/pdf/{title}/version/{version}")
-	public ResponseEntity<Object> exportCoverLetterByTitleAndVersionAsPDF(@PathVariable("title") String title,
-			@PathVariable("version") String version) {
+	@GetMapping(value = "export/pdf")
+	public ResponseEntity<Object> exportCoverLetterByTitleAndVersionAsPDF(@RequestParam("title") String title,
+			@RequestParam("version") int version) {
 		try {
 			Resource resource = coverLetterService.exportCoverLetterByTitleAndVersionAsPDF(title, version);
 			return ResponseEntity.ok().contentType(MediaType.APPLICATION_OCTET_STREAM)

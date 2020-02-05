@@ -67,7 +67,7 @@ public class CoverLetterRepository {
 	@Autowired
 	ScientificPublicationRepository scientificPublicationRepository;
 
-	public String findByTitleAndVersion(String title, String version) throws XMLDBException {
+	public String findByTitleAndVersion(String title, int version) throws XMLDBException {
 		String coverLetterStr = null;
 		XMLConnectionProperties conn = xmlConnectionPool.getConnection();
 		Collection col = basicOperations.getOrCreateCollection(collectionName, 0, conn);
@@ -174,7 +174,7 @@ public class CoverLetterRepository {
 		int latestVersion = scientificPublicationRepository.getLastVersionNumber(publicationTitle.replace(" ", ""));
 
 		Element version = document.createElement("cl:version");
-		version.setTextContent(Integer.toString(latestVersion));
+		version.setTextContent(latestVersion);
 		NodeList author = document.getElementsByTagName("cl:author");
 		document.getDocumentElement().insertBefore(version, author.item(0));
 

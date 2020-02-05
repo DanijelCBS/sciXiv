@@ -230,6 +230,10 @@ public class ScientificPublicationService {
 		return "Publication successfully withdrawn";
 	}
 
+	public int getLastVersionNumber(String title) {
+		return scientificPublicationRepository.getLastVersionNumber(title);
+	}
+
 	public ArrayList<SciPubDTO> basicSearch(String parameter) throws XMLDBException {
 		TUser user;
 		try {

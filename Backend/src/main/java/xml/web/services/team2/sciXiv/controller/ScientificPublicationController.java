@@ -28,7 +28,7 @@ public class ScientificPublicationController {
     @Autowired
     private ScientificPublicationService scientificPublicationService;
 
-    @GetMapping(produces = MediaType.APPLICATION_XML_VALUE)
+    @GetMapping
     public ResponseEntity<Object> findByNameAndVersion(@RequestParam String name, @RequestParam int version) {
         try {
             return new ResponseEntity<>(scientificPublicationService
@@ -37,6 +37,16 @@ public class ScientificPublicationController {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
         } catch (Exception e) {
             return new ResponseEntity<>("An error occurred while retrieving document", HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @GetMapping("version")
+    public ResponseEntity<Object> getLastVersionNumber(@RequestParam String title) {
+        try {
+            return new ResponseEntity<>(scientificPublicationService
+                    .getLastVersionNumber(title.replace(" ", "")), HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>("An error occurred while retrieving version number", HttpStatus.BAD_REQUEST);
         }
     }
 
@@ -137,7 +147,8 @@ public class ScientificPublicationController {
     @PutMapping(value = "revise")
     public ResponseEntity<Object> reviseScientificPublication(@RequestBody String sciPub) {
         try {
-            return new ResponseEntity<>(scientificPublicationService.revise(sciPub), HttpStatus.OK);
+            scientificPublicationService.revise(sciPub);
+            return new ResponseEntity<>(200, HttpStatus.OK);
         } catch (DocumentParsingFailedException | ChangeProcessStateException | InvalidDataException | InvalidXmlException e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
         } catch (Exception e) {
@@ -148,7 +159,8 @@ public class ScientificPublicationController {
     @PutMapping(value = "withdraw")
     public ResponseEntity<Object> withdrawScientificPublication(@RequestParam String title) {
         try {
-            return new ResponseEntity<>(scientificPublicationService.withdraw(title), HttpStatus.OK);
+            scientificPublicationService.withdraw(title);
+            return new ResponseEntity<>(200, HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity<>("An error occurred while withdrawing document", HttpStatus.BAD_REQUEST);
         }

@@ -10,8 +10,9 @@ import {
   MatButtonModule, MatInputModule,
   MatSnackBarModule,
   MatTooltipModule,
-  MatFormFieldModule
+  MatFormFieldModule, MatSelectModule
 } from '@angular/material';
+import {FormsModule} from "@angular/forms";
 
 
 @NgModule({
@@ -26,7 +27,9 @@ import {
     MatInputModule,
     MatSnackBarModule,
     MatFormFieldModule,
-    MatTabsModule
+    MatTabsModule,
+    MatSelectModule,
+    FormsModule
   ]
 })
 export class AuthorModule { }

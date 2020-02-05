@@ -1,3 +1,4 @@
+import { Router } from '@angular/router';
 import { UserRole } from './../model/UserRole';
 import { Component, OnInit } from '@angular/core';
 import { AuthService } from '../services/auth.service';
@@ -12,7 +13,8 @@ export class HeaderComponent implements OnInit {
   private currentUserRole = UserRole.UNREGISTERED;
 
   constructor(
-    private authService: AuthService
+    private authService: AuthService,
+    private router: Router
   ) { }
 
   ngOnInit() {
@@ -21,10 +23,12 @@ export class HeaderComponent implements OnInit {
         this.currentUserRole = role;
       }
     );
+    this.authService.populate();
   }
 
   private onLogout() {
     this.authService.purgeAuth();
+    this.router.navigate(['/publications']);
   }
 
   private hasAuthorPermissions(): boolean {

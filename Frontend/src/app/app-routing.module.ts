@@ -4,6 +4,8 @@ import {DashboardComponent} from "./dashboard/dashboard.component";
 import {AddScientificPublicationComponent} from "./author/add-scientific-publication/add-scientific-publication.component";
 import { RegistrationComponent } from 'src/app/shared/registration/registration.component';
 import { LoginComponent } from './shared/login/login.component';
+import { ReviewAssignmentsComponent } from './reviewer/review-assignments/review-assignments.component';
+import { AddReviewComponent } from './reviewer/add-review/add-review.component';
 
 
 const routes: Routes = [
@@ -18,6 +20,14 @@ const routes: Routes = [
   {
     path: 'addPublication',
     component: AddScientificPublicationComponent
+  },
+  {
+    path: 'reviewAssignments',
+    component: ReviewAssignmentsComponent
+  },
+  {
+    path: 'addReview',
+    component: AddReviewComponent
   },
   {
     path: 'register',

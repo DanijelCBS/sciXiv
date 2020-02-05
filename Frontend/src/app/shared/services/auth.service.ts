@@ -17,6 +17,17 @@ export class AuthService {
 
   constructor(private http: HttpClient, private jwtService: JwtService) { }
 
+  populate() {
+    // If JWT detected, attempt to get & store user's info
+    const jwt = this.jwtService.getToken();
+    if (jwt) {
+      this.setAuth(jwt);
+    } else {
+      // Remove any potential remnants of previous auth states
+      this.purgeAuth();
+    }
+  }
+
   setAuth(token: string) {
     // Save JWT sent from server in local storage
     this.jwtService.saveToken(token);
@@ -37,6 +48,10 @@ export class AuthService {
     this.jwtService.destroyToken();
     // Set current user to an empty object
     this.currentUserRoleSubject.next(UserRole.UNREGISTERED as UserRole);
+  }
+
+  getAuthToken() {
+    return this.jwtService.getToken();
   }
 
   attemptAuth(loginRequest: LoginRequestDTO): Observable<any> {

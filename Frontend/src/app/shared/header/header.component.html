@@ -1,0 +1,13 @@
+<mat-toolbar color="primary" fxLayout="row" fxLayout.xs="column" fxLayoutAlign="space-between center">
+    <span>
+      <button routerLink="/publications" mat-button>Scientific publications</button>
+      <button routerLink="/addPublication" mat-button *ngIf="hasAuthorPermissions()">My publications</button>
+      <button routerLink="/reviewAssignments" mat-button *ngIf="hasReviewerPermissions()">My reviews</button>
+      <button routerLink="/" mat-button *ngIf="hasEditorPermissions()">Publications in process</button>
+    </span>
+    <span fxLayoutAlign="right">
+      <button mat-button (click)="onLogout()" *ngIf="hasAuthorPermissions()">Logout</button>
+      <button  routerLink="/login" mat-button *ngIf="!hasAuthorPermissions()">Login</button>
+      <button routerLink="/register" mat-button *ngIf="!hasAuthorPermissions()">Register</button>
+    </span>
+</mat-toolbar>

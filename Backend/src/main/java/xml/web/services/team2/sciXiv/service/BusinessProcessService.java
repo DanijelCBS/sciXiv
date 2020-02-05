@@ -220,6 +220,7 @@ public class BusinessProcessService {
 		if (processState == TProcessStateEnum.REVISED) {
 			int latestVersion = scientificPublicationRepository
 					.getLastVersionNumber(scientificPublicationTitle.replace(" ", ""));
+			businessProcess.setReviewerAssignments(new ReviewerAssignments());
 		}
 
 		businessProcessRepository.saveObject(businessProcess);

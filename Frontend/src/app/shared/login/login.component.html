@@ -1,0 +1,25 @@
+<div class="main-div">
+    <mat-toolbar color="primary" class="login-toolbar">
+      <h2 class="md-toolbar-tools"><span>Login</span></h2>
+    </mat-toolbar>
+    <mat-card class="login-card">
+      <mat-card-content>
+        <mat-grid-list cols="2" rowHeight="10vh">
+          <mat-grid-tile colspan="2">
+            <mat-form-field class="login-input-width" [style.fontSize.px]=17>
+              <input matInput id="email" placeholder="Email" required [(ngModel)]="loginInfo.email">
+            </mat-form-field>
+          </mat-grid-tile>
+          <mat-grid-tile colspan="2">
+            <mat-form-field class="login-input-width" [style.fontSize.px]=17>
+              <input matInput id="password" placeholder="Password" required type="password" [(ngModel)]="loginInfo.password">
+            </mat-form-field>
+          </mat-grid-tile>
+          <mat-grid-tile>
+            <button id="loginButton" mat-raised-button color="primary" (click)="login()" class="login-button">Login</button>
+          </mat-grid-tile>
+        </mat-grid-list>
+      </mat-card-content>
+    </mat-card>
+<div>
+  

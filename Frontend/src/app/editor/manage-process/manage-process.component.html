@@ -1,0 +1,25 @@
+<h1 *ngIf="loading">Loading...</h1>
+<div *ngIf="!loading" class="wrapper">
+    <div fxLayout="row">
+        <h2>{{ process.publicationTitle }}</h2>
+        <h2>{{ process.processState }}</h2>
+        <p>
+            <a mat-raised-button href="http://localhost:8080/reviews/mergeToHtml/{{process.publicationTitle}}/version/{{process.publicationVersion}}">View publication with reviews as HTML</a>
+        </p>
+    </div>
+
+    <div fxLayout="row">
+        <h2>Review assignments:</h2>
+
+        <h1 *ngIf="process.reviewerAssignments.length === 0">There are no review assignments.</h1>
+
+        <mat-card style="margin-top:10px;" *ngFor="let assignment of process.reviewerAssignments">
+            <mat-card-header>
+                <mat-card-title>
+                    {{assignment.reviewerFullName}} : 
+                    {{assignment.reviewStatus}}
+                </mat-card-title>
+            </mat-card-header>
+        </mat-card>
+    </div>
+</div>

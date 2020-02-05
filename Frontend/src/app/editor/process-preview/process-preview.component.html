@@ -1,0 +1,19 @@
+<mat-card style="margin-top:20px;">
+    <mat-card-header>
+      <mat-card-title>{{process.publicationTitle}}</mat-card-title>
+      <mat-card-subtitle>Version: {{ process.publicationVersion }}</mat-card-subtitle>
+      <mat-card-title>{{process.processState}}</mat-card-title>
+    </mat-card-header>
+    <mat-card-content >
+        <button mat-raised-button (click)="onManage()" *ngIf="isManageable()">Manage publication process</button>
+        <br/><br/>
+      <a target="_blank" href="http://localhost:8080/scientificPublication/xhtml?title={{process.publicationTitle}}">View publication as HTML</a>
+    </mat-card-content>
+    <mat-card-actions>
+      <a mat-raised-button href="http://localhost:8080/scientificPublication/export/xhtml?title={{process.publicationTitle}}">Export as HTML</a>
+      <a mat-raised-button href="http://localhost:8080/scientificPublication/export/pdf?title={{process.publicationTitle}}">Export as PDF</a>
+      <a mat-raised-button href="http://localhost:8080/scientificPublication/metadata/rdf?title={{process.publicationTitle}}">Export metadata as RDF</a>
+      <a mat-raised-button href="http://localhost:8080/scientificPublication/metadata/json?title={{process.publicationTitle}}">Export metadata as JSON</a>
+    </mat-card-actions>
+</mat-card>
+  

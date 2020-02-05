@@ -16,6 +16,7 @@ import org.springframework.security.core.userdetails.User;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -69,6 +70,25 @@ public class PublicationProcessController {
 		}
 		
 		return new ResponseEntity<List<PublicationProcessDTO>>(result, HttpStatus.OK);
+	}
+	
+	@GetMapping("/{title}")
+	@PreAuthorize("hasRole('EDITOR')")
+	public ResponseEntity<PublicationProcessDTO> getPublicationProcess(@PathVariable("title") String publicationTitle) throws IOException, XMLDBException, JAXBException, UserRetrievingFailedException {
+		BusinessProcess businessProcess = businessProcessService.getBusinessProcessObject(publicationTitle);
+		BigInteger publicationVersion = businessProcess.getVersion();
+		String publicationProcessState = businessProcess.getProcessState().toString();
+		List<ReviewTaskDTO> reviewTasks = new ArrayList<ReviewTaskDTO>();
+		for (TReviewerAssignment assignment : businessProcess.getReviewerAssignments().getReviewerAssignment()) {
+			String reviewerEmail = assignment.getReviewerEmail();
+			TUser reviewer = this.userService.findByEmail(reviewerEmail);
+			String reviewerFullName = String.format("%s %s", reviewer.getFirstName(), reviewer.getLastName());
+			String reviewStatus = assignment.getStatus().toString();
+			ReviewTaskDTO reviewTaskDTO = new ReviewTaskDTO(reviewerEmail, reviewerFullName, reviewStatus);
+			reviewTasks.add(reviewTaskDTO);
+		}
+		PublicationProcessDTO publicationProcessDTO = new PublicationProcessDTO(publicationTitle, publicationVersion, publicationProcessState, reviewTasks);
+		return new ResponseEntity<PublicationProcessDTO>(publicationProcessDTO, HttpStatus.OK);
 	}
 	
 	@PutMapping("/publish")

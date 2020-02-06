@@ -1,0 +1,27 @@
+<review xmlns="http://ftn.uns.ac.rs/review" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" id="" xsi:schemaLocation="http://ftn.uns.ac.rs/review file:/C:/Users/kusljic/Documents/XML_WS/projekat/sciXiv/Backend/src/main/resources/static/xmlSchemas/review.xsd">
+    <metadata>
+        <reviewer>nikolazubic97@yahoo.com</reviewer>
+        <publicationTitle>Applications of RISM data</publicationTitle>
+        <publicationVersion>1</publicationVersion>
+        <submissionDate>2020-02-06</submissionDate>
+    </metadata>
+    <body>
+        <criteriaEvaluation>
+            <relevanceOfResearchProblem>good</relevanceOfResearchProblem>
+            <introduction>very good</introduction>
+            <conceptualQuality>small weaknesses</conceptualQuality>
+            <methodologicalQuality>great weaknesses</methodologicalQuality>
+            <results>absolutely insufficient</results>
+            <discussion>good</discussion>
+            <readability>very good</readability>
+        </criteriaEvaluation>
+        <overallEvaluation>acceptable with major revisions</overallEvaluation>
+        <commentsToAuthor>
+            <proposedChange partID="Applications of RISM data/abstract">Name a few examples of algorithms</proposedChange>
+            <proposedChange partID="Applications of RISM data/chapter/1">Discuss possible areas of research and imporvements</proposedChange>
+            <proposedChange partID="Applications of RISM data/chapter/1/paragraph/1/table/1">Add timestamp of major breakthroughs, ect. 2014</proposedChange>
+            <proposedChange partID="Applications of RISM data/chapter/2/paragraph/2">Formulas are unintuitive</proposedChange>
+        </commentsToAuthor>
+        <commentsToEditor>This paper needs further attention.</commentsToEditor>
+    </body>
+</review>

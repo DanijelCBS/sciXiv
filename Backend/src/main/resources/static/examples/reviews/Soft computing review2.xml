@@ -1,0 +1,26 @@
+<review xmlns="http://ftn.uns.ac.rs/review" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" id="" xsi:schemaLocation="http://ftn.uns.ac.rs/review file:/C:/Users/kusljic/Documents/XML_WS/projekat/sciXiv/Backend/src/main/resources/static/xmlSchemas/review.xsd">
+    <metadata>
+        <reviewer>nikolazubic97@yahoo.com</reviewer>
+        <publicationTitle>Soft computing</publicationTitle>
+        <publicationVersion>1</publicationVersion>
+        <submissionDate>2020-02-06</submissionDate>
+    </metadata>
+    <body>
+        <criteriaEvaluation>
+            <relevanceOfResearchProblem>good</relevanceOfResearchProblem>
+            <introduction>good</introduction>
+            <conceptualQuality>great weaknesses</conceptualQuality>
+            <methodologicalQuality>great weaknesses</methodologicalQuality>
+            <results>small weaknesses</results>
+            <discussion>good</discussion>
+            <readability>very good</readability>
+        </criteriaEvaluation>
+        <overallEvaluation>encouraged to resubmit</overallEvaluation>
+        <commentsToAuthor>
+            <proposedChange partID="Soft computing/abstract">Explain proposed approach and contents of paper</proposedChange>
+            <proposedChange partID="Soft computing/chapter/1/paragraph/1/table/1">Add timestamps as years</proposedChange>
+            <proposedChange partID="Soft computing/chapter/2">Formulas need explanation</proposedChange>
+        </commentsToAuthor>
+        <commentsToEditor></commentsToEditor>
+    </body>
+</review>

@@ -25,6 +25,8 @@ import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 import java.io.ByteArrayOutputStream;
 import java.io.OutputStream;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -127,9 +129,9 @@ public class UserRepository {
 		}
     }
     
-    public List<TUser> getPossibleReviewersForPublicaton(String publicationTitle) throws UserRetrievingFailedException {
+    public List<TUser> getPossibleReviewersForPublicaton(String publicationTitle) throws UserRetrievingFailedException, UnsupportedEncodingException {
     	List<TUser> reviewers = new ArrayList<TUser>();
-    	String publicationId = publicationTitle.replace(" ", "");
+    	String publicationId = URLEncoder.encode(publicationTitle, "UTF-8");
     	String xQuery = String.format(
     			"for $user in doc(\"%s\")//user\n" + 
     			"where ($user/role = \"reviewer\" or $user/role = \"editor\")\n" + 

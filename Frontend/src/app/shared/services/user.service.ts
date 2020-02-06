@@ -14,4 +14,8 @@ export class UserService {
   registerAuthor(newAuthor: UserRegostrationDTO) {
     return this.http.post(`${this.baseUrl}/authors`, newAuthor);
   }
+
+  registerReviewer(newReviewer: UserRegostrationDTO) {
+    return this.http.post(`${this.baseUrl}/reviewers`, newReviewer);
+  }
 }

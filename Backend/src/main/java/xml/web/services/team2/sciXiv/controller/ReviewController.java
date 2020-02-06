@@ -128,7 +128,7 @@ public class ReviewController {
 		return new ResponseEntity<>(HttpStatus.OK);
 	}
 
-	@RequestMapping(method = RequestMethod.POST, consumes = "application/xml")
+	@RequestMapping(method = RequestMethod.POST, consumes = "application/xml", produces = "application/text")
 	@PreAuthorize("hasRole('REVIEWER') or hasRole('EDITOR')")
 	public ResponseEntity<String> submitReview(@RequestBody String reviewXml) throws Exception {
 		String userEmail = this.getCurrentUserEmail();
@@ -163,7 +163,6 @@ public class ReviewController {
 	}
 
 	@GetMapping(value = "/mergeToHtml/{pubTitle}/version/{pubVersion}", produces = MediaType.TEXT_HTML_VALUE)
-	@PreAuthorize("hasRole('EDITOR')")
 	public ResponseEntity<Object> getScientificPublicationWithReviewsAsXHTML(
 			@PathVariable("pubTitle") String publicationTitle, @PathVariable("pubVersion") int publicationVersion)
 			throws TransformerException, XMLDBException, DocumentLoadingFailedException, ParserConfigurationException,
@@ -175,7 +174,6 @@ public class ReviewController {
 	}
 
 	@GetMapping(value = "/mergeToPdf/{pubTitle}/version/{pubVersion}", produces = MediaType.APPLICATION_PDF_VALUE)
-	@PreAuthorize("hasRole('EDITOR')")
 	public ResponseEntity<Object> getScientificPublicationWithReviewsAsPDF(
 			@PathVariable("pubTitle") String publicationTitle, @PathVariable("pubVersion") int publicationVersion)
 			throws TransformerException, XMLDBException, DocumentLoadingFailedException, ParserConfigurationException,

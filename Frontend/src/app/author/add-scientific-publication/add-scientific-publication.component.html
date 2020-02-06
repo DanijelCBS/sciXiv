@@ -23,6 +23,8 @@
             <a mat-raised-button href="http://localhost:8080/scientificPublication/export/pdf?title={{title}}">Export as PDF</a>
             <a mat-raised-button href="http://localhost:8080/scientificPublication/metadata/rdf?title={{title}}">Export metadata as RDF</a>
             <a mat-raised-button href="http://localhost:8080/scientificPublication/metadata/json?title={{title}}">Export metadata as JSON</a>
+            <a mat-raised-button href="http://localhost:8080/reviews/mergeBlindToHtml/{{title}}/version/{{version}}">View publication with reviews as HTML</a>
+            <a mat-raised-button href="http://localhost:8080/reviews/mergeBlindToPdf/{{title}}/version/{{version}}">Export publication with reviews as PDF</a>
             <button *ngIf="!addMode" type="submit" mat-raised-button (click)="withdrawPublication()">Withdraw publication</button>
           </div>
 

@@ -1,0 +1,7 @@
+<div class="wrapper">
+    <h2>There are {{ processes.length }} publications in process:</h2>
+
+    <div fxLayout="row wrap" fxLayout.xs="column" fxLayoutAlign="center" style="margin-top:20px;">
+        <app-process-preview *ngFor="let proc of processes" [process]="proc"></app-process-preview>
+    </div>
+</div>

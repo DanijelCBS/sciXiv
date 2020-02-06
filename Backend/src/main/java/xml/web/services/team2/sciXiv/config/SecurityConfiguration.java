@@ -1,5 +1,6 @@
 package xml.web.services.team2.sciXiv.config;
 
+import org.apache.tools.ant.launch.AntMain;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -60,7 +61,10 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 		.authorizeRequests()
 		.antMatchers(HttpMethod.POST, "/users/authors").permitAll()
 		.antMatchers(HttpMethod.POST, "/auth").permitAll()
-		.antMatchers(HttpMethod.GET, "/scientificPublication/**").permitAll();
+		.antMatchers(HttpMethod.GET, "/scientificPublication/**").permitAll()
+		.antMatchers(HttpMethod.GET, "/reviews/merge**").permitAll()
+		.antMatchers(HttpMethod.GET, "/coverLetter/xhtml**").permitAll()
+		.antMatchers(HttpMethod.GET, "/coverLetter/export**").permitAll();
 		//  .anyRequest().permitAll();
 		
 		// Custom JWT based authentication

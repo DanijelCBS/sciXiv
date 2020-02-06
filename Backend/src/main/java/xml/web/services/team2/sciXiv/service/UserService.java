@@ -1,5 +1,6 @@
 package xml.web.services.team2.sciXiv.service;
 
+import java.io.UnsupportedEncodingException;
 import java.util.Iterator;
 import java.util.List;
 
@@ -41,7 +42,7 @@ public class UserService {
 		return this.userRepository.getByEmail(email);
 	}
 	
-	public List<TUser> getPossibleReviewersForPublication(String publicationTitle) throws UserRetrievingFailedException {
+	public List<TUser> getPossibleReviewersForPublication(String publicationTitle) throws UserRetrievingFailedException, UnsupportedEncodingException {
 		return this.userRepository.getPossibleReviewersForPublicaton(publicationTitle);
 	}
 	

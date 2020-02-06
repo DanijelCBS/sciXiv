@@ -1,5 +1,6 @@
 package xml.web.services.team2.sciXiv.controller;
 
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -45,7 +46,7 @@ public class UserController {
 	}
 	
 	@RequestMapping(value = "/possibleReviewers", method = RequestMethod.GET)
-	public ResponseEntity<List<UserBaicInfoDTO>> getPossobleReviewers(@RequestParam("forPublication") String publicationTitle) throws UserRetrievingFailedException {
+	public ResponseEntity<List<UserBaicInfoDTO>> getPossobleReviewers(@RequestParam("forPublication") String publicationTitle) throws UserRetrievingFailedException, UnsupportedEncodingException {
 		List<TUser> reviewers = userService.getPossibleReviewersForPublication(publicationTitle);
 		List<UserBaicInfoDTO> result = new ArrayList<UserBaicInfoDTO>();
 		for (TUser reviewer : reviewers) {

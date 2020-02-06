@@ -373,9 +373,9 @@ public class ScientificPublicationRepository {
     public void insertMetadata(String resourceName, String pred, String object) {
         RDFConnectionProperties conn = rdfConnectionPool.getConnectionProperties();
         Model model = ModelFactory.createDefaultModel();
-        model.setNsPrefix("pred", "http://schema.org/");
+        model.setNsPrefix("pred", "https://schema.org/");
         org.apache.jena.rdf.model.Resource resource = model.createResource(resourceName);
-        Property property = model.createProperty("http://schema.org/", pred);
+        Property property = model.createProperty("https://schema.org/", pred);
         Literal literal = model.createLiteral(object);
         Statement statement = model.createStatement(resource, property, literal);
         model.add(statement);

@@ -14,7 +14,7 @@
                 <sp:state>Spain</sp:state>
                 <sp:email>jorge@gmail.com</sp:email>
             </sp:author>
-            <sp:author href="http://ftn.uns.ac.rs/person/DavidRizo" rel="pred:author" typeof="pred:Person">>
+            <sp:author href="http://ftn.uns.ac.rs/person/DavidRizo" rel="pred:author" typeof="pred:Person">
                 <sp:name about="http://ftn.uns.ac.rs/person/DavidRizo" property="pred:name">David Rizo</sp:name>
                 <sp:affiliation about="http://ftn.uns.ac.rs/person/DavidRizo" property="pred:affiliation">Instituto Superior de Ensenanzas Artisticas</sp:affiliation>
                 <sp:city>Alicante</sp:city>

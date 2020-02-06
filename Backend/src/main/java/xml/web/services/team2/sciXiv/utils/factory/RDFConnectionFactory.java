@@ -15,7 +15,7 @@ public class RDFConnectionFactory implements FactoryBean<RDFConnection> {
     private Properties props;
     private List<RDFConnection> connectionPool;
     private List<RDFConnection> usedConnections = new ArrayList<>();
-    private int initialPoolSize = 10;
+    private int initialPoolSize = 50;
 
     public RDFConnection getConnection() {
         if (connectionPool.isEmpty()) {

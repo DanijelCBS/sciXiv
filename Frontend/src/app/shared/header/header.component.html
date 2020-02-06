@@ -4,6 +4,7 @@
       <button routerLink="/addPublication" mat-button *ngIf="hasAuthorPermissions()">My publications</button>
       <button routerLink="/reviewAssignments" mat-button *ngIf="hasReviewerPermissions()">My reviews</button>
       <button routerLink="/processes" mat-button *ngIf="hasEditorPermissions()">Publications in process</button>
+      <button [routerLink]="['/register']" [queryParams]="{reviewer:'true'}" mat-button *ngIf="hasEditorPermissions()">Add reviewer</button>
     </span>
     <span fxLayoutAlign="right">
       <button mat-button (click)="onLogout()" *ngIf="hasAuthorPermissions()">Logout</button>

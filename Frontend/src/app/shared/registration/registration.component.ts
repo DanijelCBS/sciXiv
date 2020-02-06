@@ -3,7 +3,7 @@ import { SharedModule } from './../shared.module';
 import { Component, OnInit } from '@angular/core';
 import { FormControl, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MatSnackBar } from '@angular/material';
-import {Router} from '@angular/router';
+import {Router, ActivatedRoute, ParamMap} from '@angular/router';
 
 import {checkPasswords} from './validators/checkPasswords';
 import { UserService } from './../services/user.service';
@@ -16,11 +16,15 @@ import { UserService } from './../services/user.service';
 export class RegistrationComponent implements OnInit {
 
   userForm: FormGroup;
+  private reviewer = false;
+  private headerMessage = 'Create an account';
+  private buttonMessage = 'Sign up';
 
   constructor(
     private snackBar: MatSnackBar,
     private userService: UserService,
     private router: Router,
+    private activatedRoute: ActivatedRoute,
     private fb: FormBuilder, ) {
     this.userForm = this.fb.group({
       name: new FormControl('', [Validators.required]),
@@ -35,6 +39,19 @@ export class RegistrationComponent implements OnInit {
     }
 
   ngOnInit() {
+    this.activatedRoute.queryParamMap.subscribe(
+      (queryParams: ParamMap) => {
+        this.readQueryParams(queryParams);
+      }
+    );
+  }
+
+  readQueryParams(queryParams) {
+    if (queryParams.has('reviewer')) {
+      this.reviewer = true;
+      this.headerMessage = 'Register reviewer';
+      this.buttonMessage = 'Add reviewer';
+    }
   }
 
   hasError = (controlName: string, errorName: string) => {
@@ -58,14 +75,24 @@ export class RegistrationComponent implements OnInit {
       password: this.userForm.get('password').value,
     };
 
-    this.userService.registerAuthor(nweUser).subscribe(
-      () => {
-        // registration successfull
-        this.openSnackBar('Registration successfull.');
-        this.router.navigate(['/login']);
-      },
-      () => {this.openSnackBar('Failed to create account. Email already taken'); }
-    );
+    if (this.reviewer) {
+      this.userService.registerReviewer(nweUser).subscribe(
+        () => {
+          // registration successfull
+          this.openSnackBar('Registration successfull.');
+        },
+        () => {this.openSnackBar('Failed to create account. Email already taken'); }
+      );
+    } else {
+      this.userService.registerAuthor(nweUser).subscribe(
+        () => {
+          // registration successfull
+          this.openSnackBar('Registration successfull.');
+          this.router.navigate(['/login']);
+        },
+        () => {this.openSnackBar('Failed to create account. Email already taken'); }
+      );
+    }
   }
 
 }

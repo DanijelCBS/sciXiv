@@ -1,6 +1,6 @@
 <div class="main-div">
     <mat-toolbar color="primary" class="login-toolbar">
-      <h2 class="md-toolbar-tools"><span>Create an account</span></h2>
+      <h2 class="md-toolbar-tools"><span>{{ headerMessage }}</span></h2>
     </mat-toolbar>
     <mat-card class="login-card">
       <mat-card-content>
@@ -39,7 +39,7 @@
               </mat-form-field>
             </mat-grid-tile>
             <mat-grid-tile>
-              <button mat-raised-button color="primary" class="login-button" [disabled]="!userForm.valid">Sign Up</button>
+              <button mat-raised-button color="primary" class="login-button" [disabled]="!userForm.valid">{{ buttonMessage }}</button>
             </mat-grid-tile>
           </mat-grid-list>
         </form>

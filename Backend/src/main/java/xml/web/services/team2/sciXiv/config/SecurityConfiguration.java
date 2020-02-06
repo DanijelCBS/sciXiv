@@ -65,7 +65,6 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 		.antMatchers(HttpMethod.GET, "/reviews/merge**").permitAll()
 		.antMatchers(HttpMethod.GET, "/coverLetter/xhtml**").permitAll()
 		.antMatchers(HttpMethod.GET, "/coverLetter/export**").permitAll();
-		//  .anyRequest().permitAll();
 		
 		// Custom JWT based authentication
 		http.addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);

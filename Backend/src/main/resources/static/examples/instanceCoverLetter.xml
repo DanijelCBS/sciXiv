@@ -1,68 +1,60 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<coverLetter xmlns="http://ftn.uns.ac.rs/coverLetter"
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xmlns:cl="http://ftn.uns.ac.rs/coverLetter"
-    xsi:schemaLocation="http://ftn.uns.ac.rs/coverLetter file:/C:/Users/Nikola%20Zubic/Desktop/XMLWEB/sciXiv/Backend/src/main/resources/static/xmlSchemas/coverLetter.xsd" submissionDate="2006-05-04" id="id1">
-    <publicationTitle>Moja publikacija</publicationTitle>
-    <version>50</version>
-    <author>
-        <name>Ian Goodfellow</name>
-        <educationTitle>phD</educationTitle>
-        <affiliation>Apple</affiliation>
-        <city>Los Angeles</city>
-        <state>California, USA</state>
-        <phoneNumber>12948824895325779</phoneNumber>
-        <email>iangoodfellow@apple.com</email>
-        <signature>ZGVmYXVsdA==</signature>
-    </author>
-    <targetPublisher>
-        <editor>Machine Learning</editor>
-        <journal>Apple AI journal</journal>
-    </targetPublisher>
-    <content>
-        <paragraph>
-            <boldText>Ovo je boldovan tekst.</boldText>
-            <emphasizedText>Ovo je emphasized tekst.</emphasizedText>
-            <quote>
-                <source>Nikola Zubic</source>
-                <quoteContent>Stize AI, ne plasite se braco, sve cemo mi to kroz mreze da propustimo. Neka bude feed-forward propagacija neprestana, nek se ori aktivacija za aktivacijom.</quoteContent>
-            </quote>
-            <list ordered="true">
-                <listItem>Jabuka</listItem>
-                <listItem>Kruska</listItem>
-            </list>
-            <boldText>Boldovani tekst..</boldText>
-            <emphasizedText>Emphasized tekst...</emphasizedText>
-            <quote>
-                <source>Izvor</source>
-                <quoteContent>Evo citira se nesto iz izvora</quoteContent>
-            </quote>
-            <list ordered="false">
-                <listItem>Nije ordered</listItem>
-                <listItem>Sta da se radi</listItem>
-            </list>
-        </paragraph>
-        <paragraph>
-        <boldText>boldText2</boldText>
-        <emphasizedText>emphasizedText2</emphasizedText>
-        <quote>
-            <source>source2</source>
-            <quoteContent>quoteContent2</quoteContent>
-            </quote>
-            <list ordered="true">
-                <listItem>Ordered je</listItem>
-                <listItem>Svi srecni</listItem>
-            </list>
-            <boldText>boldText3</boldText>
-            <emphasizedText>emphasizedText3</emphasizedText>
-            <quote>
-                <source>source3</source>
-                <quoteContent>quoteContent3</quoteContent>
-            </quote>
-            <list ordered="false">
-                <listItem>listItem6</listItem>
-                <listItem>listItem7</listItem>
-            </list>
-        </paragraph>
-    </content>
-</coverLetter>
+<cl:coverLetter xmlns:cl="http://ftn.uns.ac.rs/coverLetter">
+    <cl:publicationTitle>Moja publikacija</cl:publicationTitle>
+    <cl:author>
+        <cl:name>Ian Goodfellow</cl:name>
+        <cl:educationTitle>phD</cl:educationTitle>
+        <cl:affiliation>Apple</cl:affiliation>
+        <cl:city>Los Angeles</cl:city>
+        <cl:state>California, USA</cl:state>
+        <cl:phoneNumber>12948824895325779</cl:phoneNumber>
+        <cl:email>iangoodfellow@apple.com</cl:email>
+        <cl:signature>ZGVmYXVsdA==</cl:signature>
+    </cl:author>
+    <cl:content>
+        <cl:paragraph>
+            <cl:boldText>Ovo je boldovan tekst.</cl:boldText>
+            <cl:emphasizedText>Ovo je emphasized tekst.</cl:emphasizedText>
+            <cl:quote>
+                <cl:source>Nikola Zubic</cl:source>
+                <cl:quoteContent>Stize AI, ne plasite se braco, sve cemo mi to kroz mreze da propustimo. Neka bude feed-forward propagacija neprestana, nek se ori aktivacija za aktivacijom.</cl:quoteContent>
+            </cl:quote>
+            <cl:list ordered="true">
+                <cl:listItem>Jabuka</cl:listItem>
+                <cl:listItem>Kruska</cl:listItem>
+            </cl:list>
+            <cl:boldText>Boldovani tekst..</cl:boldText>
+            <cl:emphasizedText>Emphasized tekst...</cl:emphasizedText>
+            <cl:quote>
+                <cl:source>Izvor</cl:source>
+                <cl:quoteContent>Evo citira se nesto iz izvora</cl:quoteContent>
+            </cl:quote>
+            <cl:list ordered="false">
+                <cl:listItem>Nije ordered</cl:listItem>
+                <cl:listItem>Sta da se radi</cl:listItem>
+            </cl:list>
+        </cl:paragraph>
+        <cl:paragraph>
+        <cl:boldText>boldText2</cl:boldText>
+        <cl:emphasizedText>emphasizedText2</cl:emphasizedText>
+        <cl:quote>
+            <cl:source>source2</cl:source>
+            <cl:quoteContent>quoteContent2</cl:quoteContent>
+            </cl:quote>
+            <cl:list ordered="true">
+                <cl:listItem>Ordered je</cl:listItem>
+                <cl:listItem>Svi srecni</cl:listItem>
+            </cl:list>
+            <cl:boldText>boldText3</cl:boldText>
+            <cl:emphasizedText>emphasizedText3</cl:emphasizedText>
+            <cl:quote>
+                <cl:source>source3</cl:source>
+                <cl:quoteContent>quoteContent3</cl:quoteContent>
+            </cl:quote>
+            <cl:list ordered="false">
+                <cl:listItem>listItem6</cl:listItem>
+                <cl:listItem>listItem7</cl:listItem>
+            </cl:list>
+        </cl:paragraph>
+    </cl:content>
+</cl:coverLetter>

@@ -42,15 +42,15 @@ public class DOMParser implements ErrorHandler{
 
 	public Document buildAndValidateDocument(String xmlFile, String schemaPath)
 			throws ParserConfigurationException, SAXException, IOException, DocumentParsingFailedException {
-		/*documentBuilderFactory.setValidating(false); // disable validation against DTD
-		documentBuilderFactory.setSchema(schemaFactory.newSchema(new File(schemaPath)));*/ // enable validation against XML Schema
+		documentBuilderFactory.setValidating(false); // disable validation against DTD
+		documentBuilderFactory.setSchema(schemaFactory.newSchema(new File(schemaPath))); // enable validation against XML Schema
 		DocumentBuilder builder = documentBuilderFactory.newDocumentBuilder();
-		//builder.setErrorHandler(this);
+		builder.setErrorHandler(this);
 
 		Document document = builder.parse(new InputSource(new StringReader(xmlFile)));
 
-		/*if (document == null)
-			throw new DocumentParsingFailedException("Failed to parse document");*/
+		if (document == null)
+			throw new DocumentParsingFailedException("Failed to parse document");
 
 		return document;
 	}

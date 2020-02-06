@@ -229,7 +229,7 @@ public class ScientificPublicationRepository {
             e.printStackTrace();
         }
         String sparqlQuery = SparqlUtil.selectData(conn.getDataEndpoint() + SPARQL_NAMED_GRAPH_URI,
-                "?sciPub <http://schema.org/citation> " + resourceName + " .");
+                "?sciPub <https://schema.org/citation> " + resourceName + " .");
         ArrayList<SciPubDTO> sciPubs = null;
         try {
             sciPubs = getTitlesAndAuthors(sparqlQuery, connection, conn, null, false);
@@ -266,7 +266,7 @@ public class ScientificPublicationRepository {
             querySolution = results.next();
             title = querySolution.get(sciPub).toString();
             query = SparqlUtil.selectDataWithAlias(conn.getDataEndpoint() + SPARQL_NAMED_GRAPH_URI, "<" + title + ">"
-                    + " <http://schema.org/author> ?author .\n" + "\t?author <http://schema.org/name> ?nameAuthor .\n",
+                    + " <https://schema.org/author> ?author .\n" + "\t?author <https://schema.org/name> ?nameAuthor .\n",
                     "?author", "?pred", "?nameAuthor", "?name");
             tempQueryExecution = connection.query(query);
             tempResults = tempQueryExecution.execSelect();
@@ -340,7 +340,7 @@ public class ScientificPublicationRepository {
                 e.printStackTrace();
             }
             String sparqlQuery = SparqlUtil.selectDataWithAlias(connRDF.getDataEndpoint() + SPARQL_NAMED_GRAPH_URI, resourceName
-                    + " <http://schema.org/author> ?author .\n" + "\t?author <http://schema.org/name> ?authorName .\n",
+                    + " <https://schema.org/author> ?author .\n" + "\t?author <https://schema.org/name> ?authorName .\n",
                     "?author", "?pred", "?authorName", "?name");
             queryExecution = executeSparqlQuery(sparqlQuery, connection, connRDF);
             ResultSet tempResults = queryExecution.execSelect();
@@ -426,7 +426,7 @@ public class ScientificPublicationRepository {
         ResultSet tempResults;
         if (pred.contains("author")) {
             query = SparqlUtil.selectDataWithAlias(conn.getDataEndpoint() + SPARQL_NAMED_GRAPH_URI, "<" + obj + ">" +
-                    " <http://schema.org/name> ?nameAuthor .", "?subj", "?pred", "?nameAuthor", "?name");
+                    " <https://schema.org/name> ?nameAuthor .", "?subj", "?pred", "?nameAuthor", "?name");
             QueryExecution queryExecution = connection.query(query);
             tempResults = queryExecution.execSelect();
             querySolution = tempResults.next();
@@ -434,7 +434,7 @@ public class ScientificPublicationRepository {
             queryExecution.close();
 
             query = SparqlUtil.selectDataWithAlias(conn.getDataEndpoint() + SPARQL_NAMED_GRAPH_URI, "<" + obj + ">" +
-                    " <http://schema.org/affiliation> ?affiliationAuthor .", "?subj", "?pred", "?affiliationAuthor", "?affiliation");
+                    " <https://schema.org/affiliation> ?affiliationAuthor .", "?subj", "?pred", "?affiliationAuthor", "?affiliation");
             queryExecution = connection.query(query);
             tempResults = queryExecution.execSelect();
             querySolution = tempResults.next();

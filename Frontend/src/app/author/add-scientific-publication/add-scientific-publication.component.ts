@@ -156,6 +156,7 @@ export class AddScientificPublicationComponent implements AfterViewInit {
   }
 
   submitPublication() {
+    this.removeXMLSpace();
     this.scientificPublicationApiService.submitPublication(this.scientificPublication).subscribe(
       {
         next: (result) => {
@@ -173,8 +174,17 @@ export class AddScientificPublicationComponent implements AfterViewInit {
     );
   }
 
+  removeXMLSpace() {
+    console.log("ok");
+    this.scientificPublication = this.scientificPublication.replace(/xml:space='preserve'/g,'');
+    var e = this.scientificPublication.replace(/xml:space='preserve'/g,'');
+    console.log(e);
+    this.coverLetter = this.coverLetter.replace(/xml:space='preserve'/g,'');
+  }
+
   submitCoverLetter() {
     this.coverLetter = Xonomy.harvest();
+    this.removeXMLSpace();
     this.coverLetterApiService.submitCoverLetter(this.coverLetter).subscribe(
       {
         next: (result) => {
@@ -193,6 +203,7 @@ export class AddScientificPublicationComponent implements AfterViewInit {
   }
 
   submitRevision() {
+    this.removeXMLSpace();
     this.scientificPublicationApiService.submitRevision(this.scientificPublication).subscribe(
       {
         next: (result) => {
@@ -212,6 +223,7 @@ export class AddScientificPublicationComponent implements AfterViewInit {
 
   submitCoverLetterRevision() {
     this.coverLetter = Xonomy.harvest();
+    this.removeXMLSpace();
     this.coverLetterApiService.submitCoverLetterRevision(this.coverLetter).subscribe(
       {
         next: (result) => {

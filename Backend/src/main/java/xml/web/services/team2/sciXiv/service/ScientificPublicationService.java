@@ -145,8 +145,8 @@ public class ScientificPublicationService {
 		metadataExtractor.extractMetadata(new ByteArrayInputStream(sciPub.getBytes()), metadataStream);
 		String metadata = new String(metadataStream.toByteArray());
 
-		String email = ((UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal())
-				.getUsername();
+		User current = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+		String email = current.getUsername();
 		TUser user = userRepository.getByEmail(email);
 		String publicationTitle = URLEncoder.encode(titleOrig, "UTF-8");
 		user.getOwnPublications().getPublicationID().add(publicationTitle);
@@ -158,7 +158,7 @@ public class ScientificPublicationService {
 
 		try {
 			notifySubmissionToEditor(titleOrig, user);
-		} catch (MessagingException e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 
@@ -232,8 +232,8 @@ public class ScientificPublicationService {
 	public ArrayList<SciPubDTO> basicSearch(String parameter) throws XMLDBException, UnsupportedEncodingException {
 		TUser user;
 		try {
-			String email = ((UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal())
-					.getUsername();
+			User current = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+			String email = current.getUsername();
 			user = userRepository.getByEmail(email);
 		}
 		catch(Exception e) {
@@ -247,7 +247,8 @@ public class ScientificPublicationService {
 		query = makeSparqlQuery(query, searchParameters);
 		TUser user = null;
 		try {
-			String email = ((UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUsername();
+			User current = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+			String email = current.getUsername();
 			user = userRepository.getByEmail(email);
 			ArrayList<String> userDocuments = (ArrayList<String>) user.getOwnPublications().getPublicationID();
 			String resourceURL = "http://ftn.uns.ac.rs/scientificPublication/";
@@ -294,35 +295,35 @@ public class ScientificPublicationService {
 		String literalType = "^^<http://www.w3.org/1999/02/22-rdf-syntax-ns#XMLLiteral>";
 
 		if (!parameters.getTitle().equals("")) {
-			query += " <http://schema.org/headline> " + "\"" + parameters.getTitle() + "\"" + literalType + " ;\n";
+			query += " <https://schema.org/headline> " + "\"" + parameters.getTitle() + "\"" + literalType + " ;\n";
 		}
 		if (!parameters.getDateReceived().equals("")) {
-			query += " <http://schema.org/dateCreated> " + "\"" + parameters.getDateReceived() + "\"" + literalType
+			query += " <https://schema.org/dateCreated> " + "\"" + parameters.getDateReceived() + "\"" + literalType
 					+ " ;\n";
 		}
 		if (!parameters.getDateRevised().equals("")) {
-			query += " <http://schema.org/dateModified> " + "\"" + parameters.getDateRevised() + "\"" + literalType
+			query += " <https://schema.org/dateModified> " + "\"" + parameters.getDateRevised() + "\"" + literalType
 					+ " ;\n";
 		}
 		if (!parameters.getDateAccepted().equals("")) {
-			query += " <http://schema.org/datePublished> " + "\"" + parameters.getDateAccepted() + "\"" + literalType
+			query += " <https://schema.org/datePublished> " + "\"" + parameters.getDateAccepted() + "\"" + literalType
 					+ " ;\n";
 		}
 		if (!parameters.getKeyword().equals("")) {
-			query += " <http://schema.org/keywords> " + "\"" + parameters.getKeyword() + "\"" + literalType + " ;\n";
+			query += " <https://schema.org/keywords> " + "\"" + parameters.getKeyword() + "\"" + literalType + " ;\n";
 		}
 		if (!parameters.getAuthorName().equals("")) {
-			query += " <http://schema.org/author> ?author .\n" + "\t?author <http://schema.org/name> " + "\""
+			query += " <https://schema.org/author> ?author .\n" + "\t?author <https://schema.org/name> " + "\""
 					+ parameters.getAuthorName() + "\"" + literalType + " .\n";
 			sciPub = "?sciPub";
 		}
 		if (!parameters.getAuthorAffiliation().equals("")) {
-			query += sciPub + " <http://schema.org/author> ?author .\n" + "\t?author <http://schema.org/affiliation> "
+			query += sciPub + " <https://schema.org/author> ?author .\n" + "\t?author <https://schema.org/affiliation> "
 					+ "\"" + parameters.getAuthorAffiliation() + "\"" + literalType + " .\n";
 			sciPub = "?sciPub";
 		}
 
-		query += sciPub + " <http://schema.org/creativeWorkStatus> ?status .\n";
+		query += sciPub + " <https://schema.org/creativeWorkStatus> ?status .\n";
 
 		return query;
 	}

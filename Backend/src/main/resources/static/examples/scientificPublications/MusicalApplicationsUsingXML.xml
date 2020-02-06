@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sp:scientificPublication xmlns="http://www.w3.org/ns/rdfa#" xmlns:rv="http://ftn.uns.ac.rs/review"
+    xmlns:sp="http://ftn.uns.ac.rs/scientificPublication"
+    xmlns:pred="https://schema.org/"
+    about="http://ftn.uns.ac.rs/scientificPublication/Musical Applications Using XML"
+    typeof="pred:ScholarlyArticle">
+    <sp:metadata>
+        <sp:title property="pred:headline">Musical Applications Using XML</sp:title>
+        <sp:authors>
+            <sp:author href="http://ftn.uns.ac.rs/person/RolandP" rel="pred:author" typeof="pred:Person">
+                <sp:name about="http://ftn.uns.ac.rs/person/RolandP" property="pred:name">Roland, P</sp:name>
+                <sp:affiliation about="http://ftn.uns.ac.rs/person/RolandP" property="pred:affiliation">FTN</sp:affiliation>
+                <sp:city>Novi Sad</sp:city>
+                <sp:state>Serbia</sp:state>
+                <sp:email>rol@gmail.com</sp:email>
+            </sp:author>
+        </sp:authors>
+        <sp:keywords>
+            <sp:keyword property="pred:keywords">Music</sp:keyword>
+            <sp:keyword property="pred:keywords">Neural network</sp:keyword>
+            <sp:keyword property="pred:keywords">Deep Learning</sp:keyword>
+        </sp:keywords>
+    </sp:metadata>
+    <sp:abstract sp:id="Musical Applications Using XML/abstract">
+        <sp:paragraph sp:id="Musical Applications Using XML/abstract/paragraph/1">
+            We believe that the problem to progress in OMR for CWMN lies in the complexity involved in
+            correctly modeling the composition of musical symbols. Unlike these hand-engineered multi-stage
+            approaches, we propose a holistic strategy in which the musical notation is learned as a whole using
+            machine learning strategies. However, to reduce the complexity to a feasible level, we do consider
+            a first initial stage in which the image is pre-processed to find and separate the different staves of the
+            score. Staves are good basic units to work on, analogously to similar text recognition where a single
+            line of text is assumed as input unit. Note that this is not a strong assumption as there are successful
+            algorithms for isolating staves, as mentioned above.
+        </sp:paragraph>
+    </sp:abstract>
+    <sp:chapter level="1" sp:id="Musical Applications Using XML/chapter/1">
+        <sp:title>1. Introduction</sp:title>
+        <sp:paragraph sp:id="Musical Applications Using XML/chapter/1/paragraph/1">
+            Despite the great advantages of its development, OMR is far from being totally reliable as
+            a black box, as current optical character <sp:referencePointer refId="1">recognition</sp:referencePointer> or speech recognition technologies do.
+            Commercial software is constantly being improved by fixing specific problems from version to
+            version. In the scientific community, there are hardly any complete approach for its <sp:referencePointer refId="1">solution</sp:referencePointer><sp:referencePointer refId="2"></sp:referencePointer>.
+            Traditionally, this has been motivated because of the small sub-tasks in which the workflow can be
+            divided. Simpler tasks such as <sp:referencePointer refId="2">staff-line removal,</sp:referencePointer> symbol localization and classification, or music
+            notation assembly, have so far represented major obstacles.
+            <sp:table sp:id="Musical Applications Using XML/chapter/1/paragraph/1/table/1">
+                <sp:tableDescription>Representative summary of previous works in OMR research</sp:tableDescription>
+                <sp:tableRow>
+                    <sp:tableCell>First</sp:tableCell>
+                    <sp:tableCell>Pre-processing of music score images</sp:tableCell>
+                </sp:tableRow>
+                <sp:tableRow>
+                    <sp:tableCell>Second</sp:tableCell>
+                    <sp:tableCell>Staff-line removal
+                    </sp:tableCell>
+                </sp:tableRow>
+                <sp:tableRow>
+                    <sp:tableCell>Third</sp:tableCell>
+                    <sp:tableCell>Symbol classification</sp:tableCell>
+                </sp:tableRow>
+                <sp:tableRow>
+                    <sp:tableCell>Fourth</sp:tableCell>
+                    <sp:tableCell>Detection, classification, and interpretation</sp:tableCell>
+                </sp:tableRow>
+            </sp:table>
+        </sp:paragraph>
+    </sp:chapter>
+    <sp:chapter level="1" sp:id="Musical Applications Using XML/chapter/2">
+        <sp:title>2. Background</sp:title>
+        <sp:paragraph sp:id="Musical Applications Using XML/chapter/2/paragraph/1">
+            We believe that the problem to progress in OMR for CWMN lies in the complexity involved in
+            correctly modeling the composition of musical symbols. Unlike these hand-engineered multi-stage
+            approaches, we propose a holistic strategy in which the musical notation is learned as a whole using
+            machine learning strategies. However, to reduce the complexity to a feasible level, we do consider
+            a first initial stage in which the image is pre-processed to find and separate the different staves of the
+            score. Staves are good basic units to work on, analogously to similar text recognition where a single
+            line of text is assumed as input unit. Note that this is not a strong assumption as there are successful
+            algorithms for isolating staves, as mentioned above.
+            Then, the staff can be addressed as a single unit instead of considering it as a sequence of isolated
+            elements that have to be detected and recognized independently. This also opens the possibility
+            to boost the optical recognition by taking into account the musical context which, in spite of being
+            extremely difficult to model entirely, can certainly help in the process. Thus, it seems interesting to
+            tackle the OMR task over single staves in an holistic fashion, in which the expected output is directly
+            the sequence of musical symbols present in the image.
+        </sp:paragraph>
+        <sp:paragraph sp:id="Musical Applications Using XML/chapter/2/paragraph/2">
+            <sp:boldText>Now there are some formulas</sp:boldText>
+            <sp:mathExpression>
+                <sp:limit>
+                    <sp:variable>n</sp:variable>
+                    <sp:target>\infty</sp:target>
+                    <sp:content>
+                        <sp:anyExpression>2*n+1</sp:anyExpression>
+                    </sp:content>
+                </sp:limit>
+            </sp:mathExpression>
+            <sp:mathExpression>
+                <sp:sum>
+                    <sp:counter>n</sp:counter>
+                    <sp:begin>0</sp:begin>
+                    <sp:end>10</sp:end>
+                    <sp:content>
+                        <sp:anyExpression>n + 2</sp:anyExpression>
+                    </sp:content>
+                </sp:sum>
+            </sp:mathExpression>
+            <sp:mathExpression>
+                <sp:integral>
+                    <sp:content>
+                        <sp:anyExpression>f(x) dx</sp:anyExpression>
+                    </sp:content>
+                </sp:integral>
+            </sp:mathExpression>
+        </sp:paragraph>
+    </sp:chapter>
+    <sp:references>
+        <sp:reference refPartId="1" sp:id="Musical Applications Using XML/reference/1" 
+            href="http://ftn.uns.ac.rs/scientificPublication/Neural networks" rel="pred:citation">
+            <sp:referenceAuthors>
+                <sp:referenceAuthor>Pero Peric</sp:referenceAuthor>
+                <sp:referenceAuthor>Ziko Zikic</sp:referenceAuthor>
+            </sp:referenceAuthors>
+            <sp:yearIssued>2002</sp:yearIssued>
+            <sp:referenceTitle>Neural networks</sp:referenceTitle>
+        </sp:reference>
+        <sp:reference refPartId="2" sp:id="Musical Applications Using XML/reference/2" 
+            href="http://ftn.uns.ac.rs/scientificPublication/Soft computing" rel="pred:citation">
+            <sp:referenceAuthors>
+                <sp:referenceAuthor>Pero Peric</sp:referenceAuthor>
+            </sp:referenceAuthors>
+            <sp:yearIssued>2020</sp:yearIssued>
+            <sp:referenceTitle>Soft computing</sp:referenceTitle>
+        </sp:reference>
+    </sp:references>
+</sp:scientificPublication>

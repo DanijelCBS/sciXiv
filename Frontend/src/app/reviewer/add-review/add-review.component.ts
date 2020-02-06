@@ -59,7 +59,6 @@ export class AddReviewComponent implements OnInit {
     this.reviewService.submitReview(this.reviewXml).subscribe(
       (success) => {
         this.processing = false;
-        alert('Submission successfull.');
         this.reouter.navigate(['/reviewAssignments']);
       }
     );

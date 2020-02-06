@@ -128,12 +128,12 @@ public class ReviewController {
 		return new ResponseEntity<>(HttpStatus.OK);
 	}
 
-	@RequestMapping(method = RequestMethod.POST, consumes = "application/xml", produces = "application/text")
+	@RequestMapping(method = RequestMethod.POST, consumes = "application/xml")
 	@PreAuthorize("hasRole('REVIEWER') or hasRole('EDITOR')")
-	public ResponseEntity<String> submitReview(@RequestBody String reviewXml) throws Exception {
+	public ResponseEntity<Object> submitReview(@RequestBody String reviewXml) throws Exception {
 		String userEmail = this.getCurrentUserEmail();
 		String id = this.reviewService.submitReview(reviewXml, userEmail);
-		return new ResponseEntity<String>(id, HttpStatus.CREATED);
+		return new ResponseEntity<Object>(201, HttpStatus.CREATED);
 	}
 
 	@RequestMapping(method = RequestMethod.PUT, produces = "application/xml")

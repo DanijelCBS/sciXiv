@@ -24,6 +24,10 @@ const routes: Routes = [
     component: AddScientificPublicationComponent
   },
   {
+    path: 'publication/:title',
+    component: AddScientificPublicationComponent
+  },
+  {
     path: 'reviewAssignments',
     component: ReviewAssignmentsComponent
   },

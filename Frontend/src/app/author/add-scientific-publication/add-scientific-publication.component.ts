@@ -2,9 +2,8 @@ import {AfterViewInit, Component, OnInit} from '@angular/core';
 import {ScientificPublicationApiService} from "../../services/scientific-publication-api.service";
 import {XonomyApiService} from "../../services/xonomy-api.service";
 import {MatSnackBar} from "@angular/material";
-import {ScientificPublicationDTO} from "../../shared/model/scientific-publication-dto.model";
 import {CoverLetterApiService} from "../../services/cover-letter-api.service";
-import {Router} from "@angular/router";
+import {ActivatedRoute, Router} from "@angular/router";
 declare const Xonomy: any;
 
 @Component({
@@ -13,43 +12,147 @@ declare const Xonomy: any;
   styleUrls: ['./add-scientific-publication.component.scss']
 })
 export class AddScientificPublicationComponent implements AfterViewInit {
-  private scientificPublication;
-  private coverLetter;
+  private scientificPublication = null;
+  private coverLetter = null;
+  private title;
+  private version;
   private tabIndex = 0;
   private cvDisabled = true;
   private spDisabled = false;
+  private addMode = true;
+  private versions = [];
+  private versionChanged = false;
 
   constructor(private scientificPublicationApiService: ScientificPublicationApiService,
               private coverLetterApiService: CoverLetterApiService, private xonomyApiService: XonomyApiService,
-              private snackBar: MatSnackBar, private router: Router) {}
+              private snackBar: MatSnackBar, private router: Router, private route: ActivatedRoute) {}
 
   ngOnInit() {
+    this.route.params.subscribe(params => {
+      if (params.title) {
+        this.addMode = false;
+        this.title = params.title;
+        this.version = -1;
+        this.cvDisabled = false;
+        this.getNumberOfVersions();
+        this.getScientificPublication();
+      }
+    });
   }
 
   ngAfterViewInit(): void {
-    this.scientificPublication = "<sp:scientificPublication xmlns=\"http://www.w3.org/ns/rdfa#\" xmlns:pred=\"http://schema.org/\" xmlns:sp=\"http://ftn.uns.ac.rs/scientificPublication\"></sp:scientificPublication>";
-    let xonomyElement = document.getElementById("xonomy");
-    Xonomy.render(this.scientificPublication, xonomyElement, this.xonomyApiService.scientificPublicationSpecification);
+    if (this.addMode) {
+      this.scientificPublication = "<sp:scientificPublication xmlns=\"http://www.w3.org/ns/rdfa#\" xmlns:pred=\"http://schema.org/\" xmlns:sp=\"http://ftn.uns.ac.rs/scientificPublication\"></sp:scientificPublication>";
+      let xonomyElement = document.getElementById("xonomy");
+      Xonomy.render(this.scientificPublication, xonomyElement, this.xonomyApiService.scientificPublicationSpecification);
+    }
+  }
+
+  getScientificPublication() {
+    this.scientificPublicationApiService.getScientificPublication(this.title, this.version).subscribe(
+      {
+        next: (result) => {
+          this.scientificPublication = result["content"];
+          let xonomyElement = document.getElementById("xonomy");
+          Xonomy.render(this.scientificPublication, xonomyElement, this.xonomyApiService.scientificPublicationSpecification);
+        },
+        error: (message: string) => {
+          this.snackBar.open(message, 'Dismiss', {
+            duration: 3000
+          });
+        }
+      }
+    );
+  }
+
+  getCoverLetter() {
+    this.coverLetterApiService.getCoverLetter(this.title, this.version).subscribe(
+      {
+        next: (result) => {
+          this.coverLetter = result["content"];
+          let xonomyElement = document.getElementById("xonomyCV");
+          Xonomy.render(this.coverLetter, xonomyElement, this.xonomyApiService.coverLetterSpecification);
+        },
+        error: (message: string) => {
+          this.snackBar.open(message, 'Dismiss', {
+            duration: 3000
+          });
+        }
+      }
+    );
+  }
+
+  getNumberOfVersions() {
+    this.scientificPublicationApiService.getNumberOfVersions(this.title).subscribe(
+      {
+        next: (result) => {
+          this.versions = Array(result).fill(1).map((x, i) => i + 1);
+          this.version = result;
+        },
+        error: (message: string) => {
+          this.snackBar.open(message, 'Dismiss', {
+            duration: 3000
+          });
+        }
+      }
+    );
   }
 
   changeToCoverLetter() {
     let xonomy = document.getElementById("xonomy");
     this.scientificPublication = Xonomy.harvest();
-    this.cvDisabled = false;
-    this.spDisabled = true;
+    if (this.addMode) {
+      this.cvDisabled = false;
+      this.spDisabled = true;
+    }
     this.tabIndex = 1;
     xonomy.innerHTML = "";
   }
 
   tabChanged() {
-    this.coverLetter = "<cl:coverLetter xmlns:cl=\"http://ftn.uns.ac.rs/coverLetter\"></cl:coverLetter>";
-    let xonomyElement = document.getElementById("xonomyCV");
-    Xonomy.render(this.coverLetter, xonomyElement, this.xonomyApiService.coverLetterSpecification);
+    if (this.addMode) {
+      this.coverLetter = "<cl:coverLetter xmlns:cl=\"http://ftn.uns.ac.rs/coverLetter\"></cl:coverLetter>";
+      let xonomyElement = document.getElementById("xonomyCV");
+      Xonomy.render(this.coverLetter, xonomyElement, this.xonomyApiService.coverLetterSpecification);
+    }
+    else {
+      if (this.tabIndex == 0) {
+        let xonomyCV = document.getElementById("xonomyCV");
+        this.coverLetter = Xonomy.harvest();
+        xonomyCV.innerHTML = "";
+
+        if (this.versionChanged) {
+          this.getScientificPublication();
+        }
+        else {
+          let xonomyElement = document.getElementById("xonomy");
+          Xonomy.render(this.scientificPublication, xonomyElement, this.xonomyApiService.scientificPublicationSpecification);
+        }
+      }
+      else {
+        let xonomy = document.getElementById("xonomy");
+        this.scientificPublication = Xonomy.harvest();
+        xonomy.innerHTML = "";
+        if (this.coverLetter === null || this.versionChanged) {
+          this.getCoverLetter();
+        }
+        else {
+          let xonomyElement = document.getElementById("xonomyCV");
+          Xonomy.render(this.coverLetter, xonomyElement, this.xonomyApiService.coverLetterSpecification);
+        }
+      }
+      this.versionChanged = false;
+    }
   }
 
-  submit() {
-    this.submitPublication();
-    this.submitCoverLetter();
+  changeVersion() {
+    this.versionChanged = true;
+    if (this.tabIndex == 0) {
+      this.getScientificPublication();
+    }
+    else {
+      this.getCoverLetter();
+    }
   }
 
   submitPublication() {
@@ -59,7 +162,6 @@ export class AddScientificPublicationComponent implements AfterViewInit {
           this.snackBar.open("Publication successfully submitted", 'Dismiss', {
             duration: 3000
           });
-          console.log("submitovano pub");
           this.submitCoverLetter();
         },
         error: (message: string) => {
@@ -77,6 +179,61 @@ export class AddScientificPublicationComponent implements AfterViewInit {
       {
         next: (result) => {
           this.snackBar.open("Cover letter successfully submitted", 'Dismiss', {
+            duration: 3000
+          });
+          this.router.navigate(['/dashboard']).then(r => {});
+        },
+        error: (message: string) => {
+          this.snackBar.open(message, 'Dismiss', {
+            duration: 3000
+          });
+        }
+      }
+    );
+  }
+
+  submitRevision() {
+    this.scientificPublicationApiService.submitRevision(this.scientificPublication).subscribe(
+      {
+        next: (result) => {
+          this.snackBar.open("Publication successfully revised", 'Dismiss', {
+            duration: 3000
+          });
+          this.submitCoverLetterRevision();
+        },
+        error: (message: string) => {
+          this.snackBar.open(message, 'Dismiss', {
+            duration: 3000
+          });
+        }
+      }
+    );
+  }
+
+  submitCoverLetterRevision() {
+    this.coverLetter = Xonomy.harvest();
+    this.coverLetterApiService.submitCoverLetterRevision(this.coverLetter).subscribe(
+      {
+        next: (result) => {
+          this.snackBar.open("Cover letter successfully submitted", 'Dismiss', {
+            duration: 3000
+          });
+          this.router.navigate(['/dashboard']).then(r => {});
+        },
+        error: (message: string) => {
+          this.snackBar.open(message, 'Dismiss', {
+            duration: 3000
+          });
+        }
+      }
+    );
+  }
+
+  withdrawPublication() {
+    this.scientificPublicationApiService.withdrawPublication(this.title).subscribe(
+      {
+        next: (result) => {
+          this.snackBar.open("Publication successfully withdrawn", 'Dismiss', {
             duration: 3000
           });
           this.router.navigate(['/dashboard']).then(r => {});

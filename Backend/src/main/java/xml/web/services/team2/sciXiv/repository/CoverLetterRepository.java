@@ -68,6 +68,10 @@ public class CoverLetterRepository {
 	ScientificPublicationRepository scientificPublicationRepository;
 
 	public String findByTitleAndVersion(String title, String version) throws XMLDBException {
+		String name = title.replace(" ", "");
+		if (Integer.parseInt(version) == -1) {
+			version = String.valueOf(scientificPublicationRepository.getLastVersionNumber(name));
+		}
 		String coverLetterStr = null;
 		XMLConnectionProperties conn = xmlConnectionPool.getConnection();
 		Collection col = basicOperations.getOrCreateCollection(collectionName, 0, conn);
@@ -174,9 +178,34 @@ public class CoverLetterRepository {
 		int latestVersion = scientificPublicationRepository.getLastVersionNumber(publicationTitle.replace(" ", ""));
 
 		Element version = document.createElement("cl:version");
-		version.setTextContent(Integer.toString(latestVersion));
+		version.setTextContent(String.valueOf(latestVersion));
 		NodeList author = document.getElementsByTagName("cl:author");
 		document.getDocumentElement().insertBefore(version, author.item(0));
+
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+		String submissionDate = sdf.format(new Date());
+		document.getDocumentElement().setAttribute("submissionDate", submissionDate);
+
+		String saveCoverLetter = DOMParser.doc2String(document);
+
+		XMLConnectionProperties conn = xmlConnectionPool.getConnection();
+		basicOperations.storeDocument(collectionName + "/", id, saveCoverLetter, conn);
+		xmlConnectionPool.releaseConnection(conn);
+
+		return id;
+	}
+
+	public String submitCoverLetterOfRevision(String coverLetter) throws SAXException, ParserConfigurationException, IOException,
+			TransformerException, DocumentStoringFailedException, XMLDBException {
+		Document document = DOMParser.buildDocument(coverLetter, coverLetterXsdSchemaPath);
+		String lUUID = String.format("%d", new BigInteger(UUID.randomUUID().toString().replace("-", ""), 16));
+		String id = "cl" + lUUID;
+		document.getDocumentElement().setAttribute("id", id);
+
+		String publicationTitle = document.getElementsByTagName("cl:publicationTitle").item(0).getTextContent();
+		int latestVersion = scientificPublicationRepository.getLastVersionNumber(publicationTitle.replace(" ", ""));
+		NodeList version = document.getDocumentElement().getElementsByTagName("cl:version");
+		version.item(0).setTextContent(String.valueOf(latestVersion));
 
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 		String submissionDate = sdf.format(new Date());

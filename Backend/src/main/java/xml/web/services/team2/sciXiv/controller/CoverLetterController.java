@@ -16,6 +16,7 @@ import org.xml.sax.SAXException;
 import org.xmldb.api.base.XMLDBException;
 import org.springframework.http.MediaType;
 
+import xml.web.services.team2.sciXiv.dto.StringDTO;
 import xml.web.services.team2.sciXiv.exception.DocumentLoadingFailedException;
 import xml.web.services.team2.sciXiv.exception.DocumentStoringFailedException;
 import xml.web.services.team2.sciXiv.service.CoverLetterService;
@@ -31,12 +32,13 @@ public class CoverLetterController {
 
 	XMLConnectionProperties conn;
 
-	@GetMapping(value = "/{title}/version/{version}", produces = MediaType.APPLICATION_XML_VALUE)
-	public ResponseEntity<String> getCoverLetterByTitleAndVersion(@PathVariable("title") String title,
-			@PathVariable("version") String version)
+	@GetMapping
+	public ResponseEntity<StringDTO> getCoverLetterByTitleAndVersion(@RequestParam("title") String title,
+																	 @RequestParam("version") String version)
 			throws DocumentLoadingFailedException, XMLDBException, IOException {
 		String coverLetter = coverLetterService.findByTitleAndVersion(title, version);
-		return new ResponseEntity<>(coverLetter, HttpStatus.OK);
+		StringDTO result = new StringDTO(coverLetter);
+		return new ResponseEntity<>(result, HttpStatus.OK);
 	}
 
 	@GetMapping(value = "/{id}", produces = MediaType.APPLICATION_XML_VALUE)
@@ -51,6 +53,14 @@ public class CoverLetterController {
 			throws SAXException, ParserConfigurationException, IOException, TransformerException,
 			DocumentStoringFailedException, XMLDBException {
 		coverLetterService.save(coverLetter);
+		return new ResponseEntity<>(201, HttpStatus.CREATED);
+	}
+
+	@PostMapping("revision")
+	public ResponseEntity<Object> submitCoverLetterOfRevision(@RequestBody String coverLetter)
+			throws SAXException, ParserConfigurationException, IOException, TransformerException,
+			DocumentStoringFailedException, XMLDBException {
+		coverLetterService.submitCoverLetterOfRevision(coverLetter);
 		return new ResponseEntity<>(201, HttpStatus.CREATED);
 	}
 
@@ -105,9 +115,9 @@ public class CoverLetterController {
 		}
 	}
 
-	@GetMapping(value = "export/xhtml/{title}/version/{version}")
-	public ResponseEntity<Object> exportCoverLetterByTitleAndVersionAsXHTML(@PathVariable("title") String title,
-			@PathVariable("version") String version) {
+	@GetMapping(value = "export/xhtml")
+	public ResponseEntity<Object> exportCoverLetterByTitleAndVersionAsXHTML(@RequestParam("title") String title,
+			@RequestParam("version") String version) {
 		try {
 			Resource resource = coverLetterService.exportCoverLetterByTitleAndVersionAsXHTML(title, version);
 			return ResponseEntity.ok().contentType(MediaType.APPLICATION_OCTET_STREAM)
@@ -132,9 +142,9 @@ public class CoverLetterController {
 		}
 	}
 
-	@GetMapping(value = "export/pdf/{title}/version/{version}")
-	public ResponseEntity<Object> exportCoverLetterByTitleAndVersionAsPDF(@PathVariable("title") String title,
-			@PathVariable("version") String version) {
+	@GetMapping(value = "export/pdf")
+	public ResponseEntity<Object> exportCoverLetterByTitleAndVersionAsPDF(@RequestParam("title") String title,
+			@RequestParam("version") String version) {
 		try {
 			Resource resource = coverLetterService.exportCoverLetterByTitleAndVersionAsPDF(title, version);
 			return ResponseEntity.ok().contentType(MediaType.APPLICATION_OCTET_STREAM)

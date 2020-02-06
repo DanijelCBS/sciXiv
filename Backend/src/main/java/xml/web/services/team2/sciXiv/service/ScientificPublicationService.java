@@ -41,6 +41,7 @@ import javax.xml.transform.TransformerException;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -190,18 +191,12 @@ public class ScientificPublicationService {
 		String dateRevised = sdf.format(new Date());
 
 		NodeList authors = document.getElementsByTagName("sp:authors");
-		NodeList keywords = document.getElementsByTagName("sp:keywords");
 
 		Element dateRevisedElem = document.createElement("sp:dateRevised");
 		dateRevisedElem.setTextContent(dateRevised);
 		dateRevisedElem.setAttribute("property", "pred:dateModified");
 		NodeList metadataElem = document.getElementsByTagName("sp:metadata");
 		metadataElem.item(0).insertBefore(dateRevisedElem, authors.item(0));
-
-		Element status = document.createElement("sp:status");
-		status.setTextContent("in process");
-		status.setAttribute("property", "pred:creativeWorkStatus");
-		metadataElem.item(0).insertBefore(status, keywords.item(0));
 
 		sciPub = transformer.toXML(document);
 
@@ -230,7 +225,11 @@ public class ScientificPublicationService {
 		return "Publication successfully withdrawn";
 	}
 
-	public ArrayList<SciPubDTO> basicSearch(String parameter) throws XMLDBException {
+	public int getLastVersionNumber(String title) throws XMLDBException {
+		return scientificPublicationRepository.getLastVersionNumber(title);
+	}
+
+	public ArrayList<SciPubDTO> basicSearch(String parameter) throws XMLDBException, UnsupportedEncodingException {
 		TUser user;
 		try {
 			String email = ((UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal())
@@ -246,9 +245,10 @@ public class ScientificPublicationService {
 	public ArrayList<SciPubDTO> advancedSearch(SearchPublicationsDTO searchParameters) {
 		String query = "SELECT * FROM <%s>\n" + "WHERE { \n" + "\t?sciPub";
 		query = makeSparqlQuery(query, searchParameters);
+		TUser user = null;
 		try {
 			String email = ((UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUsername();
-			TUser user = userRepository.getByEmail(email);
+			user = userRepository.getByEmail(email);
 			ArrayList<String> userDocuments = (ArrayList<String>) user.getOwnPublications().getPublicationID();
 			String resourceURL = "http://ftn.uns.ac.rs/scientificPublication/";
 			StringBuilder titles = new StringBuilder("(");
@@ -263,7 +263,7 @@ public class ScientificPublicationService {
 			query += "\tFILTER (?status = \"accepted\")\n}";
 		}
 
-		return scientificPublicationRepository.advancedSearch(query);
+		return scientificPublicationRepository.advancedSearch(query, user);
 	}
 
 	public ArrayList<SciPubDTO> getReferences(String title) {

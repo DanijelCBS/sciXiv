@@ -2,17 +2,36 @@
   <!-- <app-toolbar class="header"></app-toolbar> -->
   <div class="content">
 
+    <mat-form-field>
+      <mat-label>Versions</mat-label>
+      <mat-select [(ngModel)]="version" (selectionChange)="changeVersion()" name="versionSel">
+        <mat-option *ngFor="let v of versions" [value]="v">
+          Version {{v}}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+
     <mat-tab-group dynamicHeight [(selectedIndex)]="tabIndex" (selectedTabChange)="tabChanged()">
       <mat-tab label="Scientific publication" disabled="{{spDisabled}}">
         <div style="margin-left:30px; margin-top:50px;">
           <input id="xmlFile" type="file" (change)="readXMLFile($event, true)" name="xmlFile">
         </div>
 
-        <div id="xonomy" style="margin-top:50px; margin-left:25%;">
+        <div fxLayout="row" style="margin-top:20px">
+          <div *ngIf="!addMode" fxLayout="column" fxLayoutGap="10px" style="margin-bottom:20px; margin-left:10px">
+            <a mat-raised-button href="http://localhost:8080/scientificPublication/export/xhtml?title={{title}}">Export as HTML</a>
+            <a mat-raised-button href="http://localhost:8080/scientificPublication/export/pdf?title={{title}}">Export as PDF</a>
+            <a mat-raised-button href="http://localhost:8080/scientificPublication/metadata/rdf?title={{title}}">Export metadata as RDF</a>
+            <a mat-raised-button href="http://localhost:8080/scientificPublication/metadata/json?title={{title}}">Export metadata as JSON</a>
+            <button *ngIf="!addMode" type="submit" mat-raised-button (click)="withdrawPublication()">Withdraw publication</button>
+          </div>
+
+          <div id="xonomy" style="margin-top:50px; margin-left:25%;" fxLayout="column">
+          </div>
         </div>
 
         <div fxLayout="row wrap">
-          <button type="submit" mat-raised-button (click)="changeToCoverLetter()"
+          <button *ngIf="addMode" type="submit" mat-raised-button (click)="changeToCoverLetter()"
                   style="margin-top:50px; margin-left:25%; margin-bottom:50px;">Go to cover letter submission</button>
         </div>
 
@@ -23,12 +42,20 @@
           <input id="cvFile" type="file" (change)="readXMLFile($event, false)" name="xmlFile">
         </div>
 
-        <div id="xonomyCV" style="margin-top:50px; margin-left:25%;">
+        <div fxLayout="row" style="margin-top:20px">
+          <div *ngIf="!addMode" fxLayout="column" fxLayoutGap="10px" style="margin-bottom:20px; margin-left:20px">
+            <a mat-raised-button href="http://localhost:8080/coverLetter/export/xhtml?title={{title}}&version={{version}}">Export as HTML</a>
+            <a mat-raised-button href="http://localhost:8080/coverLetter/export/pdf?title={{title}}&version={{version}}">Export as PDF</a>
+          </div>
+          <div id="xonomyCV" style="margin-top:50px; margin-left:25%;">
+          </div>
         </div>
 
         <div fxLayout="row wrap">
-          <button type="submit" mat-raised-button (click)="submitPublication()"
+          <button *ngIf="addMode" type="submit" mat-raised-button (click)="submitPublication()"
                   style="margin-top:50px; margin-left:25%; margin-bottom:50px;">Submit publication and cover letter</button>
+          <button *ngIf="!addMode" type="submit" mat-raised-button (click)="submitRevision()"
+                  style="margin-top:50px; margin-left:25%; margin-bottom:50px;">Submit revision and cover letter</button>
         </div>
       </mat-tab>
     </mat-tab-group>

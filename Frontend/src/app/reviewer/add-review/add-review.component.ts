@@ -61,10 +61,6 @@ export class AddReviewComponent implements OnInit {
         this.processing = false;
         alert('Submission successfull.');
         this.reouter.navigate(['/reviewAssignments']);
-      },
-      (error) => {
-        this.processing = false;
-        alert('An error ocurred during submission. Please check if the selected file and its data are valid.');
       }
     );
 

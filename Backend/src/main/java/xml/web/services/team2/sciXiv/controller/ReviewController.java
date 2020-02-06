@@ -128,7 +128,7 @@ public class ReviewController {
 		return new ResponseEntity<>(HttpStatus.OK);
 	}
 
-	@RequestMapping(method = RequestMethod.POST, consumes = "application/xml")
+	@RequestMapping(method = RequestMethod.POST, consumes = "application/xml", produces = "application/text")
 	@PreAuthorize("hasRole('REVIEWER') or hasRole('EDITOR')")
 	public ResponseEntity<String> submitReview(@RequestBody String reviewXml) throws Exception {
 		String userEmail = this.getCurrentUserEmail();

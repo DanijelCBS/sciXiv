@@ -32,4 +32,11 @@ export class ReviewService {
     return this.http.put(`${this.baseUrl}/rejectAssignment?forPublication=${publicationTitle}`, {}, {headers});
   }
 
+  public submitReview(reviewXml: string) {
+    const headers = new HttpHeaders({
+      'Content-Type': 'application/xml',
+    });
+    return this.http.post(this.baseUrl, reviewXml, {headers});
+  }
+
 }

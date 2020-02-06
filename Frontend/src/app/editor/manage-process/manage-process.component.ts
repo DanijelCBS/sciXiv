@@ -1,6 +1,6 @@
 import { ReviewersService } from './../services/reviewers.service';
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute, ParamMap } from '@angular/router';
+import { ActivatedRoute, ParamMap, Router } from '@angular/router';
 import { PublicationProcessDTO } from '../model/PublicationProcessDTO';
 import { PublicationProcessService } from '../services/publication-process.service';
 import { ReviewService } from '../services/review.service';
@@ -17,6 +17,7 @@ export class ManageProcessComponent implements OnInit {
   private publicationTitle = '';
   private loading = true;
   private processingAssignment = false;
+  private processingAction = false;
   private reviewers: Array<UserBaicInfoDTO> = [];
   private selectedReviewers: Array<string> = [];
 
@@ -24,7 +25,8 @@ export class ManageProcessComponent implements OnInit {
     private processService: PublicationProcessService,
     private reviewService: ReviewService,
     private reviewerService: ReviewersService,
-    private activatedRoute: ActivatedRoute
+    private activatedRoute: ActivatedRoute,
+    private router: Router
     ) { }
 
   ngOnInit() {
@@ -81,6 +83,36 @@ export class ManageProcessComponent implements OnInit {
       (success) => {
         this.processingAssignment = false;
         window.location.reload();
+      }
+    );
+  }
+
+  private onPublish() {
+    this.processingAction = true;
+    this.processService.publishPaper(this.process.publicationTitle).subscribe(
+      (success) => {
+        this.processingAction = false;
+        this.router.navigate(['processes']);
+      }
+    );
+  }
+
+  private onReject() {
+    this.processingAction = true;
+    this.processService.rejectPaper(this.process.publicationTitle).subscribe(
+      (success) => {
+        this.processingAction = false;
+        this.router.navigate(['processes']);
+      }
+    );
+  }
+
+  private onRevisionRequested() {
+    this.processingAction = true;
+    this.processService.requestRevision(this.process.publicationTitle).subscribe(
+      (success) => {
+        this.processingAction = false;
+        this.router.navigate(['processes']);
       }
     );
   }

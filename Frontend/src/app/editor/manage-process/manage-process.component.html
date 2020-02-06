@@ -5,12 +5,37 @@
         <h2>{{ process.processState }}</h2>
         <p>
             <span>
-                <a mat-raised-button href="http://localhost:8080/reviews/mergeToHtml/{{process.publicationTitle}}/version/{{process.publicationVersion}}">View publication with reviews as HTML</a>
+                <a mat-raised-button href="http://localhost:8080/coverLetter/xhtml/{{process.publicationTitle}}/version/{{process.publicationVersion}}">View cover letter as HTML</a>
+            </span>
+            <span>
+                <a class="downloadButton" mat-raised-button href="http://localhost:8080/coverLetter/export/xhtml?title={{process.publicationTitle}}&version={{process.publicationVersion}}">Export cover letter as HTML</a>
+            </span>
+            <span>
+                <a class="downloadButton" mat-raised-button href="http://localhost:8080/coverLetter/export/pdf?title={{process.publicationTitle}}&version={{process.publicationVersion}}">Export cover letter as PDF</a>
+            </span>
+            <span>
+                <a class="downloadButton" mat-raised-button href="http://localhost:8080/reviews/mergeToHtml/{{process.publicationTitle}}/version/{{process.publicationVersion}}">View publication with reviews as HTML</a >
             </span>
             <span>
                 <a class="downloadButton" mat-raised-button href="http://localhost:8080/reviews/mergeToPdf/{{process.publicationTitle}}/version/{{process.publicationVersion}}">View publication with reviews as PDF</a>
             </span>
         </p>
+    </div>
+
+    <div fxLayout="row" *ngIf="process.processState === 'ON_REVIEW'">
+        <h2>Actions:</h2>
+        <p *ngIf="!processingAction">
+            <span>
+                <a mat-raised-button (click)="onPublish()">Publish</a>
+            </span>
+            <span>
+                <a class="downloadButton" mat-raised-button (click)="onReject()">Reject</a>
+            </span>
+            <span>
+                <a class="downloadButton" mat-raised-button (click)="onRevisionRequested()">Request revision</a>
+            </span>
+        </p>
+        <h2 *ngIf="processingAction">Processing...</h2>
     </div>
 
     <div fxLayout="row">
@@ -21,7 +46,7 @@
         <mat-card style="margin-top:10px;" *ngFor="let assignment of process.reviewerAssignments">
             <mat-card-header>
                 <mat-card-title>
-                    {{assignment.reviewerFullName}} : 
+                    {{assignment.reviewerFullName}} :
                     {{assignment.reviewStatus}}
                 </mat-card-title>
             </mat-card-header>

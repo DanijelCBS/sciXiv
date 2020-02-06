@@ -23,4 +23,16 @@ export class PublicationProcessService {
     });
     return this.http.get(`${this.baseUrl}/${publicationTitle}`, {headers});
   }
+
+  public publishPaper(publicationTitle: string) {
+    return this.http.put(`${this.baseUrl}/publish?title=${publicationTitle}`, {});
+  }
+
+  public rejectPaper(publicationTitle: string) {
+    return this.http.put(`${this.baseUrl}/reject?title=${publicationTitle}`, {});
+  }
+
+  public requestRevision(publicationTitle: string) {
+    return this.http.put(`${this.baseUrl}/requestRevision?title=${publicationTitle}`, {});
+  }
 }

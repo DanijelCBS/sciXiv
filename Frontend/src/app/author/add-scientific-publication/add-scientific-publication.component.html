@@ -19,12 +19,14 @@
 
         <div fxLayout="row" style="margin-top:20px">
           <div *ngIf="!addMode" fxLayout="column" fxLayoutGap="10px" style="margin-bottom:20px; margin-left:10px">
-            <a mat-raised-button href="http://localhost:8080/scientificPublication/export/xhtml?title={{title}}">Export as HTML</a>
-            <a mat-raised-button href="http://localhost:8080/scientificPublication/export/pdf?title={{title}}">Export as PDF</a>
-            <a mat-raised-button href="http://localhost:8080/scientificPublication/metadata/rdf?title={{title}}">Export metadata as RDF</a>
-            <a mat-raised-button href="http://localhost:8080/scientificPublication/metadata/json?title={{title}}">Export metadata as JSON</a>
+            <a mat-raised-button href="http://localhost:8080/scientificPublication/export/xhtml?title={{title}}">Export publication as HTML</a>
+            <a mat-raised-button href="http://localhost:8080/scientificPublication/export/pdf?title={{title}}">Export publication as PDF</a>
+            <a mat-raised-button href="http://localhost:8080/scientificPublication/metadata/rdf?title={{title}}">Export publication metadata as RDF</a>
+            <a mat-raised-button href="http://localhost:8080/scientificPublication/metadata/json?title={{title}}">Export publication metadata as JSON</a>
             <a mat-raised-button href="http://localhost:8080/reviews/mergeBlindToHtml/{{title}}/version/{{version}}">View publication with reviews as HTML</a>
             <a mat-raised-button href="http://localhost:8080/reviews/mergeBlindToPdf/{{title}}/version/{{version}}">Export publication with reviews as PDF</a>
+            <a mat-raised-button href="http://localhost:8080/coverLetter/export/xhtml?title={{title}}&version={{version}}">Export cover letter as HTML</a>
+            <a mat-raised-button href="http://localhost:8080/coverLetter/export/pdf?title={{title}}&version={{version}}">Export cover letter as PDF</a>
             <button *ngIf="!addMode" type="submit" mat-raised-button (click)="withdrawPublication()">Withdraw publication</button>
           </div>
 

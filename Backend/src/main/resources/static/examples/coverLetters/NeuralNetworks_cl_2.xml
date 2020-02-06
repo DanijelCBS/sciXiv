@@ -1,27 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<coverLetter xmlns="http://ftn.uns.ac.rs/coverLetter"
- xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
- xsi:schemaLocation="http://ftn.uns.ac.rs/coverLetter file:/C:/Users/Nikola%20Zubic/Desktop/XMLWEB/sciXiv/Backend/src/main/resources/static/xmlSchemas/coverLetter.xsd" submissionDate="2006-05-04" id="id1">
-    <publicationTitle>Neural networks</publicationTitle>
-    <version>2</version>
-    <author>
-        <name>Ziko Zikic</name>
-        <educationTitle>phD</educationTitle>
-        <affiliation>FTN</affiliation>
-        <city>Novi Sad</city>
-        <state>Serbia</state>
-        <phoneNumber>23623483452345</phoneNumber>
-        <email>ziko@dlsi.ua.es</email>
-        <signature>ZGVmYXVsdA==</signature>
-    </author>
-    <targetPublisher>
-        <editor>Mihajlo Kusljic</editor>
-        <journal>Scientifica Noevica</journal>
-    </targetPublisher>
-    <content>
-        <paragraph>
-            <boldText>Motivation</boldText>
-            <emphasizedText>We believe that the problem to progress in OMR for CWMN lies in the complexity involved in
+<cl:coverLetter xmlns:cl="http://ftn.uns.ac.rs/coverLetter">
+    <cl:publicationTitle>Neural networks</cl:publicationTitle>
+    <cl:author>
+        <cl:name>Ziko Zikic</cl:name>
+        <cl:educationTitle>phD</cl:educationTitle>
+        <cl:affiliation>FTN</cl:affiliation>
+        <cl:city>Novi Sad</cl:city>
+        <cl:state>Serbia</cl:state>
+        <cl:phoneNumber>23623483452345</cl:phoneNumber>
+        <cl:email>ziko@dlsi.ua.es</cl:email>
+        <cl:signature>ZGVmYXVsdA==</cl:signature>
+    </cl:author>
+    <cl:content>
+        <cl:paragraph>
+            <cl:boldText>Motivation</cl:boldText>
+            <cl:emphasizedText>We believe that the problem to progress in OMR for CWMN lies in the complexity involved in
                 correctly modeling the composition of musical symbols. Unlike these hand-engineered multi-stage
                 approaches, we propose a holistic strategy in which the musical notation is learned as a whole using
                 machine learning strategies. However, to reduce the complexity to a feasible level, we do consider
@@ -29,18 +22,18 @@
                 score. Staves are good basic units to work on, analogously to similar text recognition where a single
                 line of text is assumed as input unit. Note that this is not a strong assumption as there are successful
                 algorithms for isolating staves, as mentioned above.
-            </emphasizedText>
-            <quote>
-                <source>Kobe Bryant</source>
-                <quoteContent>My parents are my backbone. Still are. They're the only group that will support you if you score zero or you score 40.</quoteContent>
-            </quote>
-            <list ordered="true">
-                <listItem>Neural networks</listItem>
-                <listItem>Machine Learning</listItem>
-                <listItem>Deep Learning</listItem>
-            </list>
-            <boldText>Motivation and about publication</boldText>
-            <emphasizedText>We believe that the problem to progress in OMR for CWMN lies in the complexity involved in
+            </cl:emphasizedText>
+            <cl:quote>
+                <cl:source>Kobe Bryant</cl:source>
+                <cl:quoteContent>My parents are my backbone. Still are. They're the only group that will support you if you score zero or you score 40.</cl:quoteContent>
+            </cl:quote>
+            <cl:list ordered="true">
+                <cl:listItem>Neural networks</cl:listItem>
+                <cl:listItem>Machine Learning</cl:listItem>
+                <cl:listItem>Deep Learning</cl:listItem>
+            </cl:list>
+            <cl:boldText>Motivation and about publication</cl:boldText>
+            <cl:emphasizedText>We believe that the problem to progress in OMR for CWMN lies in the complexity involved in
                 correctly modeling the composition of musical symbols. Unlike these hand-engineered multi-stage
                 approaches, we propose a holistic strategy in which the musical notation is learned as a whole using
                 machine learning strategies. However, to reduce the complexity to a feasible level, we do consider
@@ -53,18 +46,18 @@
                 to boost the optical recognition by taking into account the musical context which, in spite of being
                 extremely difficult to model entirely, can certainly help in the process. Thus, it seems interesting to
                 tackle the OMR task over single staves in an holistic fashion, in which the expected output is directly
-                the sequence of musical symbols present in the image.</emphasizedText>
-            <quote>
-                <source>Walt Whitman</source>
-                <quoteContent>We convince by our presence.</quoteContent>
-            </quote>
-            <list ordered="true">
+                the sequence of musical symbols present in the image.</cl:emphasizedText>
+            <cl:quote>
+                <cl:source>Walt Whitman</cl:source>
+                <cl:quoteContent>We convince by our presence.</cl:quoteContent>
+            </cl:quote>
+            <cl:list ordered="true">
                 <listItem>Quantum AI</listItem>
                 <listItem>Possibilities of new approaches</listItem>
                 <listItem>AI and physics</listItem>
-            </list>
-            <boldText>Generalization and statistics</boldText>
-            <emphasizedText>Applications whose goal is to create a system that generalizes well to unseen examples, face the possibility of over-training. This arises
+            </cl:list>
+            <cl:boldText>Generalization and statistics</cl:boldText>
+            <cl:emphasizedText>Applications whose goal is to create a system that generalizes well to unseen examples, face the possibility of over-training. This arises
                 in convoluted or over-specified systems when the network capacity significantly exceeds the needed free parameters. Two approaches address over-training.
                 The first is to use cross-validation and similar techniques to check for the presence of over-training and to select hyperparameters to minimize the
                 generalization error.
@@ -82,39 +75,39 @@
                 in a component-based network) for categorical target variables, the outputs can be interpreted as posterior probabilities. This is useful in classification
                 as it gives a certainty measure on classifications.
 
-            </emphasizedText>
-            <quote>
-                <source>Lao Tzu</source>
-                <quoteContent>Health is the greatest possession. Contentment is the greatest treasure. Confidence is the greatest friend. Non-being is the greatest joy.
-                </quoteContent>
-            </quote>
-            <list ordered="false">
-                <listItem>Hyperparameter</listItem>
-                <listItem>Learning</listItem>
-                <listItem>Learning rates</listItem>
-            </list>
-        </paragraph>
-        <paragraph>
-            <boldText>Theory</boldText>
-            <emphasizedText>A fundamental objection is that ANNs do not sufficiently reflect neuronal function. Backpropagation is a critical step, although no such 
+            </cl:emphasizedText>
+            <cl:quote>
+                <cl:source>Lao Tzu</cl:source>
+                <cl:quoteContent>Health is the greatest possession. Contentment is the greatest treasure. Confidence is the greatest friend. Non-being is the greatest joy.
+                </cl:quoteContent>
+            </cl:quote>
+            <cl:list ordered="false">
+                <cl:listItem>Hyperparameter</cl:listItem>
+                <cl:listItem>Learning</cl:listItem>
+                <cl:listItem>Learning rates</cl:listItem>
+            </cl:list>
+        </cl:paragraph>
+        <cl:paragraph>
+            <cl:boldText>Theory</cl:boldText>
+            <cl:emphasizedText>A fundamental objection is that ANNs do not sufficiently reflect neuronal function. Backpropagation is a critical step, although no such 
                 mechanism exists in biological neural networks.[118] How information is coded by real neurons is not known. Sensor neurons fire action potentials more
                 frequently with sensor activation and muscle cells pull more strongly when their associated motor neurons receive action potentials more frequently.[119]
                 Other than the case of relaying information from a sensor neuron to a motor neuron, almost nothing of the principles of how information is handled by 
                 biological neural networks is known.
-            </emphasizedText>
-            <quote>
-                <source>Audrey Hepburn</source>
-                <quoteContent>I believe in pink. I believe that laughing is the best calorie burner. I believe in kissing, kissing a lot. I believe in being strong
+            </cl:emphasizedText>
+            <cl:quote>
+                <cl:source>Audrey Hepburn</cl:source>
+                <cl:quoteContent>I believe in pink. I believe that laughing is the best calorie burner. I believe in kissing, kissing a lot. I believe in being strong
                     when everything seems to be going wrong. I believe that happy girls are the prettiest girls. I believe that tomorrow is another day and I believe 
-                    in miracles.</quoteContent>
-            </quote>
-            <list ordered="false">
+                    in miracles.</cl:quoteContent>
+            </cl:quote>
+            <cl:list ordered="false">
                 <listItem>RNN</listItem>
                 <listItem>CNN</listItem>
                 <listItem>LSTM</listItem>
-            </list>
-            <boldText>Hardware</boldText>
-            <emphasizedText>Large and effective neural networks require considerable computing resources.[125] While the brain has hardware tailored to the task 
+            </cl:list>
+            <cl:boldText>Hardware</cl:boldText>
+            <cl:emphasizedText>Large and effective neural networks require considerable computing resources.[125] While the brain has hardware tailored to the task 
                 of processing signals through a graph of neurons, simulating even a simplified neuron on von Neumann architecture may consume vast amounts of memory
                 and storage. Furthermore, the designer often needs to transmit signals through many of these connections and their associated neurons – which require 
                 enormous CPU power and time.
@@ -126,16 +119,16 @@
                 
                 Neuromorphic engineering addresses the hardware difficulty directly, by constructing non-von-Neumann chips to directly implement neural networks in circuitry.
                 Another type of chip optimized for neural network processing is called a Tensor Processing Unit, or TPU.[128]                
-            </emphasizedText>
-            <quote>
-                <source>Earl N.</source>
-                <quoteContent>All you need is the plan, the road map, and the courage to press on to your destination.</quoteContent>
-            </quote>
-        </paragraph>
+            </cl:emphasizedText>
+            <cl:quote>
+                <cl:source>Earl N.</cl:source>
+                <cl:quoteContent>All you need is the plan, the road map, and the courage to press on to your destination.</cl:quoteContent>
+            </cl:quote>
+        </cl:paragraph>
         
-        <paragraph>
-            <boldText>Network design</boldText>
-            <emphasizedText>Neural architecture search (NAS) uses machine learning to automate ANN design. Various approaches to NAS have designed networks that compare
+        <cl:paragraph>
+            <cl:boldText>Network design</cl:boldText>
+            <cl:emphasizedText>Neural architecture search (NAS) uses machine learning to automate ANN design. Various approaches to NAS have designed networks that compare
                 well with hand-designed systems. The basic search algorithm is to propose a candidate model, evaluate it against a dataset and use the results as feedback
                 to teach the NAS network.[80] Available systems include AutoML and AutoKeras.[81]
                 
@@ -144,7 +137,7 @@
                 Hyperparameters must also be defined as part of the design (they are not learned), governing matters such as how many neurons are in each layer,
                 learning rate, step, stride, depth, receptive field and padding (for CNNs), etc.[82]
                 
-            </emphasizedText>
-        </paragraph>
-    </content>
-</coverLetter>
+            </cl:emphasizedText>
+        </cl:paragraph>
+    </cl:content>
+</cl:coverLetter>

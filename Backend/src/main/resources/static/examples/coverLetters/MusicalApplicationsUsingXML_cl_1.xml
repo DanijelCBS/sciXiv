@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<coverLetter xmlns="http://ftn.uns.ac.rs/coverLetter"
+ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+ xsi:schemaLocation="http://ftn.uns.ac.rs/coverLetter file:/C:/Users/Nikola%20Zubic/Desktop/XMLWEB/sciXiv/Backend/src/main/resources/static/xmlSchemas/coverLetter.xsd" submissionDate="2006-05-04" id="id1">
+    <publicationTitle>Musical Applications Using XML</publicationTitle>
+    <version>1</version>
+    <author>
+        <name>Roland, P</name>
+        <educationTitle>phD</educationTitle>
+        <affiliation>FTN</affiliation>
+        <city>Novi Sad</city>
+        <state>Serbia</state>
+        <phoneNumber>252362362362362</phoneNumber>
+        <email>rol@gmail.com</email>
+        <signature>ZGVmYXVsdA==</signature>
+    </author>
+    <targetPublisher>
+        <editor>Mihajlo Kusljic</editor>
+        <journal>PLOS ONE</journal>
+    </targetPublisher>
+    <content>
+        <paragraph>
+            <boldText>Musical notation</boldText>
+            <emphasizedText>We believe that the problem to progress in OMR for CWMN lies in the complexity involved in
+                correctly modeling the composition of musical symbols. Unlike these hand-engineered multi-stage
+                approaches, we propose a holistic strategy in which the musical notation is learned as a whole using
+                machine learning strategies. However, to reduce the complexity to a feasible level, we do consider
+                a first initial stage in which the image is pre-processed to find and separate the different staves of the
+                score. Staves are good basic units to work on, analogously to similar text recognition where a single
+                line of text is assumed as input unit. Note that this is not a strong assumption as there are successful
+                algorithms for isolating staves, as mentioned above.
+            </emphasizedText>
+            <quote>
+                <source>Kobe Bryant</source>
+                <quoteContent>I focus on one thing and one thing only - that's trying to win as many championships as I can.</quoteContent>
+            </quote>
+            <list ordered="true">
+                <listItem>XML</listItem>
+                <listItem>Musical OMR</listItem>
+            </list>
+            <boldText>Image processing with usage of XML data</boldText>
+            <emphasizedText>We believe that the problem to progress in OMR for CWMN lies in the complexity involved in
+                correctly modeling the composition of musical symbols. Unlike these hand-engineered multi-stage
+                approaches, we propose a holistic strategy in which the musical notation is learned as a whole using
+                machine learning strategies. However, to reduce the complexity to a feasible level, we do consider
+                a first initial stage in which the image is pre-processed to find and separate the different staves of the
+                score. Staves are good basic units to work on, analogously to similar text recognition where a single
+                line of text is assumed as input unit. Note that this is not a strong assumption as there are successful
+                algorithms for isolating staves, as mentioned above.
+                Then, the staff can be addressed as a single unit instead of considering it as a sequence of isolated
+                elements that have to be detected and recognized independently. This also opens the possibility
+                to boost the optical recognition by taking into account the musical context which, in spite of being
+                extremely difficult to model entirely, can certainly help in the process. Thus, it seems interesting to
+                tackle the OMR task over single staves in an holistic fashion, in which the expected output is directly
+                the sequence of musical symbols present in the image.</emphasizedText>
+            <quote>
+                <source>Walt Whitman</source>
+                <quoteContent>Keep your face always toward the sunshine - and shadows will fall behind you.</quoteContent>
+            </quote>
+            <list ordered="true">
+                <listItem>History</listItem>
+                <listItem>Support</listItem>
+            </list>
+        </paragraph>
+        <paragraph>
+            <boldText>History</boldText>
+            <emphasizedText>MusicXML was invented by Michael Good and initially developed by Recordare LLC. It derived several key concepts from existing academic formats 
+                (such as Walter Hewlett's MuseData and David Huron's Humdrum). It is designed for the interchange of scores, particularly between different scorewriters. 
+                MusicXML development was managed by MakeMusic following the company's acquisition of Recordare in 2011.[6][7] MusicXML development was transferred to the 
+                W3C Music Notation Community Group in July 2015.[8] 
+                Version 1.0 was released in January 2004. Version 1.1 was released in May 2005 with improved formatting support. Version 2.0 was released in June 2007 
+                and included a standard compressed format.[9] All of these versions were defined by a series of document type definitions (DTDs). An XML Schema Definition 
+                (XSD) implementation of Version 2.0 was released in September 2008. Version 3.0 was released in August 2011 with improved virtual instrument support, in 
+                both DTD and XSD versions.[10][11] Version 3.1 was released in December 2017 with improved support for the Standard Music Font Layout (SMuFL).[3] The MusicXML
+                DTDs and XSDs are each freely redistributable under the W3C Community Final Specification Agreement.[5]</emphasizedText>
+            <quote>
+                <source>Mahatma Gandhi</source>
+                <quoteContent>In a gentle way, you can shake the world.</quoteContent>
+            </quote>
+            <list ordered="false">
+                <listItem>DTD</listItem>
+                <listItem>XSD</listItem>
+            </list>
+            <boldText>Example</boldText>
+            <emphasizedText>Like all XML-based formats, MusicXML is intended to be easy for automated tools to parse and manipulate. Though it is possible to create MusicXML
+                by hand, interactive score writing programs like Finale and MuseScore greatly simplify the reading, writing, and modifying of MusicXML files. 
+                The following example is a score consisting of a single whole note middle C in the key of C major on the Treble Clef.[16]</emphasizedText>
+
+        </paragraph>
+    </content>
+</coverLetter>

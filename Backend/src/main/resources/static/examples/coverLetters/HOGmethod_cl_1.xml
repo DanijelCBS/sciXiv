@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<coverLetter xmlns="http://ftn.uns.ac.rs/coverLetter"
+ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+ xsi:schemaLocation="http://ftn.uns.ac.rs/coverLetter file:/C:/Users/Nikola%20Zubic/Desktop/XMLWEB/sciXiv/Backend/src/main/resources/static/xmlSchemas/coverLetter.xsd" submissionDate="2006-05-04" id="id1">
+    <publicationTitle>HOG method</publicationTitle>
+    <version>1</version>
+    <author>
+        <name>John Bosnich</name>
+        <educationTitle>MSc</educationTitle>
+        <affiliation>ETF</affiliation>
+        <city>Belgrade</city>
+        <state>Serbia</state>
+        <phoneNumber>003871245712578</phoneNumber>
+        <email>bosnich@gmail.com</email>
+        <signature>ZGVmYXVsdA==</signature>
+    </author>
+    <targetPublisher>
+        <editor>Mihajlo Kusljic</editor>
+        <journal>National Geographic</journal>
+    </targetPublisher>
+    <content>
+        <paragraph>
+            <boldText>Optical Music Recognition</boldText>
+            <emphasizedText>Optical Music Recognition is a field of research that investigates how to computationally
+                decode music notation from images. Despite the efforts made so far, there are hardly any complete
+                solutions to the problem. In this work, we study the use of neural networks that work in an end-to-end
+                manner. This is achieved by using a neural model that combines the capabilities of convolutional
+                neural networks, which work on the input image, and recurrent neural networks, which deal with
+                the sequential nature of the problem. Thanks to the use of the the so-called Connectionist Temporal
+                Classification loss function, these models can be directly trained from input images accompanied by
+                their corresponding transcripts into music symbol sequences. We also present the Printed Images
+                of Music Staves (PrIMuS) dataset, containing more than 80,000 monodic single-staff real scores in
+                common western notation, that is used to train and evaluate the neural approach. In our experiments,
+                it is demonstrated that this formulation can be carried out successfully. Additionally, we study several
+                considerations about the codification of the output musical sequences, the convergence and scalability
+                of the neural models, as well as the ability of this approach to locate symbols in the input score.
+            </emphasizedText>
+            <quote>
+                <source>Kobe Bryant</source>
+                <quoteContent>I have self-doubt. I have insecurity. I have fear of failure. I have nights when I show up at the arena and I'm like, 'My back hurts, my feet 
+                    hurt, my knees hurt. I don't have it. I just want to chill.' We all have self-doubt. You don't deny it, but you also don't capitulate to it. You embrace it.
+                </quoteContent>
+            </quote>
+            <list ordered="true">
+                <listItem>HOG method</listItem>
+                <listItem>Computer Vision</listItem>
+            </list>
+            <boldText>OMR for CWMN</boldText>
+            <emphasizedText>We believe that the problem to progress in OMR for CWMN lies in the complexity involved in
+                correctly modeling the composition of musical symbols. Unlike these hand-engineered multi-stage
+                approaches, we propose a holistic strategy in which the musical notation is learned as a whole using
+                machine learning strategies. However, to reduce the complexity to a feasible level, we do consider
+                a first initial stage in which the image is pre-processed to find and separate the different staves of the
+                score. Staves are good basic units to work on, analogously to similar text recognition where a single
+                line of text is assumed as input unit. Note that this is not a strong assumption as there are successful
+                algorithms for isolating staves, as mentioned above.
+                Then, the staff can be addressed as a single unit instead of considering it as a sequence of isolated
+                elements that have to be detected and recognized independently. This also opens the possibility
+                to boost the optical recognition by taking into account the musical context which, in spite of being
+                extremely difficult to model entirely, can certainly help in the process. Thus, it seems interesting to
+                tackle the OMR task over single staves in an holistic fashion, in which the expected output is directly
+                the sequence of musical symbols present in the image.</emphasizedText>
+            <quote>
+                <source>Buddha</source>
+                <quoteContent>Health is the greatest gift, contentment the greatest wealth, faithfulness the best relationship.</quoteContent>
+            </quote>
+            <list ordered="false">
+                <listItem>Old-fashioned CV</listItem>
+                <listItem>Optimizations of existing methods</listItem>
+            </list>
+        </paragraph>
+        <paragraph>
+            <boldText>Using the gradient direction to reduce the number of votes</boldText>
+            <emphasizedText>An improvement suggested by O'Gorman and Clowes can be used to detect lines if one takes into account that the local gradient of the image 
+                intensity will necessarily be orthogonal to the edge. Since edge detection generally involves computing the intensity gradient magnitude, the gradient 
+                direction is often found as a side effect. If a given point of coordinates (x,y) happens to indeed be on a line, then the local direction of the gradient 
+                gives the θ parameter corresponding to said line, and the r parameter is then immediately obtained. (Shapiro and Stockman, 305) The gradient direction can be 
+                estimated to within 20°, which shortens the sinusoid trace from the full 180° to roughly 45°. This reduces the computation time and has the interesting effect
+                of reducing the number of useless votes, thus enhancing the visibility of the spikes corresponding to real lines in the image.</emphasizedText>
+            <quote>
+                <source>Aristotle</source>
+                <quoteContent>It is during our darkest moments that we must focus to see the light.</quoteContent>
+            </quote>
+            <list ordered="false">
+                <listItem>Hough transform</listItem>
+                <listItem>Image transforming</listItem>
+            </list>
+            <boldText>Hough transform of curves, and its generalization for analytical and non-analytical shapes
+            </boldText>
+            <emphasizedText>Although the version of the transform described above applies only to finding straight lines, a similar transform can be used for finding any shape 
+                which can be represented by a set of parameters. A circle, for instance, can be transformed into a set of three parameters, representing its center and radius,
+                so that the Hough space becomes three dimensional. Arbitrary ellipses and curves can also be found this way, as can any shape easily expressed as a set of 
+                parameters.
+                
+                The generalization of the Hough transform for detecting analytical shapes in spaces having any dimensionality was proposed by Fernandes and Oliveira.[11] In 
+                contrast to other Hough transform-based approaches for analytical shapes, Fernandes' technique does not depend on the shape one wants to detect nor on the 
+                input data type. The detection can be driven to a type of analytical shape by changing the assumed model of geometry where data have been encoded (e.g., 
+                euclidean space, projective space, conformal geometry, and so on), while the proposed formulation remains unchanged. Also, it guarantees that the intended 
+                shapes are represented with the smallest possible number of parameters, and it allows the concurrent detection of different kinds of shapes that best fit an 
+                input set of entries with different dimensionalities and different geometric definitions (e.g., the concurrent detection of planes and spheres that best fit 
+                a set of points, straight lines and circles).
+                
+                For more complicated shapes in the plane (i.e., shapes that cannot be represented analytically in some 2D space), the Generalised Hough transform [12] is used,
+                which allows a feature to vote for a particular position, orientation and/or scaling of the shape using a predefined look-up table.
+                
+            </emphasizedText>
+
+            <list ordered="true">
+                <listItem>Circle detection process</listItem>
+                <listItem>Detection of 3D objects</listItem>
+            </list>
+        </paragraph>
+    </content>
+</coverLetter>

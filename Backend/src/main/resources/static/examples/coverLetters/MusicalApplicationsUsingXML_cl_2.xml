@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<coverLetter xmlns="http://ftn.uns.ac.rs/coverLetter"
+ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+ xsi:schemaLocation="http://ftn.uns.ac.rs/coverLetter file:/C:/Users/Nikola%20Zubic/Desktop/XMLWEB/sciXiv/Backend/src/main/resources/static/xmlSchemas/coverLetter.xsd" submissionDate="2006-05-04" id="id1">
+    <publicationTitle>Musical Applications Using XML</publicationTitle>
+    <version>2</version>
+    <author>
+        <name>Roland, P</name>
+        <educationTitle>phD</educationTitle>
+        <affiliation>FTN</affiliation>
+        <city>Novi Sad</city>
+        <state>Serbia</state>
+        <phoneNumber>252362362362362</phoneNumber>
+        <email>rol@gmail.com</email>
+        <signature>ZGVmYXVsdA==</signature>
+    </author>
+    <targetPublisher>
+        <editor>Mihajlo Kusljic</editor>
+        <journal>PLOS ONE</journal>
+    </targetPublisher>
+    <content>
+        <paragraph>
+            <boldText>Musical notation</boldText>
+            <emphasizedText>We believe that the problem to progress in OMR for CWMN lies in the complexity involved in
+                correctly modeling the composition of musical symbols. Unlike these hand-engineered multi-stage
+                approaches, we propose a holistic strategy in which the musical notation is learned as a whole using
+                machine learning strategies. However, to reduce the complexity to a feasible level, we do consider
+                a first initial stage in which the image is pre-processed to find and separate the different staves of the
+                score. Staves are good basic units to work on, analogously to similar text recognition where a single
+                line of text is assumed as input unit. Note that this is not a strong assumption as there are successful
+                algorithms for isolating staves, as mentioned above.
+            </emphasizedText>
+            <quote>
+                <source>Kobe Bryant</source>
+                <quoteContent>I focus on one thing and one thing only - that's trying to win as many championships as I can.</quoteContent>
+            </quote>
+            <list ordered="true">
+                <listItem>XML</listItem>
+                <listItem>Musical OMR</listItem>
+            </list>
+            <boldText>SMDL</boldText>
+            <emphasizedText>Several attempts to address this unfortunate situation have beenmade, chief among which are the Notation Interchange File Format (NIFF)and the 
+                Standard Music Description Language (SMDL). NIFF was completedin 1995 and was designed specifically as a music-notation interchangestandard. Even though it
+                has been adopted by several notation andmusic-scanning programs, its graphical approach to representing musicinformation limits its usefulness for performance 
+                applications. WhileSMDL has reached the status of official standard (ISO/IEC DraftInternational Standard 10743), it suffers from the opposite extreme oftrying
+                to be all things to all people.</emphasizedText>
+            <quote>
+                <source>Walt Whitman</source>
+                <quoteContent>Keep your face always toward the sunshine - and shadows will fall behind you.</quoteContent>
+            </quote>
+            <list ordered="true">
+                <listItem>History</listItem>
+                <listItem>Support</listItem>
+            </list>
+        </paragraph>
+        <paragraph>
+            <boldText>MARKUP FOR MUSIC</boldText>
+            <emphasizedText>This problem is not unique to music applications. Demand forinteroperability among products from competing vendors has been thebane of the computer 
+                industry since its birth. Fortunately, a solutionhas arisen from the world of Internet applications: the ExtensibleMarkup Language (XML). XML has emerged as 
+                the accepted standard fordata representation and interchange among commercial software packages.Readers of EM are probably familiar with XML as it relates 
+                toWeb pages (see “Mark My Words” in the November 2001 issue).But readers may not realize that XML has capabilities that reach farbeyond just souping up home
+                pages.
+                XML is a markup language for defining markup languages. It allowsyou to define a grammar for describing the data associated with anygroup or class of
+                computer applications. When two programs want toshare data, they exchange a highly structured text document thatconforms to the syntax rules of XML and 
+                the grammatical rules that thetwo programs have agreed upon.
+                XML requires you to define your grammar in the form of another XMLdocument called a schema or a Document Type Definition (DTD). Byfollowing XML's rules 
+                for creating a valid DTD, you don't need to worryabout how your grammar will be interpreted by a program. There arestandard tools for that, and that frees 
+                you to focus on how to organizeand represent the data you want to share. This balance of flexibilityand consistency is the core strength of XML as a vehicle
+                for datainterchange.</emphasizedText>
+            <quote>
+                <source>Mahatma Gandhi</source>
+                <quoteContent>In a gentle way, you can shake the world.</quoteContent>
+            </quote>
+            <list ordered="false">
+                <listItem>DTD</listItem>
+                <listItem>XSD</listItem>
+            </list>
+            <boldText>Example</boldText>
+            <emphasizedText>Like all XML-based formats, MusicXML is intended to be easy for automated tools to parse and manipulate. Though it is possible to create MusicXML
+                by hand, interactive score writing programs like Finale and MuseScore greatly simplify the reading, writing, and modifying of MusicXML files. 
+                The following example is a score consisting of a single whole note middle C in the key of C major on the Treble Clef.[16]</emphasizedText>
+
+        </paragraph>
+    </content>
+</coverLetter>

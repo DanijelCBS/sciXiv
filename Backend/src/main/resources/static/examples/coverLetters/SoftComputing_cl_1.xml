@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<coverLetter xmlns="http://ftn.uns.ac.rs/coverLetter"
+ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+ xsi:schemaLocation="http://ftn.uns.ac.rs/coverLetter file:/C:/Users/Nikola%20Zubic/Desktop/XMLWEB/sciXiv/Backend/src/main/resources/static/xmlSchemas/coverLetter.xsd" submissionDate="2006-05-04" id="id1">
+    <publicationTitle>Soft computing</publicationTitle>
+    <version>1</version>
+    <author>
+        <name>Pero Peric</name>
+        <educationTitle>MSc</educationTitle>
+        <affiliation>FTN</affiliation>
+        <city>Novi Sad</city>
+        <state>Serbia</state>
+        <phoneNumber>524623623463454335</phoneNumber>
+        <email>pero@gmail.com</email>
+        <signature>ZGVmYXVsdA==</signature>
+    </author>
+    <targetPublisher>
+        <editor>Mihajlo Kusljic</editor>
+        <journal>Nature Communications</journal>
+    </targetPublisher>
+    <content>
+        <paragraph>
+            <boldText>Main motivation</boldText>
+            <emphasizedText>We believe that the problem to progress in OMR for CWMN lies in the complexity involved in
+                correctly modeling the composition of musical symbols. Unlike these hand-engineered multi-stage
+                approaches, we propose a holistic strategy in which the musical notation is learned as a whole using
+                machine learning strategies. However, to reduce the complexity to a feasible level, we do consider
+                a first initial stage in which the image is pre-processed to find and separate the different staves of the
+                score. Staves are good basic units to work on, analogously to similar text recognition where a single
+                line of text is assumed as input unit. Note that this is not a strong assumption as there are successful
+                algorithms for isolating staves, as mentioned above.
+            </emphasizedText>
+            <quote>
+                <source>Kobe Bryant</source>
+                <quoteContent>At the end of 2003, my game was complete. Shooting, defense, using the dribble, transition, midrange stuff was all there. Then it was about 
+                    fine-tuning and trying to improve in each area.
+                </quoteContent>
+            </quote>
+            <list ordered="true">
+                <listItem>Primitive CV</listItem>
+                <listItem>CV with usage of Deep Learning</listItem>
+            </list>
+            <boldText>Main content</boldText>
+            <emphasizedText>            
+                We believe that the problem to progress in OMR for CWMN lies in the complexity involved in
+                correctly modeling the composition of musical symbols. Unlike these hand-engineered multi-stage
+                approaches, we propose a holistic strategy in which the musical notation is learned as a whole using
+                machine learning strategies. However, to reduce the complexity to a feasible level, we do consider
+                a first initial stage in which the image is pre-processed to find and separate the different staves of the
+                score. Staves are good basic units to work on, analogously to similar text recognition where a single
+                line of text is assumed as input unit. Note that this is not a strong assumption as there are successful
+                algorithms for isolating staves, as mentioned above.
+                Then, the staff can be addressed as a single unit instead of considering it as a sequence of isolated
+                elements that have to be detected and recognized independently. This also opens the possibility
+                to boost the optical recognition by taking into account the musical context which, in spite of being
+                extremely difficult to model entirely, can certainly help in the process. Thus, it seems interesting to
+                tackle the OMR task over single staves in an holistic fashion, in which the expected output is directly
+                the sequence of musical symbols present in the image.
+            </emphasizedText>
+            <quote>
+                <source>Khalil Gibran</source>
+                <quoteContent>Yesterday we obeyed kings and bent our necks before emperors. But today we kneel only to truth, follow only beauty, and obey only love.
+                </quoteContent>
+            </quote>
+            <list ordered="false">
+                <listItem>Fuzzy logic</listItem>
+                <listItem>Evolutionary computation</listItem>
+            </list>
+        </paragraph>
+        <paragraph>
+            <boldText>Fuzzy logic</boldText>
+            <emphasizedText>Fuzzification is the process of assigning the numerical input of a system to fuzzy sets with some degree of membership. This degree of 
+                membership may be anywhere within the interval [0,1]. If it is 0 then the value does not belong to the given fuzzy set, and if it is 1 then the value 
+                completely belongs within the fuzzy set. Any value between 0 and 1 represents the degree of uncertainty that the value belongs in the set. These fuzzy
+                sets are typically described by words, and so by assigning the system input to fuzzy sets, we can reason with it in a linguistically natural manner.
+            </emphasizedText>
+
+            <list ordered="true">
+                <listItem>AND(x,y)</listItem>
+                <listItem>OR(x,y)</listItem>
+            </list>
+            <boldText>History</boldText>
+            <emphasizedText>Simulations of evolution using evolutionary algorithms and artificial life started with the work of Nils Aall Barricelli in the 1960s, and 
+                was extended by Alex Fraser, who published a series of papers on simulation of artificial selection.[1] Artificial evolution became a widely recognised 
+                optimisation method as a result of the work of Ingo Rechenberg in the 1960s and early 1970s, who used evolution strategies to solve complex engineering
+                problems.[2] Genetic algorithms in particular became popular through the writing of John Holland.[3] As academic interest grew, dramatic increases in the 
+                power of computers allowed practical applications, including the automatic evolution of computer programs.[4] Evolutionary algorithms are now used to solve
+                multi-dimensional problems more efficiently than software produced by human designers, and also to optimise the design of systems.[5][6]
+                
+            </emphasizedText>
+
+        </paragraph>
+    </content>
+</coverLetter>

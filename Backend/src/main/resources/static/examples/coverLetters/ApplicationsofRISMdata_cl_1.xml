@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<coverLetter xmlns="http://ftn.uns.ac.rs/coverLetter"
+ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+ xsi:schemaLocation="http://ftn.uns.ac.rs/coverLetter file:/C:/Users/Nikola%20Zubic/Desktop/XMLWEB/sciXiv/Backend/src/main/resources/static/xmlSchemas/coverLetter.xsd" submissionDate="2006-05-04" id="id1">
+    <publicationTitle>Applications of RISM data</publicationTitle>
+    <version>1</version>
+    <author>
+        <name>Keil, K.</name>
+        <educationTitle>phD</educationTitle>
+        <affiliation>Research Center</affiliation>
+        <city>New York</city>
+        <state>USA</state>
+        <phoneNumber>884817851487</phoneNumber>
+        <email>keil@gmail.com</email>
+        <signature>ZGVmYXVsdA==</signature>
+    </author>
+    <targetPublisher>
+        <editor>Mihajlo Kusljic</editor>
+        <journal>New Scientist</journal>
+    </targetPublisher>
+    <content>
+        <paragraph>
+            <boldText>We believe that the problem to progress in OMR for CWMN lies in the complexity involved in
+                correctly modeling the composition of musical symbols. Unlike these hand-engineered multi-stage
+                approaches, we propose a holistic strategy in which the musical notation is learned as a whole using
+                machine learning strategies. However, to reduce the complexity to a feasible level, we do consider
+                a first initial stage in which the image is pre-processed to find and separate the different staves of the
+                score. Staves are good basic units to work on, analogously to similar text recognition where a single
+                line of text is assumed as input unit. Note that this is not a strong assumption as there are successful
+                algorithms for isolating staves, as mentioned above.</boldText>
+            <emphasizedText>Then, the staff can be addressed as a single unit instead of considering it as a sequence of isolated
+                elements that have to be detected and recognized independently. This also opens the possibility
+                to boost the optical recognition by taking into account the musical context which, in spite of being
+                extremely difficult to model entirely, can certainly help in the process. Thus, it seems interesting to
+                tackle the OMR task over single staves in an holistic fashion, in which the expected output is directly
+                the sequence of musical symbols present in the image.</emphasizedText>
+            <quote>
+                <source>Kobe Bryant</source>
+                <quoteContent>The most important thing is to try and inspire people so that they can be great in whatever they want to do.</quoteContent>
+            </quote>
+            <list ordered="true">
+                <listItem>RISM</listItem>
+                <listItem>Data Science</listItem>
+            </list>
+            <boldText>Information about manuscripts and printed music indexed in RISM (Répertoire International des Sources Musicales), a large, international project that 
+                records and describes musical sources, was for decades available solely through book publications, CD-ROMs, or subscription services. Recent initiatives to make 
+                the data available on a wider scale have resulted in, most significantly, a freely accessible online database and the availability of its data as open data and 
+                linked open data. Previously, the task of increasing the amount of data was primarily carried out by RISM national groups and the Zentralredaktion 
+                (Central Office). The current opportunities available by linking to other freely accessible databases and importing data from other resources open new 
+                perspectives and prospects.
+            </boldText>
+            <emphasizedText>This paper describes the RISM data and their applications for digital libraries and digital musicological projects. We discuss 
+                the possibilities and challenges in making available a large and growing quantity of data and how the data have been utilized in external library and 
+                musicological projects. Interactive functions in the RISM OPAC are planned for the future, as is closer collaboration with the projects that use RISM data. 
+                Ultimately, RISM would like to arrange a “take and give” system in which the RISM data are used in external projects, enhanced by the project participants, 
+                and then delivered back to the RISM Zentralredaktion.</emphasizedText>
+            <quote>
+                <source>Steve Jobs</source>
+                <quoteContent>Your work is going to fill a large part of your life, and the only way to be truly satisfied is to do what you believe is great work. And the 
+                    only way to do great work is to love what you do. If you haven't found it yet, keep looking. Don't settle. As with all matters of the heart, you'll know 
+                    when you find it.
+                </quoteContent>
+            </quote>
+            <list ordered="true">
+                <listItem>Deep learning</listItem>
+                <listItem>Music</listItem>
+            </list>
+        </paragraph>
+        <paragraph>
+            <boldText>Evaluation of algorithm</boldText>
+            <emphasizedText>... To evaluate their algorithm, two different data sets are used which both consist of monophonic music in modern notation, however one 
+                is printed and one handwritten. Experiments on the first dataset which comprises incipts from the RISM data set [9] yield a symbol/pitch error rate of 1.5% 
+                and a rhythm error rate of 2.0%. The total error for both properties to be correct is 2.8%. ...
+            </emphasizedText>
+            <quote>
+                <source>Maya Angelou</source>
+                <quoteContent>My mission in life is not merely to survive, but to thrive; and to do so with some passion, some compassion, some humor, and some style.
+                </quoteContent>
+            </quote>
+            <list ordered="false">
+                <listItem>AI</listItem>
+                <listItem>Neural Networks</listItem>
+            </list>
+            <boldText>boldText3</boldText>
+            <emphasizedText>... A direct approach for search within music collections is to use OMR technology to transform the documents into symbolic pieces of information, 
+                over which classical content-based or symbolic retrieval methods can be used [87], [22], [104], [287], [157], [173], [1], [97]. The problem is that these 
+                transformations require a more comprehensive understanding of the processed documents (see Sections VI-B3 and VI-B4 below). ...
+            </emphasizedText>
+            <quote>
+                <source>source3</source>
+                <quoteContent>quoteContent3</quoteContent>
+            </quote>
+            <list ordered="false">
+                <listItem>Beethoven</listItem>
+                <listItem>Classical music</listItem>
+            </list>
+        </paragraph>
+    </content>
+</coverLetter>

@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<coverLetter xmlns="http://ftn.uns.ac.rs/coverLetter"
+ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+ xsi:schemaLocation="http://ftn.uns.ac.rs/coverLetter file:/C:/Users/Nikola%20Zubic/Desktop/XMLWEB/sciXiv/Backend/src/main/resources/static/xmlSchemas/coverLetter.xsd" submissionDate="2006-05-04" id="id1">
+    <publicationTitle>Neural networks</publicationTitle>
+    <version>1</version>
+    <author>
+        <name>Pero Peric</name>
+        <educationTitle>phD</educationTitle>
+        <affiliation>FTN</affiliation>
+        <city>Novi Sad</city>
+        <state>Serbia</state>
+        <phoneNumber>12959327956727836</phoneNumber>
+        <email>pero@gmail.com</email>
+        <signature>ZGVmYXVsdA==</signature>
+    </author>
+    <targetPublisher>
+        <editor>Mihajlo Kusljic</editor>
+        <journal>Scientifica Noevica</journal>
+    </targetPublisher>
+    <content>
+        <paragraph>
+            <boldText>Motivation</boldText>
+            <emphasizedText>We believe that the problem to progress in OMR for CWMN lies in the complexity involved in
+                correctly modeling the composition of musical symbols. Unlike these hand-engineered multi-stage
+                approaches, we propose a holistic strategy in which the musical notation is learned as a whole using
+                machine learning strategies. However, to reduce the complexity to a feasible level, we do consider
+                a first initial stage in which the image is pre-processed to find and separate the different staves of the
+                score. Staves are good basic units to work on, analogously to similar text recognition where a single
+                line of text is assumed as input unit. Note that this is not a strong assumption as there are successful
+                algorithms for isolating staves, as mentioned above.
+            </emphasizedText>
+            <quote>
+                <source>Kobe Bryant</source>
+                <quoteContent>My parents are my backbone. Still are. They're the only group that will support you if you score zero or you score 40.</quoteContent>
+            </quote>
+            <list ordered="true">
+                <listItem>Neural networks</listItem>
+                <listItem>Machine Learning</listItem>
+                <listItem>Deep Learning</listItem>
+            </list>
+            <boldText>Motivation and about publication</boldText>
+            <emphasizedText>We believe that the problem to progress in OMR for CWMN lies in the complexity involved in
+                correctly modeling the composition of musical symbols. Unlike these hand-engineered multi-stage
+                approaches, we propose a holistic strategy in which the musical notation is learned as a whole using
+                machine learning strategies. However, to reduce the complexity to a feasible level, we do consider
+                a first initial stage in which the image is pre-processed to find and separate the different staves of the
+                score. Staves are good basic units to work on, analogously to similar text recognition where a single
+                line of text is assumed as input unit. Note that this is not a strong assumption as there are successful
+                algorithms for isolating staves, as mentioned above.
+                Then, the staff can be addressed as a single unit instead of considering it as a sequence of isolated
+                elements that have to be detected and recognized independently. This also opens the possibility
+                to boost the optical recognition by taking into account the musical context which, in spite of being
+                extremely difficult to model entirely, can certainly help in the process. Thus, it seems interesting to
+                tackle the OMR task over single staves in an holistic fashion, in which the expected output is directly
+                the sequence of musical symbols present in the image.</emphasizedText>
+            <quote>
+                <source>Walt Whitman</source>
+                <quoteContent>We convince by our presence.</quoteContent>
+            </quote>
+            <list ordered="true">
+                <listItem>Quantum AI</listItem>
+                <listItem>Possibilities of new approaches</listItem>
+                <listItem>AI and physics</listItem>
+            </list>
+            <boldText>Organization</boldText>
+            <emphasizedText>The neurons are typically organized into multiple layers, especially in deep learning. Neurons of one layer connect only to neurons of the 
+                immediately preceding and immediately following layers. The layer that receives external data is the input layer. The layer that produces the ultimate
+                result is the output layer. In between them are zero or more hidden layers. Single layer and unlayered networks are also used. Between two layers, multiple
+                connection patterns are possible. They can be fully connected, with every neuron in one layer connecting to every neuron in the next layer. They can be
+                pooling, where a group of neurons in one layer connect to a single neuron in the next layer, thereby reducing the number of neurons in that layer.[43]
+                Neurons with only such connections form a directed acyclic graph and are known as feedforward networks.[44] Alternatively, networks that allow connections 
+                between neurons in the same or previous layers are known as recurrent networks.[45]
+            </emphasizedText>
+            <quote>
+                <source>Lao Tzu</source>
+                <quoteContent>Health is the greatest possession. Contentment is the greatest treasure. Confidence is the greatest friend. Non-being is the greatest joy.
+                </quoteContent>
+            </quote>
+            <list ordered="false">
+                <listItem>Hyperparameter</listItem>
+                <listItem>Learning</listItem>
+                <listItem>Learning rates</listItem>
+            </list>
+        </paragraph>
+        <paragraph>
+            <boldText>Hyperparameter</boldText>
+            <emphasizedText>A hyperparameter is a constant parameter whose value is set before the learning process begins. The values of parameters are derived via learning. 
+                Examples of hyperparameters include learning rate, the number of hidden layers and batch size.[46] The values of some hyperparameters can be dependent on
+                those of other hyperparameters. For example, the size of some layers can depend on the overall number of layers.
+            </emphasizedText>
+            <quote>
+                <source>Audrey Hepburn</source>
+                <quoteContent>I believe in pink. I believe that laughing is the best calorie burner. I believe in kissing, kissing a lot. I believe in being strong
+                    when everything seems to be going wrong. I believe that happy girls are the prettiest girls. I believe that tomorrow is another day and I believe 
+                    in miracles.</quoteContent>
+            </quote>
+            <list ordered="false">
+                <listItem>RNN</listItem>
+                <listItem>CNN</listItem>
+                <listItem>LSTM</listItem>
+            </list>
+            <boldText>Backpropagation</boldText>
+            <emphasizedText>Backpropagation is a method to adjust the connection weights to compensate for each error found during learning. The error amount 
+                is effectively divided among the connections. Technically, backprop calculates the gradient (the derivative) of the cost function associated with a 
+                given state with respect to the weights. The weight updates can be done via stochastic gradient descent or other methods, such as Extreme
+                Learning Machines,[48] "No-prop" networks,[49] training without backtracking,[50] "weightless" networks,[51][52] and non-connectionist neural networks.
+                
+            </emphasizedText>
+            <quote>
+                <source>Earl N.</source>
+                <quoteContent>All you need is the plan, the road map, and the courage to press on to your destination.</quoteContent>
+            </quote>
+        </paragraph>
+        
+        <paragraph>
+            <boldText>Network design</boldText>
+            <emphasizedText>Neural architecture search (NAS) uses machine learning to automate ANN design. Various approaches to NAS have designed networks that compare
+                well with hand-designed systems. The basic search algorithm is to propose a candidate model, evaluate it against a dataset and use the results as feedback
+                to teach the NAS network.[80] Available systems include AutoML and AutoKeras.[81]
+                
+                Design issues include deciding the number, type and connectedness of network layers, as well as the size of each and the connection type (full, pooling, ...).
+                
+                Hyperparameters must also be defined as part of the design (they are not learned), governing matters such as how many neurons are in each layer,
+                learning rate, step, stride, depth, receptive field and padding (for CNNs), etc.[82]
+                
+            </emphasizedText>
+        </paragraph>
+    </content>
+</coverLetter>
